@@ -1,0 +1,479 @@
+[
+  {
+    "ch": "Opening",
+    "title": "Problem solving<br>and search",
+    "body": "<p class=\"cover-sub\">Unit 2 · Intelligent Systems</p><div class=\"cover-meta\">School of Computer Science · Ciudad Real<br>Universidad de Castilla-La Mancha<br><strong>Rubén Juárez Cádiz</strong></div>",
+    "notes": "Unit 1 introduced the agent. Unit 2 focuses on an agent that uses a model to plan before acting. The cover is conceptual AI-generated artwork, not a graph to solve. The supplied 44-slide lecture is expanded with executable search traces, solved activities and precise algorithm assumptions.",
+    "cls": "cover dark",
+    "sub": "",
+    "ref": "UCLM · Computer Science Degree"
+  },
+  {
+    "ch": "Opening",
+    "title": "What you will be able to do",
+    "body": "<div class=\"rows\"><div><strong>Formulate</strong><span>Turn a task into states, actions, transitions, a goal and costs.</span></div><div><strong>Trace</strong><span>Follow the frontier, selected node and repeated-state decisions.</span></div><div><strong>Compare</strong><span>Justify completeness, cost optimality, time and memory.</span></div><div><strong>Implement</strong><span>Connect BFS, UCS, DFS, DLS and IDS to the Loopover lab.</span></div></div><p class=\"takeaway\">The central question: which node should leave the frontier next?</p>",
+    "notes": "Suggested pacing: three 80-minute teaching blocks, adaptable to the timetable. Block one: formulation and search mechanics. Block two: uninformed algorithms and simulations. Block three: worked problems and laboratory implementation. Use the index to select sections rather than rush through every screen in one class. All interactive controls, notes and activities are in English. Simulations run offline.",
+    "cls": "",
+    "sub": "A framework for reasoning, tracing and building solvers",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Problem-solving agents",
+    "title": "A goal does not specify a route",
+    "body": "<p class=\"statement\">“Reach the destination” tells us what counts as success.</p><p class=\"prompt\">Search finds an action sequence that can make it happen.</p>",
+    "notes": "Connect to Unit 1. A goal is a predicate on states, while a plan is a sequence of actions. Many plans may reach the same goal with different costs. The agent uses a model to explore possibilities without executing all of them in the real environment. Ask students to separate goal, plan and utility in a campus-delivery example.",
+    "cls": "red question",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Problem-solving agents",
+    "title": "Formulate, search and execute",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Update</strong><span>Interpret the percept</span></div><div class=\"flowstep\"><small>02</small><strong>Formulate</strong><span>Goal and problem</span></div><div class=\"flowstep\"><small>03</small><strong>Search</strong><span>Find a plan</span></div><div class=\"flowstep\"><small>04</small><strong>Execute</strong><span>Take an action</span></div></div><div class=\"table-scroll\"><table><thead><tr><th>Mode</th><th>What happens</th></tr></thead><tbody><tr><td>Offline planning</td><td>Compute a plan using a model before executing it.</td></tr><tr><td>Online search</td><td>Interleave action, observation and learning about an initially unknown environment.</td></tr></tbody></table></div><p class=\"takeaway\">A real agent may monitor execution and replan when its assumptions fail.</p>",
+    "notes": "The simplest classical problem-solving agent assumes a known initial state, deterministic transitions and a static planning setting. Under those assumptions it can execute a precomputed sequence. Monitoring and replanning extend that idealization. Online search is not a synonym for using the internet. It concerns interleaving computation with action and discovery.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Problem types",
+    "title": "Different uncertainty, different solutions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Problem type</th><th>Information available</th><th>Form of solution</th></tr></thead><tbody><tr><td>Single-state</td><td>Known current state and deterministic model.</td><td>An action sequence.</td></tr><tr><td>Conformant</td><td>Initial uncertainty with no observations during execution.</td><td>A sequence that works for every possible state.</td></tr><tr><td>Contingent</td><td>Observations or uncertain action outcomes matter.</td><td>A conditional plan or policy.</td></tr><tr><td>Exploration</td><td>The environment or transition structure is unknown.</td><td>Act while acquiring a useful model.</td></tr></tbody></table></div><p class=\"takeaway\">This unit mainly studies deterministic, fully observable single-state problems.</p>",
+    "notes": "Uncertainty changes what a solution must represent. A fixed sequence need not work for every hidden state. A contingent solution branches on observations. In conformant planning, use a belief state representing all possibilities. These are scope distinctions; the algorithms developed next are not claimed to solve every uncertainty model.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Formulation",
+    "title": "A precise search problem",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Component</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial state s₀</td><td>Where the search begins.</td></tr><tr><td>Actions A(s)</td><td>Which actions are legal in a state.</td></tr><tr><td>Transition T(s,a)</td><td>Which state results from a legal action.</td></tr><tr><td>Goal test G(s)</td><td>Whether the objective has been reached.</td></tr><tr><td>Step cost c(s,a)</td><td>The cost contributed by one action.</td></tr></tbody></table></div><p class=\"takeaway\">A solution is a legal action sequence. Its path cost is the sum of step costs.</p>",
+    "notes": "The source presents four components by combining actions and resulting states into a successor function. This presentation separates A and T, giving five entries without changing the model. The reachable state space is induced by the initial state and transitions. A goal can identify one state or many acceptable states. Costs must reflect the task rather than be inferred from the diagram’s visual geometry.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Formulation",
+    "title": "An abstraction must preserve future choices",
+    "body": "<div class=\"cols\"><div><h3>Useful simplification</h3><p>Route finding may represent a state by the current city.</p><h3>Missing information</h3><p>If fuel determines which roads are usable, city alone is insufficient.</p></div><div><h3>A better state</h3><p><code>(city, fuel)</code> preserves the information needed for future actions.</p><h3>Design test</h3><p>Can identical encoded states have different legal futures?</p></div></div><p class=\"takeaway\">Discard irrelevant detail while preserving actions, transitions, goals and costs.</p>",
+    "notes": "This is a state-sufficiency test. Search algorithms treat equal states as interchangeable for future planning. If the encoding omits remaining fuel or coin inventory, duplicate detection may incorrectly discard a necessary alternative. If time-dependent costs matter, the representation may also need time. History-dependent conditions must be represented or explicitly excluded by assumptions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Original state-design example"
+  },
+  {
+    "ch": "Formulation",
+    "title": "Romania: fewest roads or fewest kilometres?",
+    "body": "<div class=\"cols\"><div><div class=\"table-scroll\"><table><thead><tr><th>Selected road</th><th>Distance</th></tr></thead><tbody><tr><td>Arad ↔ Sibiu</td><td>140 km</td></tr><tr><td>Sibiu ↔ Fagaras</td><td>99 km</td></tr><tr><td>Fagaras ↔ Bucharest</td><td>211 km</td></tr><tr><td>Sibiu ↔ Rimnicu Vilcea</td><td>80 km</td></tr><tr><td>Rimnicu Vilcea ↔ Pitesti</td><td>97 km</td></tr><tr><td>Pitesti ↔ Bucharest</td><td>101 km</td></tr></tbody></table></div></div><div><h3>Three-road route</h3><p>Arad, Sibiu, Fagaras, Bucharest</p><div class=\"stat-number\">450 km</div><h3>Four-road route</h3><p>Arad, Sibiu, Rimnicu Vilcea, Pitesti, Bucharest</p><div class=\"stat-number\">418 km</div></div></div><p class=\"takeaway\">Fewer actions and lower total cost are different objectives.</p>",
+    "notes": "These are selected roads from the textbook Romania example, with the standard teaching distances. They are not current travel advice or a complete road map. The three-edge path has cost 140+99+211=450. The four-edge path costs 140+80+97+101=418. In the original map Arad also connects to Timisoara and Zerind. For a BFS trace using alphabetical successor order, the first frontier is [Sibiu, Timisoara, Zerind], and expanding Sibiu produces [Timisoara, Zerind, Fagaras, Oradea, Rimnicu Vilcea] if the full textbook map is used. Always specify which graph is being traced.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · AIMA Romania teaching example"
+  },
+  {
+    "ch": "Search mechanics",
+    "title": "A state graph and its search tree",
+    "body": "<div class=\"cols\"><div><h3>State-space graph</h3><div class=\"graph-mini\">S → A → X<br>S → B → X</div><p>There is one state X, reached through two routes.</p></div><div><h3>Search tree</h3><div class=\"graph-mini\">S / A / X<br>S / B / X</div><p>There are two nodes containing X, each with its own path.</p></div></div><p class=\"takeaway\">States describe configurations. Nodes describe paths that reach configurations.</p>",
+    "notes": "A state-space graph may be given explicitly or generated through a successor function. A search tree unfolds paths, so repeated states may appear many times. Do not equate the number of search nodes with the number of distinct states. If a cycle returns to S, tree search may produce infinitely many path nodes even when the graph is finite.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Search mechanics",
+    "title": "A node stores more than a state",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Field</th><th>Example</th><th>Purpose</th></tr></thead><tbody><tr><td>state</td><td>X</td><td>Configuration used by the problem model.</td></tr><tr><td>parent</td><td>Node containing A</td><td>Reconstruct the selected path.</td></tr><tr><td>action</td><td>A_to_X</td><td>Record how the node was reached.</td></tr><tr><td>depth</td><td>2</td><td>Count actions from the root.</td></tr><tr><td>path cost g(n)</td><td>7</td><td>Accumulate step costs.</td></tr></tbody></table></div><p class=\"takeaway\">The same state may occur at different depths and path costs.</p>",
+    "notes": "The state representation should not include search bookkeeping such as a parent pointer merely to distinguish different paths. Node equality and state equality solve different problems. In Java, hash-based repeated-state control normally uses the immutable state representation. When a goal node is selected, follow parent links back to the root and reverse the actions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Search mechanics",
+    "title": "Frontier, expansion and reached states",
+    "body": "<div class=\"rows\"><div><strong>Frontier</strong><span>Candidate nodes waiting to be selected.</span></div><div><strong>Selection</strong><span>Remove a candidate according to the strategy.</span></div><div><strong>Expansion</strong><span>Generate legal successor states and child nodes.</span></div><div><strong>Repeated-state control</strong><span>Track discovery, expansion or best known cost, depending on the algorithm.</span></div></div><p class=\"takeaway\">Discovered, expanded and settled are different events.</p>",
+    "notes": "A discovered state has been generated. An expanded node has had successors considered. A settled state in uniform-cost search has been removed with its best cost under the algorithm’s assumptions. The source uses visited and explored loosely; in implementations these meanings must be explicit. We use goal testing after selection in the common simulator.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Search mechanics",
+    "title": "A generic tree-search skeleton",
+    "body": "<pre class=\"wide-code\"><code>frontier ← [root(initial_state)]\nwhile frontier is not empty:\n    node ← remove_next(frontier)\n    if goal(node.state):\n        return reconstruct(node)\n    for (action, state, cost) in successors(node.state):\n        child ← Node(state, node, action,\n                     node.depth + 1, node.g + cost)\n        insert(frontier, child)\nreturn FAILURE</code></pre><p class=\"takeaway\">The removal rule controls search order. Duplicate handling adds another design decision.</p>",
+    "notes": "This is explanatory pseudocode, not a finished Java implementation. It may revisit the same state arbitrarily many times. The root has depth and cost zero and no parent. A returned node encodes a path that must be reconstructed. The goal test is deliberately placed after frontier removal so later UCS discussion uses a consistent convention.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Search mechanics",
+    "title": "Repeated states require a policy",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Policy</th><th>What it prevents</th><th>Important consequence</th></tr></thead><tbody><tr><td>Path cycle check</td><td>A state appearing twice on the current path.</td><td>Uses little memory but allows repeats across branches.</td></tr><tr><td>Discovered-state set</td><td>Adding a state already reached.</td><td>Appropriate for ordinary equal-cost BFS.</td></tr><tr><td>Best-cost map</td><td>Discarding a cheaper route to a known state.</td><td>Needed for cost-based search such as UCS.</td></tr><tr><td>Depth-aware pruning</td><td>Discarding a state reached with more remaining depth.</td><td>Relevant when implementing depth-limited graph search.</td></tr></tbody></table></div><p class=\"takeaway\">A boolean “visited” flag is not a substitute for every kind of repeated-state reasoning.</p>",
+    "notes": "BFS can mark a state on insertion because the first discovery has minimum depth under its assumptions. UCS may first discover an expensive path, so best-known costs must be improved. A depth-limited search can reach the same state with different remaining budgets; indiscriminate global pruning can lose a solution. The simple DLS demonstration later uses path-based cycle control.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Algorithm-specific implementation clarification"
+  },
+  {
+    "ch": "Breadth-first search",
+    "title": "BFS selects the shallowest candidate",
+    "body": "<div class=\"cols\"><div><div class=\"big-word\">FIFO<br>queue</div><p>Insert new nodes at the back.<br>Remove the oldest node at the front.</p></div><div><h3>Expansion order</h3><p>All depth-0 nodes, then depth-1 nodes, then depth-2 nodes, and so on.</p><h3>What it optimizes</h3><p>The number of actions. This also minimizes cost when every action costs the same.</p></div></div><p class=\"takeaway\">The ordering of successors resolves ties between nodes at the same depth.</p>",
+    "notes": "FIFO means first in, first out. A queue stores nodes, not just state labels, when paths must be reconstructed. Specify successor order before asking for a trace. On finite graphs, marking states when enqueued avoids unnecessary duplicate frontier entries. The first goal found has minimum depth. Unequal costs remove the general cost-optimality guarantee.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Search laboratory",
+    "title": "One graph, three search strategies",
+    "body": "<div class=\"search-demo\"><div id=\"search-canvas\"><svg class=\"search-graph\" viewBox=\"0 0 750 430\" role=\"img\" aria-label=\"Directed graph. S to A costs 1, S to B 2, A to C 8, C to D 1, A to G 9 and B to G 2.\"><defs><marker id=\"arrow-live\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0,0 L8,4 L0,8\" fill=\"currentColor\"/></marker></defs><path class=\"graph-edge\" data-edge=\"S-A\" d=\"M100.33703217803111,195.45428946266173 L220.70405654415154,102.59972780879738\" marker-end=\"url(#arrow-live)\"/><text class=\"edge-cost\" x=\"137\" y=\"128\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"S-B\" d=\"M100.33703217803111,234.54571053733827 L220.70405654415154,327.4002721912026\" marker-end=\"url(#arrow-live)\"/><text class=\"edge-cost\" x=\"136\" y=\"315\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"A-C\" d=\"M282.0,80.0 L413.0,80.0\" marker-end=\"url(#arrow-live)\"/><text class=\"edge-cost\" x=\"345\" y=\"55\" text-anchor=\"middle\">8</text><path class=\"graph-edge\" data-edge=\"C-D\" d=\"M482.0,80.0 L623.0,80.0\" marker-end=\"url(#arrow-live)\"/><text class=\"edge-cost\" x=\"553\" y=\"55\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"A-G\" d=\"M276.7254676742361,97.59969822449695 L629.0986780016646,329.6503489279254\" marker-end=\"url(#arrow-live)\"/><text class=\"edge-cost\" x=\"475\" y=\"212\" text-anchor=\"middle\">9</text><path class=\"graph-edge\" data-edge=\"B-G\" d=\"M282.0,350.0 L623.0,350.0\" marker-end=\"url(#arrow-live)\"/><text class=\"edge-cost\" x=\"450\" y=\"328\" text-anchor=\"middle\">2</text><g class=\"graph-node\" data-state=\"S\"><circle cx=\"75\" cy=\"215\" r=\"31\"/><text x=\"75\" y=\"225\" text-anchor=\"middle\">S</text></g><g class=\"graph-node\" data-state=\"A\"><circle cx=\"250\" cy=\"80\" r=\"31\"/><text x=\"250\" y=\"90\" text-anchor=\"middle\">A</text></g><g class=\"graph-node\" data-state=\"B\"><circle cx=\"250\" cy=\"350\" r=\"31\"/><text x=\"250\" y=\"360\" text-anchor=\"middle\">B</text></g><g class=\"graph-node\" data-state=\"C\"><circle cx=\"450\" cy=\"80\" r=\"31\"/><text x=\"450\" y=\"90\" text-anchor=\"middle\">C</text></g><g class=\"graph-node\" data-state=\"D\"><circle cx=\"660\" cy=\"80\" r=\"31\"/><text x=\"660\" y=\"90\" text-anchor=\"middle\">D</text></g><g class=\"graph-node\" data-state=\"G\"><circle cx=\"660\" cy=\"350\" r=\"31\"/><text x=\"660\" y=\"360\" text-anchor=\"middle\">G</text></g></svg></div><div><label class=\"control-label\" for=\"search-method\">Frontier policy</label><select id=\"search-method\"><option value=\"bfs\">BFS · FIFO</option><option value=\"ucs\">UCS · lowest g</option><option value=\"dfs\">DFS · stack</option></select><div class=\"demo-controls\"><button id=\"search-step\" class=\"primary\">Select next node</button><button id=\"search-run\">Run to completion</button><button id=\"search-reset\">Reset</button></div><div class=\"readout\"><span>Selection order</span><b id=\"search-order\"></b></div><div class=\"readout\"><span>Frontier · next candidate first</span><div id=\"search-frontier\" class=\"frontier-items\"></div></div><p id=\"search-status\" class=\"search-status\" aria-live=\"polite\"></p></div></div><p class=\"fine\">Directed edges carry positive costs. Successor order is alphabetical. Text labels identify selected and frontier states.</p>",
+    "notes": "Start with BFS, then reset and run UCS and DFS. The graph is an original example. Its edges are S→A:1, S→B:2, A→C:8, A→G:9, B→G:2 and C→D:1. BFS and DFS mark states when inserted. DFS pushes successors in reverse alphabetical order so A is examined before B. UCS uses best costs and stable insertion-order ties. The goal is tested after a non-stale node is selected. G is selected but not expanded. The simulator’s frontier shows the next selection first. All numerical traces elsewhere refer to this exact graph.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original graph and executable simulation"
+  },
+  {
+    "ch": "Breadth-first search",
+    "title": "BFS: the queue explains the result",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Selected</th><th>Queue afterwards</th><th>What happened</th></tr></thead><tbody><tr><td>S</td><td>A(1), B(2)</td><td>Discover the two depth-1 nodes.</td></tr><tr><td>A</td><td>B(2), C(9), G(10)</td><td>Discover C and G at depth 2.</td></tr><tr><td>B</td><td>C(9), G(10)</td><td>G is already discovered.</td></tr><tr><td>C</td><td>G(10), D(10)</td><td>Discover D at depth 3.</td></tr><tr><td>G</td><td>Stop</td><td>Return S → A → G, cost 10.</td></tr></tbody></table></div><p class=\"takeaway\">Numbers in parentheses are path costs, not queue priorities. BFS prioritizes depth.</p>",
+    "notes": "At B, another path to G has cost 4, but standard BFS does not improve paths by monetary or distance cost. Its promise is minimum depth. Both S-A-G and S-B-G contain two actions. With the stated successor order, S-A-G is the first goal path. This is not a bug in BFS; it illustrates a mismatch between a cost objective and a depth-based strategy.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated trace of the shared simulation"
+  },
+  {
+    "ch": "Breadth-first search",
+    "title": "BFS guarantees and memory cost",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Question</th><th>Answer with assumptions</th></tr></thead><tbody><tr><td>Complete?</td><td>Yes for finite branching when a solution exists at finite depth.</td></tr><tr><td>Cost-optimal?</td><td>Yes when step costs are equal and positive.</td></tr><tr><td>Main resource risk</td><td>An exponentially large frontier.</td></tr><tr><td>Finite explicit graph</td><td>Standard adjacency-list BFS takes O(V + E) time and O(V) space.</td></tr></tbody></table></div><p class=\"takeaway\">Tree-size bounds and explicit-graph bounds describe different representations.</p>",
+    "notes": "For an implicit search tree, complexity is expressed using branching and solution depth. With our goal test on removal, nodes one level below depth d may already have been generated, yielding a conservative O(b^(d+1)) time and memory bound. A generation-time BFS goal test can stop earlier. A finite explored graph may eventually return failure; completeness does not mean failure can be detected in finite time for every infinite unsolvable graph.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Complexity conventions clarified"
+  },
+  {
+    "ch": "Breadth-first search",
+    "title": "How quickly does a tree grow?",
+    "body": "<div class=\"demo-split\"><div><label class=\"slider-title\" for=\"branching\">Branching factor b: <b id=\"branching-value\">3</b></label><input id=\"branching\" type=\"range\" min=\"2\" max=\"10\" value=\"3\"><label class=\"slider-title\" for=\"depth\">Depth d: <b id=\"depth-value\">6</b></label><input id=\"depth\" type=\"range\" min=\"1\" max=\"10\" value=\"6\"><p class=\"fine\">A full b-ary tree, no repeated states and all levels counted.</p></div><div><div class=\"readout\"><span>Nodes at depth d · bᵈ</span><b id=\"level-count\" class=\"stat-number\"></b></div><div class=\"readout\"><span>Nodes through depth d · Σᵢ₌₀ᵈ bⁱ</span><b id=\"tree-count\" class=\"stat-number\"></b></div><div class=\"readout\"><span>At an assumed 128 bytes per retained node</span><b id=\"memory-count\"></b></div></div></div><p class=\"takeaway\">The memory estimate is illustrative. Real nodes and data structures have additional overhead.</p>",
+    "notes": "Vary depth before branching. This is an exact count for the stated full-tree model, not a measurement of a real Java implementation. The bytes-per-node assumption is explicitly hypothetical. The displayed memory is total full-tree nodes multiplied by 128 bytes, in binary units. It is not claimed that every BFS implementation retains every generated node. Duplicate removal and earlier goal tests can reduce work.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original counting model and interactive calculator"
+  },
+  {
+    "ch": "Uniform-cost search",
+    "title": "UCS selects the lowest path cost",
+    "body": "<div class=\"cols\"><div><div class=\"big-word\">Priority<br>queue</div><div class=\"equation smaller\">priority(n) = g(n)</div></div><div><h3>Different objective</h3><p>A deeper path may still be cheaper.</p><h3>Different duplicate rule</h3><p>If a cheaper route reaches a known state, update its best cost and candidate path.</p></div></div><p class=\"takeaway\">The first discovered route to a state need not be its cheapest route.</p>",
+    "notes": "Uniform-cost search is a goal-directed version of Dijkstra-style shortest-path exploration with suitable costs. A priority queue may support decrease-key, or it may contain a new entry while the old one is later skipped as stale. The simulator uses the latter approach. Equal positive step costs make cost order agree with depth order, apart from tie-breaking.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Uniform-cost search",
+    "title": "Best costs and stale entries",
+    "body": "<pre class=\"wide-code\"><code>best[start] ← 0; push(root, priority=0)\nwhile frontier is not empty:\n    n ← pop_min_g()\n    if n.g != best[n.state]: continue\n    if goal(n.state): return reconstruct(n)\n    for (a, s, cost) in successors(n.state):\n        new_g ← n.g + cost\n        if new_g &lt; best.get(s, infinity):\n            best[s] ← new_g\n            push(Node(s, n, a, new_g), priority=new_g)\nreturn FAILURE</code></pre><p class=\"takeaway\">The goal test follows stale-entry rejection and minimum-cost selection.</p>",
+    "notes": "This is abbreviated pseudocode. A real node also records depth and any deterministic tie-break identifier. best is keyed by immutable state. With nonnegative edge costs, a non-stale node removed at minimum g has settled optimal cost. With strictly positive lower-bounded costs and finite branching, UCS is also complete for finite-cost solutions in the usual infinite-tree setting. Do not copy a discovered-state boolean from BFS into this algorithm.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Uniform-cost search",
+    "title": "UCS improves an expensive discovery",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Selected</th><th>Active candidates, lowest g first</th><th>Effect</th></tr></thead><tbody><tr><td>S(0)</td><td>A(1), B(2)</td><td>Initialize alternative routes.</td></tr><tr><td>A(1)</td><td>B(2), C(9), G(10)</td><td>An expensive goal path is discovered.</td></tr><tr><td>B(2)</td><td>G(4), C(9)</td><td>Improve G from 10 to 4.</td></tr><tr><td>G(4)</td><td>Stop</td><td>Return S → B → G.</td></tr></tbody></table></div><p class=\"takeaway\">G(10) may remain physically in the heap, but it is stale and must not be accepted.</p>",
+    "notes": "The shared simulation displays all queued entries and labels stale ones. The compact table shows active entries only. When B is expanded, g(B)+c(B,G)=2+2=4 beats 10. G(4) is removed before C(9), giving the cheapest route. The old G(10) entry does not harm correctness if it is rejected when selected.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated trace of the shared simulation"
+  },
+  {
+    "ch": "Uniform-cost search",
+    "title": "Discovering a goal is not enough",
+    "body": "<p class=\"statement compact\">A discovers G with cost 10.<br>B later offers G with cost 4.</p><div class=\"cols\"><div><h3>Stopping on generation</h3><p>May accept the expensive route before cheaper alternatives are considered.</p></div><div><h3>Stopping on selection</h3><p>Accepts a non-stale goal removed at minimum g under UCS assumptions.</p></div></div><p class=\"takeaway\">The position of one goal test can change the correctness of an algorithm.</p>",
+    "notes": "This is the same graph rather than an unrelated counterexample. Generate successors of A before expanding B and ask students whether the task is solved optimally yet. It is not. Early generation-time termination is valid for certain BFS implementations with equal action costs, but that rule cannot be transferred blindly to UCS.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Counterexample from the shared simulation"
+  },
+  {
+    "ch": "Uniform-cost search",
+    "title": "UCS: separate optimality and completeness",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Setting</th><th>What can be guaranteed</th></tr></thead><tbody><tr><td>Finite reachable graph, nonnegative costs</td><td>Correct graph UCS terminates and returns a cheapest reachable goal.</td></tr><tr><td>Infinite setting, finite branching, cost ≥ ε > 0</td><td>A finite-cost solution will be reached.</td></tr><tr><td>Infinite zero-cost region</td><td>Search may never reach a positive-cost goal.</td></tr><tr><td>Negative edges</td><td>The usual settle-on-removal argument fails.</td></tr></tbody></table></div><p class=\"takeaway\">A zero lower bound and a positive lower bound are not interchangeable.</p>",
+    "notes": "On a finite graph, strict best-cost improvement and repeated-state control handle zero-cost cycles without repeatedly improving the same state. In an infinite setting, infinitely many zero-cost states can starve a positive-cost goal. A positive lower bound ε limits how many actions fit within a finite cost budget. Negative-edge problems require a different algorithm and assumptions. Keep these distinctions when interpreting summary tables.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · AIMA / CS188 assumptions checked"
+  },
+  {
+    "ch": "Depth-first search",
+    "title": "DFS follows one branch first",
+    "body": "<div class=\"cols\"><div><div class=\"big-word\">LIFO<br>stack</div><p>Insert new nodes on top.<br>Remove the most recently inserted node.</p></div><div><h3>In the shared graph</h3><p>Selection order:<br><b>S, A, C, D, G</b></p><h3>Returned path</h3><p>S → A → G, with cost 10.</p></div></div><p class=\"takeaway\">The selected-node order is not the solution path.</p>",
+    "notes": "The shared DFS implementation marks states on insertion and pushes successors in reverse alphabetical order. G is discovered from A before the dead-end C-D branch is explored. When D has no successors, G is selected. Parent links reconstruct S-A-G, not the entire selection trace. This is a useful opportunity to distinguish traversal order from a returned plan.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied material · Calculated simulator trace"
+  },
+  {
+    "ch": "Depth-first search",
+    "title": "Low-memory claims need an implementation",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>DFS variant</th><th>Memory behaviour</th><th>Completeness caveat</th></tr></thead><tbody><tr><td>Tree / path-based DFS</td><td>O(bm) with stored siblings, or O(m) with lazy successor iteration.</td><td>Can descend forever without reaching a goal.</td></tr><tr><td>Finite graph DFS with a global visited set</td><td>Stores up to O(V) visited states as well as the traversal state.</td><td>Complete over a finite reachable graph with correct duplicate handling.</td></tr><tr><td>Either version</td><td>No general minimum-depth or minimum-cost guarantee.</td><td>Successor ordering can strongly affect the first result.</td></tr></tbody></table></div><p class=\"takeaway\">Adding a global visited set changes the memory model.</p>",
+    "notes": "The source correctly emphasizes DFS memory savings but a blanket O(bm) statement must refer to a tree or path-based implementation. The simulator stores a global discovered set and therefore also consumes memory proportional to visited states. In infinite acyclic spaces even cycle detection cannot prevent endless descent. A depth bound addresses that particular risk, but may exclude the goal.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Implementation-dependent qualification"
+  },
+  {
+    "ch": "Depth limits",
+    "title": "Depth-limited search has three outcomes",
+    "body": "<div class=\"rows\"><div><strong>SOLUTION</strong><span>A goal was found within the limit.</span></div><div><strong>CUTOFF</strong><span>A potentially useful branch was stopped by the limit.</span></div><div><strong>FAILURE</strong><span>All available branches were exhausted without finding a goal or being cut off.</span></div></div><p class=\"takeaway\">CUTOFF means “the limit prevented a conclusion”, not “there is no solution”.</p>",
+    "notes": "Let the depth limit be ℓ. DLS explores depth-first but stops beyond ℓ. If a goal lies deeper, the search may return cutoff. Distinguish that result from genuine failure, because IDS must continue after cutoff. The demonstration recognizes terminal dead ends as failure even when they occur at the depth limit. This is a slightly more informative version of the common textbook rule that returns cutoff immediately at the bound.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Depth limits",
+    "title": "A depth limit you can change",
+    "body": "<div class=\"demo-split\"><div><svg class=\"depth-tree-svg\" viewBox=\"0 0 500 340\" role=\"img\" aria-label=\"Tree with S at depth zero, A and B at depth one, C and D at depth two, and goal G under C at depth three\"><line x1=\"250\" y1=\"40\" x2=\"130\" y2=\"120\"/><line x1=\"250\" y1=\"40\" x2=\"370\" y2=\"120\"/><line x1=\"130\" y1=\"120\" x2=\"130\" y2=\"200\"/><line x1=\"370\" y1=\"120\" x2=\"370\" y2=\"200\"/><line x1=\"130\" y1=\"200\" x2=\"130\" y2=\"280\"/><g class=\"depth-node\" data-depth=\"0\"><rect x=\"215\" y=\"17\" width=\"70\" height=\"46\" rx=\"4\"/><text x=\"250\" y=\"49\">S</text></g><g class=\"depth-node\" data-depth=\"1\"><rect x=\"95\" y=\"97\" width=\"70\" height=\"46\" rx=\"4\"/><text x=\"130\" y=\"129\">A</text></g><g class=\"depth-node\" data-depth=\"1\"><rect x=\"335\" y=\"97\" width=\"70\" height=\"46\" rx=\"4\"/><text x=\"370\" y=\"129\">B</text></g><g class=\"depth-node\" data-depth=\"2\"><rect x=\"95\" y=\"177\" width=\"70\" height=\"46\" rx=\"4\"/><text x=\"130\" y=\"209\">C</text></g><g class=\"depth-node\" data-depth=\"2\"><rect x=\"335\" y=\"177\" width=\"70\" height=\"46\" rx=\"4\"/><text x=\"370\" y=\"209\">D</text></g><g class=\"depth-node\" data-depth=\"3\"><rect x=\"95\" y=\"257\" width=\"70\" height=\"46\" rx=\"4\"/><text x=\"130\" y=\"289\">G</text></g></svg><p class=\"fine\">Edges: S→A, S→B, A→C, B→D, C→G.<br>G is at depth 3. D is a terminal dead end.</p></div><div><label class=\"slider-title\" for=\"depth-limit\">Depth limit ℓ: <b id=\"limit-value\">1</b></label><input id=\"depth-limit\" type=\"range\" min=\"0\" max=\"4\" value=\"1\"><div class=\"readout\"><span>Result</span><b id=\"dls-result\"></b></div><div class=\"readout\"><span>Visited nodes in this run</span><b id=\"dls-order\"></b></div><p id=\"dls-explain\" class=\"search-status\"></p></div></div><p class=\"takeaway\">Increasing the limit can change CUTOFF into SOLUTION.</p>",
+    "notes": "Run limits zero through three. With alphabetical traversal: ℓ=0 visits S and cuts off; ℓ=1 visits S,A,B and cuts off; ℓ=2 visits S,A,C,B,D and cuts off because C could continue; ℓ=3 visits S,A,C,G and finds the solution. At ℓ=4 the same goal is found before the larger bound. These are counts for this specific tree, not general complexity formulas.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original DLS demonstration"
+  },
+  {
+    "ch": "Iterative deepening",
+    "title": "IDS increases the limit systematically",
+    "body": "<pre class=\"wide-code\"><code>for limit = 0, 1, 2, ...:\n    result ← depth_limited_search(initial_state, limit)\n    if result is SOLUTION: return result\n    if result is FAILURE: return FAILURE\n    # CUTOFF: try the next limit</code></pre><div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>ℓ = 0</strong><span>Root only</span></div><div class=\"flowstep\"><small>02</small><strong>ℓ = 1</strong><span>One action</span></div><div class=\"flowstep\"><small>03</small><strong>ℓ = 2</strong><span>Two actions</span></div><div class=\"flowstep\"><small>04</small><strong>ℓ = 3</strong><span>Three actions</span></div></div><p class=\"takeaway\">With finite branching, IDS finds a finite-depth solution without keeping a BFS-sized frontier.</p>",
+    "notes": "Each iteration performs a fresh depth-limited traversal. Path-based cycle checking avoids loops within the current path. Do not carry a naive global visited set across iterations, since states pruned at a small limit must be revisited with a larger remaining budget. IDS finds a shallowest goal, hence minimum cost when step costs are equal and positive. Unequal costs remove that cost guarantee.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Iterative deepening",
+    "title": "Repeated work can still be affordable",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Full tree through depth 5</th><th>Single traversal count</th><th>IDS total count</th></tr></thead><tbody><tr><td>b = 2</td><td>63</td><td>120</td></tr><tr><td>b = 10</td><td>111,111</td><td>123,456</td></tr></tbody></table></div><div class=\"cols\"><div><h3>Why the overhead is limited</h3><p>In a branching tree, most nodes occur near the deepest level.</p></div><div><h3>What the counts assume</h3><p>Every level is fully explored. No early goal stop and no duplicate pruning.</p></div></div><p class=\"takeaway\">For b > 1, the overhead ratio approaches b / (b − 1) as depth grows.</p>",
+    "notes": "The single traversal count is Σ b^i for i from 0 to d. IDS counts each depth-i node d+1−i times, giving Σ(d+1−i)b^i. At b=2,d=5 the counts are 63 and 120; at b=10,d=5 they are 111111 and 123456. These are model counts, not measured runtimes. With b=1, IDS can have quadratic rather than linear work in depth, so the branching assumption matters.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied idea · Original calculated examples"
+  },
+  {
+    "ch": "Comparison",
+    "title": "Completeness and cost optimality",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Strategy</th><th>Complete?</th><th>Cost-optimal?</th><th>Main trade-off</th></tr></thead><tbody><tr><td>BFS</td><td>Yes¹</td><td>With equal positive costs</td><td>Large frontier.</td></tr><tr><td>UCS</td><td>Yes²</td><td>With nonnegative costs³</td><td>Cost-ordered frontier and best-cost storage.</td></tr><tr><td>DFS</td><td>Not in general; yes on finite spaces with safe cycle control</td><td>No</td><td>Traversal depth versus visited-state memory.</td></tr><tr><td>DLS</td><td>Only when the limit is sufficient⁴</td><td>No in general</td><td>A wrong limit cuts off solutions.</td></tr><tr><td>IDS</td><td>Yes¹</td><td>With equal positive costs</td><td>Repeated shallow work, small path memory.</td></tr></tbody></table></div><p class=\"fine\">¹ Finite branching and finite-depth solution. ² Positive lower-bounded costs for the usual infinite-space result. ³ Correct best-cost handling and a goal removed from the queue. ⁴ Finite search to the bound with safe cycle handling.</p>",
+    "notes": "This table deliberately preserves conditions instead of using unqualified yes/no answers. For a finite graph, UCS also handles zero costs as discussed earlier. For DLS, an adequate limit makes a finite-depth solution discoverable, but DFS order may still return a nonminimal path. Cost optimality means minimum total step cost, not merely fewest actions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied comparison · Conditions made explicit"
+  },
+  {
+    "ch": "Comparison",
+    "title": "Notation that keeps the claims precise",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Symbol</th><th>Meaning</th></tr></thead><tbody><tr><td>b</td><td>Maximum branching factor.</td></tr><tr><td>d</td><td>Depth of the shallowest goal, not necessarily the cheapest goal.</td></tr><tr><td>m</td><td>Maximum depth considered by the search tree or traversal.</td></tr><tr><td>ℓ</td><td>Chosen depth limit.</td></tr><tr><td>C*</td><td>Cost of an optimal solution.</td></tr><tr><td>ε</td><td>A positive lower bound on step costs, when assumed.</td></tr></tbody></table></div><p class=\"takeaway\">Do not replace d with “depth of the least-cost solution” when costs differ.</p>",
+    "notes": "The source combines shallowest and least-cost depth in one label. They agree only under appropriate equal-cost assumptions. In a cyclic finite graph, the unrestricted search tree may have infinite depth even though the state count is finite. That is why m is a search-tree or traversal quantity rather than simply the number of states.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Comparison",
+    "title": "Tree-based worst-case growth",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Strategy</th><th>Time bound</th><th>Space bound</th></tr></thead><tbody><tr><td>BFS, goal tested on removal</td><td>O(b^(d+1))</td><td>O(b^(d+1))</td></tr><tr><td>UCS, cost ≥ ε > 0</td><td>O(b^(1 + ⌊C*/ε⌋))</td><td>O(b^(1 + ⌊C*/ε⌋))</td></tr><tr><td>DFS, finite maximum depth m</td><td>O(b^m)</td><td>O(bm)</td></tr><tr><td>DLS with limit ℓ</td><td>O(b^ℓ)</td><td>O(bℓ)</td></tr><tr><td>IDS, b > 1</td><td>O(b^d)</td><td>O(bd)</td></tr></tbody></table></div><p class=\"fine\">Conventions: finite branching b &gt; 1, implicit trees, stored siblings for DFS-style space. A global reached map adds memory. Explicit finite-graph bounds use V and E instead.</p>",
+    "notes": "These are standard conservative tree-search bounds with the conventions stated on the slide. They describe asymptotic growth, not exact node counts. Optimized BFS with generation-time goal testing is often summarized with O(b^d). There is no contradiction once the convention is specified. UCS explores nodes affordable within the optimal-cost budget and may generate one extra layer. The table does not assume a heuristic.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Standard search bounds with explicit conventions"
+  },
+  {
+    "ch": "Comparison",
+    "title": "Choosing a strategy from the task",
+    "body": "<div class=\"rows\"><div><strong>Equal costs and ample memory</strong><span>BFS is a straightforward way to obtain a shortest action sequence.</span></div><div><strong>Different nonnegative costs</strong><span>UCS handles the actual accumulated cost.</span></div><div><strong>A shallow solution and tight memory</strong><span>Path-based IDS is often a useful starting point.</span></div><div><strong>A justified maximum depth</strong><span>DLS makes the bound explicit.</span></div><div><strong>Traversal without an optimality requirement</strong><span>DFS may be appropriate if its termination conditions are controlled.</span></div></div><p class=\"takeaway\">Choose the objective and constraints before choosing the data structure.</p>",
+    "notes": "These are conditional design suggestions, not universal rankings. If memory is strict, measure the visited structure as well as the frontier. A known finite graph may justify global DFS. If actions have different costs, IDS optimizes depth rather than cost. Later informed-search methods can use domain knowledge but still depend on a correct problem model.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "The 8-puzzle as a state space",
+    "body": "<div class=\"cols\"><div><h3>Supplied initial board</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(3,1fr)\"><span class=\"\">7</span><span class=\"\">2</span><span class=\"\">4</span><span class=\"\">5</span><span class=\"\">□</span><span class=\"\">6</span><span class=\"\">8</span><span class=\"\">3</span><span class=\"\">1</span></div></div><div><h3>Goal board</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(3,1fr)\"><span class=\"\">1</span><span class=\"\">2</span><span class=\"\">3</span><span class=\"\">4</span><span class=\"\">5</span><span class=\"\">6</span><span class=\"\">7</span><span class=\"\">8</span><span class=\"\">□</span></div></div></div><p class=\"takeaway\">State: tile arrangement. Actions: legal blank moves. Cost: one per move.</p>",
+    "notes": "The blank is a position, not an extra numbered tile. Generate only moves within the 3×3 board. There are 9! arrangements, but a fixed goal is reachable from only one parity class, with 9!/2 = 181440 states. For the supplied starting sequence, ignoring the blank gives 16 inversions, an even number, so it is solvable relative to the shown goal on this odd-width board. Do not transfer this parity rule unchanged to even-width puzzles.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied board · Calculated parity check"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "The vacuum world: modelling the full state",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">s = (location, dirtA, dirtB)</div><div class=\"stat-number\">2 × 2 × 2 = 8 states</div><p>Goal: both dirt flags are false.</p></div><div><div class=\"rows\"><div><strong>Actions</strong><span>Left, right, suck and optionally wait.</span></div><div><strong>Transition</strong><span>Update the location or current dirt flag.</span></div><div><strong>Cost convention</strong><span>One per non-wait action. Waiting can be omitted from the search.</span></div></div></div></div><p class=\"takeaway\">This search model uses a known full state. Unit 1’s local sensor alone does not provide it.</p>",
+    "notes": "The distinction from the partially observable agent in Unit 1 is intentional. A single-state search assumes a known initial configuration and a deterministic model. With only a local observation, one would instead need a belief-state formulation or additional information. A no-op self-loop creates no progress and can usually be excluded when planning solely to reach a clean state. If it has zero cost, duplicate handling is important.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "Limited-inventory coin change",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Coin value</th><th>Available quantity</th><th>Action</th></tr></thead><tbody><tr><td>50 cents</td><td>1</td><td>take_50</td></tr><tr><td>10 cents</td><td>4</td><td>take_10</td></tr><tr><td>5 cents</td><td>1</td><td>take_5</td></tr><tr><td>1 cent</td><td>4</td><td>take_1</td></tr></tbody></table></div><p class=\"takeaway\">State = ((n50, n10, n5, n1), remaining). Goal: remaining = 0. Cost: one per coin.</p>",
+    "notes": "The target Y ranges from 0 to 99 cents. Counts represent remaining inventory. For a coin v, require a positive available count and remaining≥v, then reduce that count and the remaining amount. Inventory is part of the state because it constrains future choices. The four quantities together sum to 99 cents. Taking coins in different orders may reach the same state, which motivates duplicate detection.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "A coin-change solver you can inspect",
+    "body": "<div class=\"demo-split\"><div><label class=\"slider-title\" for=\"coin-target\">Target amount Y, in cents</label><input class=\"number-input\" id=\"coin-target\" type=\"number\" min=\"0\" max=\"99\" step=\"1\" value=\"15\"><div class=\"demo-controls\"><button id=\"coin-solve\" class=\"primary\">Solve with BFS</button></div><p>Available: 1 × 50c, 4 × 10c,<br>1 × 5c and 4 × 1c.</p><p class=\"fine\">Every selected coin costs one search step.</p></div><div><div class=\"readout\"><span>Minimum number of coins</span><b id=\"coin-count\"></b></div><div class=\"readout\"><span>Returned coin sequence</span><b id=\"coin-path\"></b></div><div class=\"readout\"><span>Expanded states / peak frontier</span><b id=\"coin-metrics\"></b></div><p id=\"coin-status\" class=\"search-status\" aria-live=\"polite\"></p></div></div><p class=\"takeaway\">The solver uses remaining inventory in state equality and checks the goal after queue removal.</p>",
+    "notes": "The simulation performs actual BFS rather than looking up answers. Try 0, 15, 49 and 99. Zero requires zero coins. Fifteen uses 10+5. Ninety-nine consumes all ten available coins. The displayed expansion count excludes the selected goal because no successors are generated from it. Peak frontier counts queued nodes. Both depend on the descending coin successor order 50,10,5,1. Invalid inputs are rejected.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original BFS simulation using the supplied inventory"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "Fifteen cents: a complete short argument",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Depth</th><th>Selected-coin prefixes</th><th>Interpretation</th></tr></thead><tbody><tr><td>0</td><td>[]</td><td>Remaining amount 15.</td></tr><tr><td>1</td><td>[10], [5], [1]</td><td>No one-coin solution. 50 is not legal.</td></tr><tr><td>2</td><td>[10,5] reaches the goal</td><td>Two coins suffice.</td></tr><tr><td>Optimality</td><td>No goal exists at depth 0 or 1</td><td>Equal action costs make this a minimum-coin solution.</td></tr></tbody></table></div><p class=\"takeaway\">The [5,10] path reaches the same final inventory as [10,5].</p>",
+    "notes": "This table groups paths by depth rather than claiming every row is a chronological queue snapshot. The actual BFS simulator checks the goal on selection, so it may expand other nodes of depth one before selecting [10,5]. Different ordering does not change the minimum number of coins. To discuss duplicates, compare [10,5] and [5,10]: both remove the same coins and leave remaining=0.",
+    "cls": "",
+    "sub": "",
+    "ref": "Worked solution for the supplied Y = 15 exercise"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "Why greedy coin choice is a separate claim",
+    "body": "<div class=\"cols\"><div><h3>A different coin system</h3><p>Values {4, 3, 1}, unlimited supply.<br>Target: 6.</p><h3>Largest-first choice</h3><p>4 + 1 + 1 uses three coins.</p></div><div><h3>A better solution</h3><p>3 + 3 uses two coins.</p><h3>What follows</h3><p>A plausible local rule is not automatically a proof of global optimality.</p></div></div><p class=\"takeaway\">This counterexample changes the coin system. It is not a claim about the supplied inventory.</p>",
+    "notes": "The exercise separates modelling from algorithm justification. Students may recognize canonical coin systems where a greedy rule is optimal, but that result depends on denomination and inventory conditions. BFS obtains a minimum-coin solution for this small equal-cost state-space model without assuming a greedy-choice property.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original counterexample with explicitly different denominations"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "River crossing: compact state and safety",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">s = (Mₗ, Cₗ, boat)</div><p>Initial: (3, 3, L)<br>Goal: (0, 0, R)</p><p>Right-bank counts follow from:<br>Mᵣ = 3 − Mₗ, Cᵣ = 3 − Cₗ.</p></div><div><h3>Boat capacity</h3><p>One or two passengers per crossing.</p><h3>Safety on each bank</h3><p>If missionaries are present, they cannot be outnumbered.</p><div class=\"equation smaller\">M = 0 or M ≥ C</div></div></div><p class=\"takeaway\">The zero-missionary case matters: a bank containing only cannibals is legal.</p>",
+    "notes": "This is the classic missionaries-and-cannibals puzzle retained from the supplied material. M and C identify the two participant types in the textbook story. Legal states satisfy bounds from zero to three and the safety condition on both banks. Boat location is necessary because it controls available departures. All crossings cost one. The simplified state avoids storing redundant right-bank counts.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "Successors must preserve every constraint",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Load</strong><span>Choose one or two available passengers</span></div><div class=\"flowstep\"><small>02</small><strong>Cross</strong><span>Update the departure and arrival banks</span></div><div class=\"flowstep\"><small>03</small><strong>Check</strong><span>Validate counts and both banks</span></div><div class=\"flowstep\"><small>04</small><strong>Return</strong><span>Keep only legal successor states</span></div></div><div class=\"table-scroll\"><table><thead><tr><th>Candidate load (M,C)</th><th>Legal passenger count</th></tr></thead><tbody><tr><td>(1,0), (0,1)</td><td>One</td></tr><tr><td>(2,0), (1,1), (0,2)</td><td>Two</td></tr></tbody></table></div><p class=\"takeaway\">Passenger availability and destination safety are separate checks.</p>",
+    "notes": "A common bug validates only the bank receiving the boat. A departure can also create an unsafe bank. The candidate transition must respect available passengers, count bounds, boat movement and safety on both banks. If the state encoding and transitions preserve totals, conservation follows automatically. The solver used to verify the following solution enumerates these five loads and performs BFS.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Worked problems",
+    "title": "A verified 11-crossing solution",
+    "body": "<div class=\"cols\"><div><div class=\"table-scroll\"><table><thead><tr><th>Step</th><th>Passengers / direction</th><th>Left bank afterwards</th></tr></thead><tbody><tr><td>1</td><td>CC →</td><td>(3,1)</td></tr><tr><td>2</td><td>C ←</td><td>(3,2)</td></tr><tr><td>3</td><td>CC →</td><td>(3,0)</td></tr><tr><td>4</td><td>C ←</td><td>(3,1)</td></tr><tr><td>5</td><td>MM →</td><td>(1,1)</td></tr><tr><td>6</td><td>MC ←</td><td>(2,2)</td></tr></tbody></table></div></div><div><div class=\"table-scroll\"><table><thead><tr><th>Step</th><th>Passengers / direction</th><th>Left bank afterwards</th></tr></thead><tbody><tr><td>7</td><td>MM →</td><td>(0,2)</td></tr><tr><td>8</td><td>C ←</td><td>(0,3)</td></tr><tr><td>9</td><td>CC →</td><td>(0,1)</td></tr><tr><td>10</td><td>C ←</td><td>(0,2)</td></tr><tr><td>11</td><td>CC →</td><td>(0,0)</td></tr></tbody></table></div></div></div><p class=\"takeaway\">→ means left to right. ← means right to left. Every crossing has unit cost.</p>",
+    "notes": "This sequence was generated and checked with BFS over the stated finite model. Every transition conserves the six people and satisfies the bank constraints. No shorter goal path was found because BFS exhausts smaller depths first. Ask students to validate the two banks after step five, when each bank contains equal counts, and step seven, when the left bank has no missionaries.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated BFS solution under the stated classic rules"
+  },
+  {
+    "ch": "Laboratory",
+    "title": "Geared Loopover connects both units",
+    "body": "<div class=\"cols\"><div><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">00</span><span class=\"\">01</span><span class=\"\">02</span><span class=\"\">03</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><div class=\"rows\"><div><strong>State</strong><span>The complete 4 × 4 board, immutable as a search key.</span></div><div><strong>Action</strong><span>Row index, column index and sign.</span></div><div><strong>Successor</strong><span>Apply row rotation, then column rotation.</span></div><div><strong>Goal and cost</strong><span>Ordered board, one unit per coupled action.</span></div></div></div></div><p class=\"takeaway\">32 action labels per state: 4 rows × 4 columns × 2 signs.</p>",
+    "notes": "This retains the geared laboratory rules supplied in both units. A plus sign shifts the selected row right, then the fixed-index column down; a minus sign shifts the row left, then the column up. The intermediate board is not a separate one-step successor. The state count has 16! as a permutation upper bound, which is not a claim about reachability. Reuse Unit 1’s simulator to inspect the two phases.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied Unit 2 and the laboratory specification in Unit 1"
+  },
+  {
+    "ch": "Laboratory",
+    "title": "An exact transition test for 02+",
+    "body": "<div class=\"cols\"><div><h3>Input</h3><p class=\"mono state-string\">00010203040506070809101112131415</p><h3>After the row phase</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"accentcell\">03</span><span class=\"accentcell\">00</span><span class=\"accentcell\">01</span><span class=\"accentcell\">02</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><h3>Complete successor</h3><p class=\"mono state-string\">03001402040501070809061112131015</p><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">03</span><span class=\"\">00</span><span class=\"accentcell\">14</span><span class=\"\">02</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"accentcell\">01</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"accentcell\">06</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"accentcell\">10</span><span class=\"\">15</span></div></div></div><p class=\"takeaway\">The column move uses the board produced by the row move.</p>",
+    "notes": "Use this as a concrete regression case when implementing the successor function. Verify the exact 32-character result, all sixteen distinct tiles and the unit step cost. The opposite-sign action in the same row-then-column order is not generally the inverse; reversing a composition also reverses the operation order. This example has been recalculated rather than copied from a decorative diagram.",
+    "cls": "",
+    "sub": "",
+    "ref": "Verified transition from the geared Loopover model"
+  },
+  {
+    "ch": "Laboratory",
+    "title": "Theory mapped to Java responsibilities",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Course class / structure</th><th>Responsibility</th></tr></thead><tbody><tr><td>Estado</td><td>Valid immutable board encoding and state equality.</td></tr><tr><td>Sucesor</td><td>Action label, resulting Estado and step cost.</td></tr><tr><td>Nodo</td><td>Estado, parent, action, depth and accumulated cost.</td></tr><tr><td>Frontera</td><td>Queue, stack or priority queue policy.</td></tr><tr><td>Visitados / best-cost map</td><td>Repeated-state handling appropriate to the strategy.</td></tr></tbody></table></div><p class=\"takeaway\">Keep the problem model independent of the frontier policy.</p>",
+    "notes": "The Spanish identifiers are retained because they name the lab’s classes in the supplied slides. They are not untranslated lecture text. The actual Java repository was not attached, so this is a design contract rather than a claim that specific classes or methods have been inspected. In particular, UCS requires a cost-aware structure rather than blindly reusing a boolean visited set.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Laboratory",
+    "title": "A small implementation contract",
+    "body": "<div class=\"rows\"><div><strong>Immutability</strong><span>Generating a child must not alter its parent’s state.</span></div><div><strong>Equality</strong><span>Equivalent configurations must compare equal and have consistent hashes.</span></div><div><strong>Cost propagation</strong><span>child.g = parent.g + successor.cost.</span></div><div><strong>Path reconstruction</strong><span>Follow parent pointers, collect actions and reverse the result.</span></div><div><strong>Deterministic ties</strong><span>Specify successor order and tie-breaking for reproducible traces.</span></div></div><p class=\"takeaway\">A search algorithm cannot compensate for an incorrect transition function.</p>",
+    "notes": "For array-backed Java states, beware of shared mutable references. If hash keys change after insertion, set and map lookup becomes unreliable. For priority queues, use a stable secondary key when reproducible teaching traces matter. Keep generated-node, expanded-node and frontier-size counters separately defined. These implementation principles do not prescribe a particular library or project structure.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original implementation guidance tied to the supplied lab"
+  },
+  {
+    "ch": "Laboratory",
+    "title": "Tests that check the model, not just the output",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Check</th><th>What a failure reveals</th></tr></thead><tbody><tr><td>Known transition 02+</td><td>Wrong operation order, direction or index.</td></tr><tr><td>All 16 tiles preserved</td><td>Lost, duplicated or overwritten positions.</td></tr><tr><td>Parent unchanged</td><td>Aliasing or mutable-state leakage.</td></tr><tr><td>Goal input</td><td>Incorrect empty-plan handling.</td></tr><tr><td>Different-cost graph</td><td>A UCS best-cost or goal-test error.</td></tr><tr><td>Unreachable finite case</td><td>Failure termination or repeated-state handling.</td></tr></tbody></table></div><p class=\"takeaway\">A visually plausible route is not sufficient evidence that the solver is correct.</p>",
+    "notes": "These are proposed checks for students. Add illegal encodings and out-of-range action labels when testing parsing. Use independent small graphs with known optimal costs to separate search bugs from Loopover transition bugs. With random test generation, preserve the seed. Memory and time caps should be explicit, and reaching a cap should not be reported as a proof of no solution.",
+    "cls": "",
+    "sub": "",
+    "ref": "Proposed laboratory validation activity"
+  },
+  {
+    "ch": "Practice",
+    "title": "Workshop: trace, compare and justify",
+    "body": "<div class=\"cols\"><div><div class=\"activity-time\">12 min</div><p>Use the six-state graph from the search laboratory.</p><p>Work in pairs, then compare with another pair.</p></div><div><div class=\"rows\"><div><strong>BFS</strong><span>Record the first three selections and frontier states.</span></div><div><strong>UCS</strong><span>Explain how G changes from cost 10 to cost 4.</span></div><div><strong>DFS</strong><span>Separate selection order from the returned path.</span></div><div><strong>IDS</strong><span>Predict the first solution and discuss cost optimality.</span></div></div></div></div><p class=\"takeaway\">State the successor order and the location of the goal test before tracing.</p>",
+    "notes": "Allow four minutes for traces, four for the UCS argument and four for comparing guarantees. Use alphabetical successor order, a goal test on removal and the duplicate policies described with the simulation. For IDS, assume path-based DLS with alphabetical children. The graph is directed and all costs are positive but unequal. This prevents silently applying the equal-cost IDS optimality result.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original classroom workshop"
+  },
+  {
+    "ch": "Practice",
+    "title": "Workshop solution: depth and cost diverge",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method</th><th>First returned path</th><th>Actions</th><th>Cost</th></tr></thead><tbody><tr><td>BFS</td><td>S → A → G</td><td>2</td><td>10</td></tr><tr><td>UCS</td><td>S → B → G</td><td>2</td><td>4</td></tr><tr><td>DFS as demonstrated</td><td>S → A → G</td><td>2</td><td>10</td></tr><tr><td>IDS with alphabetical DLS</td><td>S → A → G</td><td>2</td><td>10</td></tr></tbody></table></div><p class=\"takeaway\">IDS finds a shallowest goal here. Unequal costs make that insufficient for minimum cost.</p>",
+    "notes": "BFS begins with S, A, B. UCS begins with S, A, B and then selects G at cost 4. DFS selects S,A,C,D,G but returns S,A,G through parent links. IDS cuts off at limits zero and one, then finds S,A,G at limit two after checking A’s earlier child C. Suggested rubric: correct model and conventions 2 points, traces 4, cost argument 2, assumptions and caveats 2. This is a teaching proposal rather than official grading.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated solution and suggested rubric"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "Six checks before implementing",
+    "body": "<div class=\"check-grid\"><div class=\"check-item\"><b>01</b><p>State or node: which has a parent?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>The node. State equality describes the configuration, not its path.</div></div><div class=\"check-item\"><b>02</b><p>When does BFS minimize cost?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Equal positive step costs turn minimum depth into minimum cost.</div></div><div class=\"check-item\"><b>03</b><p>When can UCS accept a goal?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>When a non-stale goal is selected with the lowest path cost.</div></div><div class=\"check-item\"><b>04</b><p>Why improve a known state in UCS?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Its first discovered path may be more expensive.</div></div><div class=\"check-item\"><b>05</b><p>What does CUTOFF mean?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>The depth bound stopped a branch that could continue.</div></div><div class=\"check-item\"><b>06</b><p>What does IDS repeat?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Fresh depth-limited searches with progressively larger limits.</div></div></div>",
+    "notes": "Use this as retrieval practice rather than showing all answers immediately. Follow up each answer with a counterexample: two paths to one state, unequal road distances, an expensive first goal, or a deeper reachable goal. In the PDF, all explanations are visible for self-study.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original learning check"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "One model, several ways to explore it",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Model</strong><span>State and legal transitions</span></div><div class=\"flowstep\"><small>02</small><strong>Order</strong><span>Frontier strategy</span></div><div class=\"flowstep\"><small>03</small><strong>Control</strong><span>Duplicates and bounds</span></div><div class=\"flowstep\"><small>04</small><strong>Verify</strong><span>Goal, cost and resources</span></div></div><div class=\"rows\"><div><strong>A solution</strong><span>A valid path to a goal.</span></div><div><strong>An optimal solution</strong><span>A valid path with minimum cost under the chosen cost model.</span></div><div><strong>An honest result</strong><span>A solution, proven finite exhaustion, or an explicitly reported limit.</span></div></div><p class=\"takeaway\">Good search begins with a correct abstraction and ends with a justified claim.</p>",
+    "notes": "Distinguish failure from timeout, memory exhaustion and depth cutoff. A solver that cannot continue has not necessarily proved unsolvability. Also separate an algorithm’s theoretical guarantee from a single successful test. Tie each guarantee to the implementation assumptions used throughout the unit.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  },
+  {
+    "ch": "Reference",
+    "title": "Sources and further reading",
+    "body": "<div class=\"references\"><p><b>Supplied course presentation</b><br>01_Presentacion_Tema2_Problem_Solving_Search(3).pptx, 44 slides. Main source for scope, examples and lab terminology.</p><p><b>Russell and Norvig · Artificial Intelligence: A Modern Approach</b><br>Chapter 3: problem formulation and uninformed search.<br><a href=\"https://aima.cs.berkeley.edu/\">Official textbook resources</a></p><p><b>UC Berkeley · CS188</b><br>State spaces, search problems and uninformed strategies.<br><a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/search/uninformed.html\">Uninformed Search</a></p><p><b>Examples in this presentation</b><br>The six-state graph, numerical traces, simulators and exercises are teaching constructions. Romania distances follow the textbook example.</p></div>",
+    "notes": "The presentation preserves the supplied material’s central progression and adds original worked examples. Complexity conventions and cost assumptions are stated next to the relevant claims. All simulations operate locally. External source links require internet access. The HTML contains explanatory notes for each screen; the PDF includes static examples and revealed exercise answers.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material and primary educational sources"
+  },
+  {
+    "ch": "Next unit",
+    "title": "What if the agent knew where to look?",
+    "body": "<p class=\"statement compact\">Uninformed search orders candidates using depth or accumulated cost.</p><div class=\"cols\"><div><h3>Unit 3 adds a heuristic</h3><div class=\"equation smaller\">h(n)</div><p>An estimate of the remaining cost.</p></div><div><h3>A question to carry forward</h3><p>When does that estimate speed up search without losing the guarantee we need?</p></div></div><p class=\"takeaway\">The state model, legal transitions, path cost and goal test remain essential.</p>",
+    "notes": "Do not describe uninformed search as literally having no information. It uses the problem definition, and UCS uses path costs. Informed search adds domain guidance, typically a heuristic estimate. This closes the unit without teaching A* prematurely. Ask students what a useful estimate might be for route finding or a tile puzzle.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 2 material"
+  }
+]

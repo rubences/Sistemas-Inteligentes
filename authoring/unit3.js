@@ -1,0 +1,56 @@
+// Fixed teaching graphs. All edge costs are positive.
+const MAIN_EDGES={S:[['A',2],['B',2],['D',1]],A:[['G',9]],B:[['C',2]],C:[['G',2]],D:[['G',20]],G:[]};
+const MAIN_H={S:3,A:1,B:4,C:2,D:10,G:0};
+const REOPEN_EDGES={S:[['A',3],['B',1]],A:[['G',3]],B:[['A',1],['G',10]],G:[]};
+const REOPEN_H={S:5,A:0,B:4,G:0};
+function makeSearch(edges,h,method='astar',weight=1,reopen=true){return {edges,h,method,weight,reopen,frontier:[{s:'S',g:0,h:h.S,path:['S'],seq:0}],best:{S:0},closed:new Set(),order:[],expanded:[],seq:1,done:false,result:null,selected:null,message:'Ready. Select the initial node S.'};}
+function priority(st,n){return st.method==='ucs'?n.g:st.method==='greedy'?n.h:n.g+(st.method==='weighted'?st.weight:1)*n.h;}
+function ordered(st){return st.frontier.slice().sort((a,b)=>priority(st,a)-priority(st,b)||a.h-b.h||a.seq-b.seq);}
+function advance(st){if(st.done)return;let n=null;
+ while(st.frontier.length){st.frontier=ordered(st);const next=st.frontier.shift();if(next.g!==st.best[next.s])continue;if(!st.reopen&&st.closed.has(next.s))continue;n=next;break;}
+ if(!n){st.done=true;st.message='FAILURE: the reachable frontier is exhausted.';return;}
+ st.selected=n.s;st.order.push(n.s);
+ if(n.s==='G'){st.done=true;st.result=n;st.message='GOAL: '+n.path.join(' → ')+'. Cost '+n.g+'. Expanded '+st.expanded.length+' nodes.';return;}
+ const wasClosed=st.closed.has(n.s);st.closed.add(n.s);st.expanded.push(n.s);const updates=[],discarded=[];
+ for(const [s,cost] of st.edges[n.s]){const g=n.g+cost;if(!st.reopen&&st.closed.has(s)){if(g<(st.best[s]??Infinity))discarded.push(s+' at g='+g);continue;}if(g>=(st.best[s]??Infinity))continue;if(st.best[s]!==undefined)updates.push(s+': '+st.best[s]+' → '+g);st.best[s]=g;st.frontier.push({s,g,h:st.h[s],path:[...n.path,s],seq:st.seq++});}
+ st.message=(wasClosed?'Reopened ':'Expanded ')+n.s+' at g='+n.g+'. '+(discarded.length?'Closed-set policy discarded '+discarded.join(', ')+'.':updates.length?'Improved '+updates.join(', ')+'.':'Successors checked.');
+}
+function runEngine(st){let guard=0;while(!st.done&&guard++<100)advance(st);if(!st.done)throw Error('Unexpected search limit');}
+function renderSearch(st,prefix){byId(prefix+'-order').textContent=st.order.join(' → ')||'None selected';byId(prefix+'-frontier').innerHTML=ordered(st).map(n=>'<span class="frontier-token'+(n.g!==st.best[n.s]?' stale':'')+'">'+n.s+' '+n.g+'/'+n.h+'/'+priority(st,n)+(n.g!==st.best[n.s]?' stale':'')+'</span>').join('')||'<span class="small">Empty</span>';byId(prefix+'-status').textContent=st.message;byId(prefix+'-step').disabled=st.done;byId(prefix+'-run').disabled=st.done;
+ document.querySelectorAll('#'+prefix+'-graph .graph-node').forEach(e=>{const s=e.dataset.state;e.classList.toggle('expanded',st.expanded.includes(s));e.classList.toggle('selected',s===st.selected);e.classList.toggle('frontier',st.frontier.some(n=>n.s===s&&n.g===st.best[n.s]));e.classList.toggle('on-solution',!!st.result&&st.result.path.includes(s));});
+ document.querySelectorAll('#'+prefix+'-graph .graph-edge').forEach(e=>e.classList.toggle('on-solution',!!st.result&&st.result.path.some((s,i,a)=>i<a.length-1&&e.dataset.edge===s+'-'+a[i+1])));
+}
+let mainSearch,reopenSearch;
+function resetMain(){const method=byId('method').value;byId('weight').disabled=method!=='weighted';byId('weight-value').textContent=Number(byId('weight').value);mainSearch=makeSearch(MAIN_EDGES,MAIN_H,method,+byId('weight').value,true);renderSearch(mainSearch,'main');}
+function resetReopen(){reopenSearch=makeSearch(REOPEN_EDGES,REOPEN_H,'astar',1,byId('allow-reopen').checked);renderSearch(reopenSearch,'reopen');}
+byId('main-step').onclick=()=>{advance(mainSearch);renderSearch(mainSearch,'main');};byId('main-run').onclick=()=>{runEngine(mainSearch);renderSearch(mainSearch,'main');};byId('main-reset').onclick=resetMain;byId('method').onchange=resetMain;byId('weight').oninput=resetMain;
+byId('reopen-step').onclick=()=>{advance(reopenSearch);renderSearch(reopenSearch,'reopen');};byId('reopen-run').onclick=()=>{runEngine(reopenSearch);renderSearch(reopenSearch,'reopen');};byId('reopen-reset').onclick=resetReopen;byId('allow-reopen').onchange=resetReopen;resetMain();resetReopen();
+function exactDistances(edges){const d=Object.fromEntries(Object.keys(edges).map(s=>[s,Infinity]));d.G=0;const q=[['G',0]];while(q.length){q.sort((a,b)=>a[1]-b[1]);const [t,g]=q.shift();if(g!==d[t])continue;for(const [s,es] of Object.entries(edges))for(const [v,c]of es)if(v===t&&g+c<d[s]){d[s]=g+c;q.push([s,g+c]);}}return d;}
+const TRUE_H=exactDistances(REOPEN_EDGES);
+function auditHeuristic(h){return {admissible:Object.keys(h).every(s=>h[s]>=0&&h[s]<=TRUE_H[s]),violations:Object.entries(REOPEN_EDGES).flatMap(([s,es])=>es.filter(([t,c])=>h[s]>c+h[t]).map(([t,c])=>({s,t,c,left:h[s],right:c+h[t]})))};}
+function updateAudit(){const h={G:0};for(const s of ['S','A','B']){h[s]=+byId('h-'+s).value;byId('h-'+s+'-value').textContent=h[s];}const r=auditHeuristic(h);byId('audit-table').innerHTML='<div class="table-scroll"><table><thead><tr><th>State</th><th>h</th><th>True h*</th><th>Lower bound?</th></tr></thead><tbody>'+['S','A','B','G'].map(s=>'<tr><td>'+s+'</td><td>'+h[s]+'</td><td>'+TRUE_H[s]+'</td><td>'+(h[s]<=TRUE_H[s]?'Yes':'No')+'</td></tr>').join('')+'</tbody></table></div>';byId('audit-result').textContent='Admissible: '+(r.admissible?'YES':'NO')+'. Consistent: '+(!r.violations.length?'YES':'NO')+'.';byId('audit-edges').textContent=r.violations.length?'Failed edges: '+r.violations.map(x=>x.s+'→'+x.t+' ('+x.left+' > '+x.right+')').join('; ')+'.':'Every directed edge satisfies h(s) ≤ cost + h(next).';}
+for(const s of ['S','A','B'])byId('h-'+s).oninput=updateAudit;byId('audit-reset').onclick=()=>{for(const s of ['S','A','B'])byId('h-'+s).value=REOPEN_H[s];updateAudit();};byId('audit-consistent').onclick=()=>{for(const s of ['S','A','B'])byId('h-'+s).value=TRUE_H[s];updateAudit();};updateAudit();
+// 8-puzzle. The spiral goal is explicit and excludes the blank from estimates.
+const P_START=[2,8,3,1,6,4,7,0,5],P_GOAL=[1,2,3,8,0,4,7,6,5];let puzzle=P_START.slice(),puzzleMoves=0;
+function puzzleMetrics(s){let mis=0,md=0;s.forEach((v,i)=>{if(!v)return;const target=P_GOAL.indexOf(v);if(i!==target)mis++;md+=Math.abs(Math.floor(i/3)-Math.floor(target/3))+Math.abs(i%3-target%3);});return {mis,md};}
+function legalPuzzle(i){const b=puzzle.indexOf(0);return puzzle[i]!==0&&Math.abs(Math.floor(i/3)-Math.floor(b/3))+Math.abs(i%3-b%3)===1;}
+function renderPuzzle(){const m=puzzleMetrics(puzzle);byId('puzzle-board').innerHTML=puzzle.map((v,i)=>v?'<button type="button" data-cell="'+i+'" '+(legalPuzzle(i)?'':'disabled')+' aria-label="Tile '+v+(legalPuzzle(i)?', move into the blank':', not adjacent to the blank')+'">'+v+'</button>':'<span class="blank" aria-label="Blank square"></span>').join('');byId('puzzle-mis').textContent=m.mis;byId('puzzle-md').textContent=m.md;byId('puzzle-status').textContent=(m.mis===0?'Goal reached.':'Both values are lower bounds on remaining moves.')+' Manual moves: '+puzzleMoves+'.';byId('puzzle-board').querySelectorAll('button').forEach(b=>b.onclick=()=>movePuzzle(+b.dataset.cell));}
+function movePuzzle(i){if(!Number.isInteger(i)||i<0||i>8||!legalPuzzle(i))return false;const b=puzzle.indexOf(0);[puzzle[b],puzzle[i]]=[puzzle[i],puzzle[b]];puzzleMoves++;renderPuzzle();return true;}
+function setPuzzle(kind){puzzle=kind==='goal'?P_GOAL.slice():kind==='near'?[1,0,3,8,2,4,7,6,5]:P_START.slice();puzzleMoves=0;renderPuzzle();}
+byId('puzzle-reset').onclick=()=>setPuzzle('source');byId('puzzle-near').onclick=()=>setPuzzle('near');byId('puzzle-goal').onclick=()=>setPuzzle('goal');renderPuzzle();
+// Actual two-tile PDB, using reversed edges of the coupled action graph.
+const L_GOAL=Array.from({length:16},(_,i)=>i),ACTIONS=[];for(let r=0;r<4;r++)for(let c=0;c<4;c++)for(const d of [1,-1])ACTIONS.push([r,c,d]);
+function shiftRow(s,r,d){const o=s.slice();for(let c=0;c<4;c++)o[r*4+(c+d+4)%4]=s[r*4+c];return o;}
+function shiftCol(s,c,d){const o=s.slice();for(let r=0;r<4;r++)o[((r+d+4)%4)*4+c]=s[r*4+c];return o;}
+function loopAction(s,r,c,d){return shiftCol(shiftRow(s,r,d),c,d);}
+function inverseAction(s,r,c,d){return shiftRow(shiftCol(s,c,-d),r,-d);}
+function patternMove(p,r,c,d,inverse=false){return p.map(i=>{let y=Math.floor(i/4),x=i%4;if(inverse){if(x===c)y=(y-d+4)%4;if(y===r)x=(x-d+4)%4;}else{if(y===r)x=(x+d+4)%4;if(x===c)y=(y+d+4)%4;}return 4*y+x;});}
+const pkey=p=>p.join(','),PDB=new Map([['0,1',0]]),abstractQueue=[[0,1]];for(let head=0;head<abstractQueue.length;head++){const t=abstractQueue[head];for(const [r,c,d]of ACTIONS){const p=patternMove(t,r,c,d,true),k=pkey(p);if(!PDB.has(k)){PDB.set(k,PDB.get(pkey(t))+1);abstractQueue.push(p);}}}
+function loopMetrics(s){let m=0,D=0;s.forEach((t,i)=>{if(t!==i)m++;const dy=Math.abs(Math.floor(i/4)-Math.floor(t/4)),dx=Math.abs(i%4-t%4);D+=Math.min(dy,4-dy)+Math.min(dx,4-dx);});const hm=Math.ceil(m/7),hd=Math.ceil(D/8),pdb=PDB.get(pkey([s.indexOf(0),s.indexOf(1)]));return {m,D,hm,hd,pdb,combined:Math.max(hm,hd,pdb)};}
+const L_PRESETS={one:[1,6,3,0,4,5,10,7,8,9,14,11,12,13,2,15],two:[12,1,2,0,4,5,6,7,8,9,10,11,3,13,14,15],three:[5,9,12,0,3,4,10,6,8,13,15,7,1,14,2,11],goal:L_GOAL};
+const CERTIFICATES={one:'Optimal plan: 02+. Cost 1.',two:'Optimal plan: 00+, 00−. Cost 2.',three:'Optimal plan: 02+, 13−, 31+. Cost 3.',goal:'Goal reached. Empty plan, cost 0.'};let loopBoard=L_PRESETS.one.slice(),loopHistory=[];
+function renderLoop(){const m=loopMetrics(loopBoard);byId('heur-loop-board').innerHTML=loopBoard.map(v=>'<span class="'+(v<2?'pattern-tile':'')+'">'+String(v).padStart(2,'0')+'</span>').join('');byId('heur-loop-state').textContent=loopBoard.map(v=>String(v).padStart(2,'0')).join('');byId('heur-metrics').innerHTML=[['Raw misplaced m',m.m],['Raw distance D',m.D],['⌈m / 7⌉',m.hm],['⌈D / 8⌉',m.hd],['Two-tile PDB',m.pdb],['Combined maximum',m.combined]].map(([a,v])=>'<div><span>'+a+'</span><b>'+v+'</b></div>').join('');const known=Object.keys(L_PRESETS).find(k=>L_PRESETS[k].every((v,i)=>v===loopBoard[i]));byId('hloop-status').textContent=(known?CERTIFICATES[known]:'Lower bound: '+m.combined+' actions. The full solution has not been computed.')+' PDB: '+PDB.size+' states.';byId('hloop-undo').disabled=!loopHistory.length;}
+function setLoopPreset(k){loopBoard=L_PRESETS[k].slice();loopHistory=[];renderLoop();}
+byId('loop-preset').onchange=()=>setLoopPreset(byId('loop-preset').value);byId('hloop-reset').onclick=()=>setLoopPreset(byId('loop-preset').value);byId('hloop-apply').onclick=()=>{loopHistory.push(loopBoard.slice());loopBoard=loopAction(loopBoard,+byId('hloop-row').value,+byId('hloop-col').value,+byId('hloop-sign').value);renderLoop();};byId('hloop-undo').onclick=()=>{if(loopHistory.length)loopBoard=loopHistory.pop();renderLoop();};renderLoop();
+const snapshot=st=>({order:st.order.slice(),expanded:st.expanded.slice(),result:st.result,frontier:ordered(st),best:{...st.best},done:st.done});
+window.presentation={go,slides,makeSearch,advance,runEngine,MAIN_EDGES,MAIN_H,REOPEN_EDGES,REOPEN_H,resetMain,resetReopen,getMain:()=>snapshot(mainSearch),getReopen:()=>snapshot(reopenSearch),auditHeuristic,TRUE_H,puzzleMetrics,movePuzzle,setPuzzle,getPuzzle:()=>puzzle.slice(),loopAction,inverseAction,patternMove,loopMetrics,PDB,L_PRESETS,setLoopPreset,getLoop:()=>loopBoard.slice()};

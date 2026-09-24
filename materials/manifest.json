@@ -1,0 +1,74 @@
+[
+  {
+    "unit": 1,
+    "path": "materials/lectures/UCLM_Unit1_Intelligent_Agents_EN.html",
+    "sha256": "c91f7761cbb495aff3cf66badfc563917c233bfafba864ee3bdc39b0d0073c3b",
+    "bytes": 434655
+  },
+  {
+    "unit": 1,
+    "path": "materials/pdf/UCLM_Unit1_Intelligent_Agents_EN.pdf",
+    "sha256": "5ff0832c9b19d835220f61eff6e55c27c691441d0a7cc22af58633f85292a1ef",
+    "bytes": 339970
+  },
+  {
+    "unit": 2,
+    "path": "materials/lectures/UCLM_Unit2_Problem_Solving_Search_EN.html",
+    "sha256": "61a84476062df04edb3126f8b3c5d60d174ba401d856a1061b2af3efb232c72f",
+    "bytes": 531142
+  },
+  {
+    "unit": 2,
+    "path": "materials/pdf/UCLM_Unit2_Problem_Solving_Search_EN.pdf",
+    "sha256": "9fa20372935b7d7783059e5dc68b234230ba4788eabac6867c93d7a975b75cef",
+    "bytes": 424311
+  },
+  {
+    "unit": 3,
+    "path": "materials/lectures/UCLM_Unit3_Informed_Search_EN.html",
+    "sha256": "9083027cd13cb352ebc60bc38a226d75f86cd9ac471b2b817521233ffee9541e",
+    "bytes": 545674
+  },
+  {
+    "unit": 3,
+    "path": "materials/pdf/UCLM_Unit3_Informed_Search_EN.pdf",
+    "sha256": "7d817e338ddc4d74977eb87abce2d93b69b6452464d4f20b2e94d3e57a5ee12c",
+    "bytes": 454316
+  },
+  {
+    "unit": 4,
+    "path": "materials/lectures/UCLM_Unit4_Constraint_Satisfaction_EN.html",
+    "sha256": "37f3bfff23b84c125614aa088c9689ed3e583b80fa2b5c5ae7dbc7059aae8159",
+    "bytes": 500159
+  },
+  {
+    "unit": 4,
+    "path": "materials/pdf/UCLM_Unit4_Constraint_Satisfaction_EN.pdf",
+    "sha256": "a8fb71dd980b703b352ad51a4df449954b3ca7bf5d9291c019edbd836047d3f6",
+    "bytes": 696542
+  },
+  {
+    "unit": 5,
+    "path": "materials/lectures/UCLM_Unit5_Adversarial_Search_EN.html",
+    "sha256": "6ed7f5e8ef358326c5d38367b7344a7b0bd143233f87ab8d509be36be6da8439",
+    "bytes": 522447
+  },
+  {
+    "unit": 5,
+    "path": "materials/pdf/UCLM_Unit5_Adversarial_Search_EN.pdf",
+    "sha256": "45ad9a345c84d33577ebe926660099b7a4849ed17d1f01438671ef6fadd0c6e3",
+    "bytes": 712178
+  },
+  {
+    "unit": 6,
+    "path": "materials/lectures/UCLM_Unit6_Reinforcement_Learning_EN.html",
+    "sha256": "c191b231ca30958092d29dd6f376427896595ce49bbac7ae2ebe314ad667d054",
+    "bytes": 425050
+  },
+  {
+    "unit": 6,
+    "path": "materials/pdf/UCLM_Unit6_Reinforcement_Learning_EN.pdf",
+    "sha256": "33e74adf2a731c84c9c3f8c4c107693509359c44ea07554303423dceb3523e12",
+    "bytes": 645127
+  }
+]

@@ -1,0 +1,30 @@
+name: Course checks
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Campus logic and canonical materials
+        run: |
+          node --test tests/*.test.cjs
+          node --check assets/app.js
+          python scripts/check_materials.py
+          python authoring/build.py
+      - name: Python reference algorithms
+        run: python -m unittest discover -s practice/python -v
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Java transitions and bounded search
+        working-directory: practice/java
+        run: |
+          javac *.java
+          java -ea LoopoverTest
+          java Loopover

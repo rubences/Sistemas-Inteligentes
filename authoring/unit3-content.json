@@ -1,0 +1,542 @@
+[
+  {
+    "ch": "Opening",
+    "title": "Informed<br>search",
+    "body": "<p class=\"cover-sub\">Unit 3 · Intelligent Systems</p><div class=\"cover-meta\">School of Computer Science · Ciudad Real<br>Universidad de Castilla-La Mancha<br><strong>Rubén Juárez Cádiz</strong></div>",
+    "notes": "This unit extends Unit 2 with a cost estimate for the future. The supplied 42-slide lecture provides the scope. New executable examples connect the formal guarantees to implementation choices. The cover is conceptual AI-generated artwork and does not represent a graph to solve.",
+    "cls": "cover dark",
+    "sub": "",
+    "ref": "UCLM · Computer Science Degree"
+  },
+  {
+    "ch": "Opening",
+    "title": "The route through this unit",
+    "body": "<div class=\"rows\"><div><strong>Guide the search</strong><span>Compare UCS, Greedy, A* and Weighted A* on one graph.</span></div><div><strong>Justify the result</strong><span>Distinguish admissibility, consistency and reopening.</span></div><div><strong>Design a heuristic</strong><span>Use the 8-puzzle, relaxed problems and pattern databases.</span></div><div><strong>Build the lab solver</strong><span>Derive and inspect bounds for geared Loopover.</span></div></div><p class=\"takeaway\">By the end, a claim of optimality should come with explicit assumptions.</p>",
+    "notes": "Suggested teaching sequence: three 80-minute sessions. Session one covers priorities and A* traces. Session two covers heuristic properties and construction. Session three applies the theory to Loopover and the Java lab. The HTML supports step-by-step teaching, notes and offline study. The PDF reveals exercise explanations for revision.",
+    "cls": "",
+    "sub": "Concepts, working examples and laboratory decisions",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Known cost and estimated cost",
+    "body": "<div class=\"cols\"><div><div class=\"equation\">g(n)</div><p>The accumulated cost of the path represented by node n.</p></div><div><div class=\"equation\">h(s)</div><p>An estimate of the cheapest remaining cost from state s to a goal.</p></div></div><p class=\"takeaway\">Two nodes can share a state and h value while having different paths and g values.</p>",
+    "notes": "Use h(n) as shorthand for h(n.state). A state is a configuration. A node also carries a parent, action and accumulated path cost. The cost g is exact for that particular path, but it is not necessarily the cheapest known cost to the state. Search priorities apply to candidate nodes. This distinction is essential for improvements and reopening.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "The heuristic uses the problem’s cost units",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Objective</th><th>Suitable heuristic units</th><th>A modelling check</th></tr></thead><tbody><tr><td>Fewest moves</td><td>Estimated remaining moves</td><td>One action must have a clear definition.</td></tr><tr><td>Shortest distance</td><td>Estimated remaining kilometres</td><td>Geometric distance needs a valid lower-bound argument.</td></tr><tr><td>Minimum travel time</td><td>Estimated remaining minutes</td><td>Distance alone is not a time estimate.</td></tr></tbody></table></div><p class=\"takeaway\">The goal and action model determine what h is allowed to mean.</p>",
+    "notes": "We assume nonnegative state-based heuristics with h(goal)=0 throughout. A heuristic must refer to the same goal and cost convention as the solver. In Loopover, one coupled row-and-column action costs one. Treating each moved tile as a separate paid action changes the problem. A straight-line travel-time bound would need a justified speed upper bound and compatible movement assumptions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original cost-model clarification"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Three ways to order the frontier",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Strategy</th><th>Priority</th><th>What it favours</th></tr></thead><tbody><tr><td>Uniform-cost search</td><td>g(n)</td><td>A cheap path so far.</td></tr><tr><td>Greedy best-first</td><td>h(n)</td><td>A state that appears close to a goal.</td></tr><tr><td>A*</td><td>g(n) + h(n)</td><td>A low estimated total cost via the node.</td></tr></tbody></table></div><p class=\"takeaway\">Setting h = 0 makes A* use the same cost ordering as UCS.</p>",
+    "notes": "All three can use a priority queue. Changing the priority does not remove the need for successor generation, path reconstruction or repeated-state handling. The exact order among tied priorities depends on a secondary rule. In the main simulator, all strategies use lower h and then insertion order as tie breakers. With h identically zero, the A* and UCS rules coincide.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "A frontier calculation",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Candidate</th><th>g</th><th>h</th><th>g + h</th></tr></thead><tbody><tr><td>A</td><td>2</td><td>6</td><td>8</td></tr><tr><td>B</td><td>4</td><td>2</td><td>6</td></tr><tr><td>C</td><td>5</td><td>5</td><td>10</td></tr><tr><td>D</td><td>7</td><td>1</td><td>8</td></tr></tbody></table></div><div class=\"cols\"><div><h3>Greedy chooses D</h3><p>Its remaining-cost estimate is the smallest.</p></div><div><h3>A* chooses B</h3><p>Its total-cost estimate is the smallest.</p></div></div>",
+    "notes": "This retains the numerical frontier exercise in the supplied slides. UCS would choose A because its g is 2. The table is a snapshot of candidate nodes, not a complete graph, so it cannot establish a final solution path or heuristic admissibility. Ask students for all three choices before revealing the comparison.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied Unit 3 frontier values"
+  },
+  {
+    "ch": "Greedy search",
+    "title": "Greedy best-first search",
+    "body": "<div class=\"cols\"><div><div class=\"equation\">f = h</div><p>Remove the candidate with the smallest estimate of the remaining cost.</p></div><div><h3>Potential benefit</h3><p>Useful guidance can lead to a goal after few expansions.</p><h3>Limitation</h3><p>The priority ignores the cost already paid.</p></div></div><p class=\"takeaway\">Even an admissible heuristic does not make Greedy cost-optimal.</p>",
+    "notes": "The word greedy refers to the choice of frontier priority. It does not imply a particular tie rule or duplicate policy. A low h value says little about how expensive it was to reach that state. The next graph uses a consistent heuristic and still demonstrates a suboptimal Greedy result.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Search laboratory",
+    "title": "One graph with three competing routes",
+    "body": "<div class=\"cols\"><div><svg class=\"informed-graph\" viewBox=\"0 0 750 450\" role=\"img\" aria-label=\"Directed graph. S to A costs 2. S to B costs 2. S to D costs 1. A to G costs 9. B to C costs 2. C to G costs 2. D to G costs 20. Heuristics: S 3, A 1, B 4, C 2, D 10, G 0.\"><defs><marker id=\"arrow-main-static\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3.5\" orient=\"auto\"><path d=\"M0,0 L7,3.5 L0,7\" fill=\"currentColor\"/></marker></defs><path class=\"graph-edge\" data-edge=\"S-A\" d=\"M91.23339111948755,194.9797804614437 L223.99690140424198,93.66025945465744\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"140\" y=\"118\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"S-B\" d=\"M98.0,215.0 L216.0,215.0\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"160\" y=\"198\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"S-D\" d=\"M91.23339111948755,235.0202195385563 L223.99690140424198,336.3397405453426\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"140\" y=\"325\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"A-G\" d=\"M286.23228483743424,80.65572070924227 L643.0891179193959,202.40687552544094\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"485\" y=\"116\" text-anchor=\"middle\">9</text><path class=\"graph-edge\" data-edge=\"B-C\" d=\"M288.0,215.0 L431.0,215.0\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"363\" y=\"198\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"C-G\" d=\"M503.0,215.0 L641.0,215.0\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"570\" y=\"198\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"D-G\" d=\"M286.23228483743424,349.34427929075775 L643.0891179193959,227.59312447455906\" marker-end=\"url(#arrow-main-static)\"/><text class=\"edge-cost\" x=\"488\" y=\"334\" text-anchor=\"middle\">20</text><g class=\"graph-node\" data-state=\"S\"><circle cx=\"65\" cy=\"215\" r=\"31\"/><text x=\"65\" y=\"225\" text-anchor=\"middle\">S</text><text class=\"h-label\" x=\"65\" y=\"274\" text-anchor=\"middle\">h=3</text></g><g class=\"graph-node\" data-state=\"A\"><circle cx=\"255\" cy=\"70\" r=\"31\"/><text x=\"255\" y=\"80\" text-anchor=\"middle\">A</text><text class=\"h-label\" x=\"255\" y=\"129\" text-anchor=\"middle\">h=1</text></g><g class=\"graph-node\" data-state=\"B\"><circle cx=\"255\" cy=\"215\" r=\"31\"/><text x=\"255\" y=\"225\" text-anchor=\"middle\">B</text><text class=\"h-label\" x=\"255\" y=\"274\" text-anchor=\"middle\">h=4</text></g><g class=\"graph-node\" data-state=\"C\"><circle cx=\"470\" cy=\"215\" r=\"31\"/><text x=\"470\" y=\"225\" text-anchor=\"middle\">C</text><text class=\"h-label\" x=\"470\" y=\"274\" text-anchor=\"middle\">h=2</text></g><g class=\"graph-node\" data-state=\"D\"><circle cx=\"255\" cy=\"360\" r=\"31\"/><text x=\"255\" y=\"370\" text-anchor=\"middle\">D</text><text class=\"h-label\" x=\"255\" y=\"419\" text-anchor=\"middle\">h=10</text></g><g class=\"graph-node\" data-state=\"G\"><circle cx=\"680\" cy=\"215\" r=\"31\"/><text x=\"680\" y=\"225\" text-anchor=\"middle\">G</text><text class=\"h-label\" x=\"680\" y=\"274\" text-anchor=\"middle\">h=0</text></g></svg></div><div><h3>Route costs</h3><p>S, A, G: 2 + 9 = <b>11</b><br>S, B, C, G: 2 + 2 + 2 = <b>6</b><br>S, D, G: 1 + 20 = <b>21</b></p><h3>Heuristic values</h3><p>S: 3 · A: 1 · B: 4<br>C: 2 · D: 10 · G: 0</p></div></div><p class=\"takeaway\">Arrows define legal directions. Edge labels are costs; h labels are estimates.</p>",
+    "notes": "This is an original six-state directed graph. The true remaining costs are S=6, A=9, B=4, C=2, D=20 and G=0. Every displayed heuristic is admissible and every directed edge satisfies consistency. Alphabetical successor order is A,B,D from S. The path through D is cheap to start but expensive to finish.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original graph · Calculated path costs"
+  },
+  {
+    "ch": "Search laboratory",
+    "title": "UCS, Greedy and A* in action",
+    "body": "<div class=\"search-demo\"><div id=\"main-graph\"><svg class=\"informed-graph\" viewBox=\"0 0 750 450\" role=\"img\" aria-label=\"Directed graph. S to A costs 2. S to B costs 2. S to D costs 1. A to G costs 9. B to C costs 2. C to G costs 2. D to G costs 20. Heuristics: S 3, A 1, B 4, C 2, D 10, G 0.\"><defs><marker id=\"arrow-main-live\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3.5\" orient=\"auto\"><path d=\"M0,0 L7,3.5 L0,7\" fill=\"currentColor\"/></marker></defs><path class=\"graph-edge\" data-edge=\"S-A\" d=\"M91.23339111948755,194.9797804614437 L223.99690140424198,93.66025945465744\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"140\" y=\"118\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"S-B\" d=\"M98.0,215.0 L216.0,215.0\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"160\" y=\"198\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"S-D\" d=\"M91.23339111948755,235.0202195385563 L223.99690140424198,336.3397405453426\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"140\" y=\"325\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"A-G\" d=\"M286.23228483743424,80.65572070924227 L643.0891179193959,202.40687552544094\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"485\" y=\"116\" text-anchor=\"middle\">9</text><path class=\"graph-edge\" data-edge=\"B-C\" d=\"M288.0,215.0 L431.0,215.0\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"363\" y=\"198\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"C-G\" d=\"M503.0,215.0 L641.0,215.0\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"570\" y=\"198\" text-anchor=\"middle\">2</text><path class=\"graph-edge\" data-edge=\"D-G\" d=\"M286.23228483743424,349.34427929075775 L643.0891179193959,227.59312447455906\" marker-end=\"url(#arrow-main-live)\"/><text class=\"edge-cost\" x=\"488\" y=\"334\" text-anchor=\"middle\">20</text><g class=\"graph-node\" data-state=\"S\"><circle cx=\"65\" cy=\"215\" r=\"31\"/><text x=\"65\" y=\"225\" text-anchor=\"middle\">S</text><text class=\"h-label\" x=\"65\" y=\"274\" text-anchor=\"middle\">h=3</text></g><g class=\"graph-node\" data-state=\"A\"><circle cx=\"255\" cy=\"70\" r=\"31\"/><text x=\"255\" y=\"80\" text-anchor=\"middle\">A</text><text class=\"h-label\" x=\"255\" y=\"129\" text-anchor=\"middle\">h=1</text></g><g class=\"graph-node\" data-state=\"B\"><circle cx=\"255\" cy=\"215\" r=\"31\"/><text x=\"255\" y=\"225\" text-anchor=\"middle\">B</text><text class=\"h-label\" x=\"255\" y=\"274\" text-anchor=\"middle\">h=4</text></g><g class=\"graph-node\" data-state=\"C\"><circle cx=\"470\" cy=\"215\" r=\"31\"/><text x=\"470\" y=\"225\" text-anchor=\"middle\">C</text><text class=\"h-label\" x=\"470\" y=\"274\" text-anchor=\"middle\">h=2</text></g><g class=\"graph-node\" data-state=\"D\"><circle cx=\"255\" cy=\"360\" r=\"31\"/><text x=\"255\" y=\"370\" text-anchor=\"middle\">D</text><text class=\"h-label\" x=\"255\" y=\"419\" text-anchor=\"middle\">h=10</text></g><g class=\"graph-node\" data-state=\"G\"><circle cx=\"680\" cy=\"215\" r=\"31\"/><text x=\"680\" y=\"225\" text-anchor=\"middle\">G</text><text class=\"h-label\" x=\"680\" y=\"274\" text-anchor=\"middle\">h=0</text></g></svg></div><div><label class=\"control-label\" for=\"method\">Frontier priority</label><select id=\"method\"><option value=\"astar\">A* · g + h</option><option value=\"ucs\">UCS · g</option><option value=\"greedy\">Greedy · h</option><option value=\"weighted\">Weighted A* · g + w h</option></select><label class=\"weight-control\" for=\"weight\">Weight w: <b id=\"weight-value\">1</b><input id=\"weight\" type=\"range\" min=\"1\" max=\"3\" step=\"0.25\" value=\"1\" disabled></label><div class=\"demo-controls\"><button id=\"main-step\" class=\"primary\">Select next</button><button id=\"main-run\">Run</button><button id=\"main-reset\">Reset</button></div><div class=\"readout\"><span>Selection order</span><b id=\"main-order\"></b></div><div class=\"readout\"><span>Frontier · next first · g / h / priority</span><div id=\"main-frontier\" class=\"frontier-items\"></div></div><p id=\"main-status\" class=\"search-status\" aria-live=\"polite\"></p></div></div><p class=\"fine\">Ties: lower h, then insertion order. Goal test on removal. Best-g updates and stale-entry rejection.</p>",
+    "notes": "Run each strategy from the same initial state. A* selects S,A,B,C,G and returns cost 6. UCS also selects D before the goal and returns cost 6. Greedy selects S,A,G and returns cost 11. Weighted A* is introduced later; w=1 reproduces A*. Selection includes the goal, while the expansion counter excludes it because no goal successors are generated.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable original example · No network required"
+  },
+  {
+    "ch": "Search laboratory",
+    "title": "Fewer expansions can buy a worse solution",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method</th><th>Selection order</th><th>Expanded nodes</th><th>Returned cost</th></tr></thead><tbody><tr><td>UCS</td><td>S, D, A, B, C, G</td><td>5</td><td>6</td></tr><tr><td>Greedy</td><td>S, A, G</td><td>2</td><td>11</td></tr><tr><td>A*</td><td>S, A, B, C, G</td><td>4</td><td>6</td></tr></tbody></table></div><p class=\"takeaway\">These are exact counts for this graph and these tie rules, not general speed rankings.</p>",
+    "notes": "A* avoids the D branch here because g(D)+h(D)=11. Greedy reaches the goal quickly but ignores the high cost of the A-to-G edge. A* still expands A because its admissible heuristic is very optimistic. CPU time would also depend on heuristic evaluation, queue operations and implementation overhead. We report node counts rather than invented timing measurements.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated simulator traces"
+  },
+  {
+    "ch": "Greedy search",
+    "title": "Greedy guarantees depend on the setting",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Setting</th><th>What follows</th></tr></thead><tbody><tr><td>Finite reachable graph with duplicate control</td><td>Search eventually finds a reachable goal or exhausts the frontier.</td></tr><tr><td>Infinite search space</td><td>An infinite sequence of attractive states can prevent progress to a goal.</td></tr><tr><td>Unequal route costs</td><td>The first goal need not be cheapest, even with an admissible h.</td></tr></tbody></table></div><p class=\"takeaway\">Completeness and cost optimality are separate claims.</p>",
+    "notes": "The finite-space completeness statement assumes every generated candidate is eventually considered if search does not terminate, finite successor lists and finite heuristic values. The main graph has positive edge costs and explicit best-cost bookkeeping. Infinite-space guarantees for Greedy require more than a helpful-looking heuristic. Avoid unqualified statements that it is always incomplete or always fast.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "A*",
+    "title": "A* estimates a complete route through a node",
+    "body": "<div class=\"cols\"><div><div class=\"equation\">f = g + h</div><p>Already paid + estimated remainder.</p></div><div><h3>If h is admissible</h3><p>f is a lower bound on a solution extending this particular path.</p><h3>If h is zero</h3><p>Only the accumulated cost affects the primary order.</p></div></div><p class=\"takeaway\">The estimate guides which candidate to examine. The returned path still needs validation.</p>",
+    "notes": "An f value is not necessarily the cost of any actual complete route. It combines an actual prefix with an optimistic suffix. The same state reached via a cheaper prefix receives a smaller f. This is why changing only a state label without replacing its parent and g would be an incorrect update.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "A*",
+    "title": "Graph A* with best-cost improvements",
+    "body": "<pre class=\"wide-code\"><code>best[start] ← 0\npush(root(start), priority=h(start))\nwhile frontier is not empty:\n    n ← pop_min_f()\n    if n.g != best[n.state]: continue\n    if goal(n.state): return reconstruct(n)\n    for (a, s, cost) in successors(n.state):\n        new_g ← n.g + cost\n        if new_g &lt; best.get(s, infinity):\n            best[s] ← new_g\n            push(Node(s, n, a, new_g), new_g + h(s))\nreturn FAILURE</code></pre><p class=\"takeaway\">A cheaper path can be queued even when the state was expanded earlier.</p>",
+    "notes": "This explanatory version uses lazy duplicate entries and allows reopening. A node stores state, parent, action and g; a real implementation may also store depth, h and a sequence number. Because improvements are strict, equal-cost rediscoveries do not create more entries. The stale check precedes the goal test. A state-based deterministic heuristic makes a best-g improvement also an f improvement.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original pseudocode consistent with the stated A* policy"
+  },
+  {
+    "ch": "A*",
+    "title": "Queue entries and state records have different jobs",
+    "body": "<div class=\"rows\"><div><strong>best[state]</strong><span>The smallest g discovered so far for that state.</span></div><div><strong>Queue entry</strong><span>An immutable candidate path with its own g, parent and priority.</span></div><div><strong>Stale entry</strong><span>Its g no longer matches best[state], so it is skipped.</span></div><div><strong>Reopening</strong><span>A cheaper path reaches a state whose successors were already explored.</span></div></div><p class=\"takeaway\">The presence of a state in a set does not tell you whether its current path is cheapest.</p>",
+    "notes": "A priority queue does not usually repair its ordering if a field inside an enqueued object changes. Creating a fresh immutable entry and skipping stale ones is a simple approach. Keep the best-state record separate from the historical node needed for parent reconstruction. Stale entry rejection and reopening are related but distinct mechanisms.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original implementation clarification"
+  },
+  {
+    "ch": "Heuristic properties",
+    "title": "Admissibility is a global lower-bound claim",
+    "body": "<div class=\"equation\">0 ≤ h(s) ≤ h*(s)</div><div class=\"cols\"><div><h3>h*(s)</h3><p>The actual minimum remaining cost to any goal.</p></div><div><h3>Consequences</h3><p>Underestimation is allowed.<br>Every goal has h = 0.</p></div></div><p class=\"takeaway\">Checking several examples can disprove admissibility, but cannot establish it for every state.</p>",
+    "notes": "Our convention includes nonnegativity. Some definitions allow negative admissible values, but that is not needed in this course. If a state has no route to a goal, h* can be treated as infinity. A proof must cover the states on which the heuristic will be used. One state with h greater than a verified solution cost is enough to refute a lower-bound claim.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Heuristic properties",
+    "title": "Consistency constrains every legal step",
+    "body": "<div class=\"equation smaller\">h(s) ≤ c(s, a, s′) + h(s′)</div><div class=\"cols\"><div><h3>Local interpretation</h3><p>The estimate cannot drop by more than the cost of taking one step.</p></div><div><h3>Goal boundary</h3><p>Set h(goal) = 0.</p><p>The inequality applies to every directed transition.</p></div></div><p class=\"takeaway\">Consistency plus the goal boundary implies admissibility for states that can reach a goal.</p>",
+    "notes": "Apply the inequality along any legal path from s to a goal. The heuristic terms telescope, leaving h(s) no greater than that path’s total cost. Taking the cheapest path gives admissibility. The h(goal)=0 boundary is essential: edge inequalities alone also hold for an arbitrary constant positive function, which overestimates at the goal.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Heuristic properties",
+    "title": "Consistent heuristics make f nondecreasing",
+    "body": "<div class=\"equation smaller\">f(n′) = g(n) + c(s,a,s′) + h(s′)<br>≥ g(n) + h(s) = f(n)</div><div class=\"cols\"><div><h3>Along a generated path</h3><p>The estimated total cost never falls.</p></div><div><h3>For ordinary A*</h3><p>A non-stale state removed at minimum f already has its cheapest g.</p></div></div><p class=\"takeaway\">With a consistent heuristic, an expanded state does not need reopening.</p>",
+    "notes": "The nondecreasing property refers to f along a path. A consistent graph A* can safely close a state when it is removed, assuming valid cost handling and a fixed goal. An inconsistent admissible heuristic can make f decrease, so early expansion need not settle a state. Weighted A* changes the priority function, so this no-reopening conclusion cannot simply be transferred to it.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Heuristic laboratory",
+    "title": "An interactive heuristic check",
+    "body": "<div class=\"audit-layout\"><div><p>Edges: S→A:3, S→B:1, B→A:1,<br>A→G:3, B→G:10.</p><div class=\"audit-controls\"><label for=\"h-S\">h(S): <b id=\"h-S-value\">5</b><input id=\"h-S\" type=\"range\" min=\"0\" max=\"8\" value=\"5\"></label><label for=\"h-A\">h(A): <b id=\"h-A-value\">0</b><input id=\"h-A\" type=\"range\" min=\"0\" max=\"8\" value=\"0\"></label><label for=\"h-B\">h(B): <b id=\"h-B-value\">4</b><input id=\"h-B\" type=\"range\" min=\"0\" max=\"8\" value=\"4\"></label></div><p class=\"fine\">h(G) = 0. The graph is finite and all its states are shown.</p><div class=\"demo-controls\"><button id=\"audit-consistent\">Consistent values</button><button id=\"audit-reset\">Reset</button></div></div><div><div id=\"audit-table\"></div><p id=\"audit-result\" class=\"audit-result\" aria-live=\"polite\"></p><p id=\"audit-edges\" class=\"small\"></p></div></div>",
+    "notes": "The true remaining costs are S=5, A=3, B=4 and G=0. The initial values 5,0,4,0 are admissible but inconsistent. The failed edges are S→A and B→A. The consistent preset uses 5,3,4,0, which are exact distances. Try increasing h(A) to 4 to violate admissibility. Unlike testing a handful of puzzle states, this checker covers this entire finite graph.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original complete-graph checker"
+  },
+  {
+    "ch": "A* and reopening",
+    "title": "Admissible heuristics may require reopening",
+    "body": "<div class=\"cols\"><div><svg class=\"informed-graph\" viewBox=\"0 0 750 450\" role=\"img\" aria-label=\"Directed graph. S to A costs 3. S to B costs 1. B to A costs 1. A to G costs 3. B to G costs 10. Heuristics: S 5, A 0, B 4, G 0.\"><defs><marker id=\"arrow-reopen-static\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3.5\" orient=\"auto\"><path d=\"M0,0 L7,3.5 L0,7\" fill=\"currentColor\"/></marker></defs><path class=\"graph-edge\" data-edge=\"S-A\" d=\"M95.02402859367194,191.3048290625356 L314.5170571165695,91.18520201700338\" marker-end=\"url(#arrow-reopen-static)\"/><text class=\"edge-cost\" x=\"191\" y=\"120\" text-anchor=\"middle\">3</text><path class=\"graph-edge\" data-edge=\"S-B\" d=\"M95.02402859367194,218.6951709374644 L314.5170571165695,318.81479798299665\" marker-end=\"url(#arrow-reopen-static)\"/><text class=\"edge-cost\" x=\"190\" y=\"306\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"B-A\" d=\"M350.0,302.0 L350.0,114.0\" marker-end=\"url(#arrow-reopen-static)\"/><text class=\"edge-cost\" x=\"385\" y=\"210\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"A-G\" d=\"M380.43241460034153,87.76198031627226 L624.0344191086873,189.9176596262237\" marker-end=\"url(#arrow-reopen-static)\"/><text class=\"edge-cost\" x=\"520\" y=\"118\" text-anchor=\"middle\">3</text><path class=\"graph-edge\" data-edge=\"B-G\" d=\"M380.43241460034153,322.23801968372777 L624.0344191086873,220.0823403737763\" marker-end=\"url(#arrow-reopen-static)\"/><text class=\"edge-cost\" x=\"520\" y=\"305\" text-anchor=\"middle\">10</text><g class=\"graph-node\" data-state=\"S\"><circle cx=\"65\" cy=\"205\" r=\"31\"/><text x=\"65\" y=\"215\" text-anchor=\"middle\">S</text><text class=\"h-label\" x=\"65\" y=\"264\" text-anchor=\"middle\">h=5</text></g><g class=\"graph-node\" data-state=\"A\"><circle cx=\"350\" cy=\"75\" r=\"31\"/><text x=\"350\" y=\"85\" text-anchor=\"middle\">A</text><text class=\"h-label\" x=\"415\" y=\"79\" text-anchor=\"start\">h=0</text></g><g class=\"graph-node\" data-state=\"B\"><circle cx=\"350\" cy=\"335\" r=\"31\"/><text x=\"350\" y=\"345\" text-anchor=\"middle\">B</text><text class=\"h-label\" x=\"350\" y=\"394\" text-anchor=\"middle\">h=4</text></g><g class=\"graph-node\" data-state=\"G\"><circle cx=\"660\" cy=\"205\" r=\"31\"/><text x=\"660\" y=\"215\" text-anchor=\"middle\">G</text><text class=\"h-label\" x=\"660\" y=\"264\" text-anchor=\"middle\">h=0</text></g></svg></div><div><h3>Two prefixes to A</h3><p>S → A costs 3.<br>S → B → A costs 2.</p><h3>Fixed heuristic</h3><p>h(S)=5, h(A)=0,<br>h(B)=4, h(G)=0.</p></div></div><p class=\"takeaway\">A is expanded at g = 3 before B reveals its cheaper route.</p>",
+    "notes": "The heuristic never exceeds the true remaining costs, but it violates consistency. After S is expanded, A has f=3 and B has f=5, so A is removed first. A generates G at cost 6. B is then removed and finds A at cost 2. The solver must consider that improvement to obtain the cost-5 path.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original admissible-but-inconsistent counterexample"
+  },
+  {
+    "ch": "A* and reopening",
+    "title": "Reopening changes the returned answer",
+    "body": "<div class=\"search-demo\"><div id=\"reopen-graph\"><svg class=\"informed-graph\" viewBox=\"0 0 750 450\" role=\"img\" aria-label=\"Directed graph. S to A costs 3. S to B costs 1. B to A costs 1. A to G costs 3. B to G costs 10. Heuristics: S 5, A 0, B 4, G 0.\"><defs><marker id=\"arrow-reopen-live\" markerWidth=\"7\" markerHeight=\"7\" refX=\"6\" refY=\"3.5\" orient=\"auto\"><path d=\"M0,0 L7,3.5 L0,7\" fill=\"currentColor\"/></marker></defs><path class=\"graph-edge\" data-edge=\"S-A\" d=\"M95.02402859367194,191.3048290625356 L314.5170571165695,91.18520201700338\" marker-end=\"url(#arrow-reopen-live)\"/><text class=\"edge-cost\" x=\"191\" y=\"120\" text-anchor=\"middle\">3</text><path class=\"graph-edge\" data-edge=\"S-B\" d=\"M95.02402859367194,218.6951709374644 L314.5170571165695,318.81479798299665\" marker-end=\"url(#arrow-reopen-live)\"/><text class=\"edge-cost\" x=\"190\" y=\"306\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"B-A\" d=\"M350.0,302.0 L350.0,114.0\" marker-end=\"url(#arrow-reopen-live)\"/><text class=\"edge-cost\" x=\"385\" y=\"210\" text-anchor=\"middle\">1</text><path class=\"graph-edge\" data-edge=\"A-G\" d=\"M380.43241460034153,87.76198031627226 L624.0344191086873,189.9176596262237\" marker-end=\"url(#arrow-reopen-live)\"/><text class=\"edge-cost\" x=\"520\" y=\"118\" text-anchor=\"middle\">3</text><path class=\"graph-edge\" data-edge=\"B-G\" d=\"M380.43241460034153,322.23801968372777 L624.0344191086873,220.0823403737763\" marker-end=\"url(#arrow-reopen-live)\"/><text class=\"edge-cost\" x=\"520\" y=\"305\" text-anchor=\"middle\">10</text><g class=\"graph-node\" data-state=\"S\"><circle cx=\"65\" cy=\"205\" r=\"31\"/><text x=\"65\" y=\"215\" text-anchor=\"middle\">S</text><text class=\"h-label\" x=\"65\" y=\"264\" text-anchor=\"middle\">h=5</text></g><g class=\"graph-node\" data-state=\"A\"><circle cx=\"350\" cy=\"75\" r=\"31\"/><text x=\"350\" y=\"85\" text-anchor=\"middle\">A</text><text class=\"h-label\" x=\"415\" y=\"79\" text-anchor=\"start\">h=0</text></g><g class=\"graph-node\" data-state=\"B\"><circle cx=\"350\" cy=\"335\" r=\"31\"/><text x=\"350\" y=\"345\" text-anchor=\"middle\">B</text><text class=\"h-label\" x=\"350\" y=\"394\" text-anchor=\"middle\">h=4</text></g><g class=\"graph-node\" data-state=\"G\"><circle cx=\"660\" cy=\"205\" r=\"31\"/><text x=\"660\" y=\"215\" text-anchor=\"middle\">G</text><text class=\"h-label\" x=\"660\" y=\"264\" text-anchor=\"middle\">h=0</text></g></svg></div><div><label class=\"checkbox-label\"><input type=\"checkbox\" id=\"allow-reopen\" checked> Allow expanded states to reopen</label><div class=\"demo-controls\"><button id=\"reopen-step\" class=\"primary\">Select next</button><button id=\"reopen-run\">Run</button><button id=\"reopen-reset\">Reset</button></div><div class=\"readout\"><span>Selection order</span><b id=\"reopen-order\"></b></div><div class=\"readout\"><span>Frontier · state and g / h / f</span><div id=\"reopen-frontier\" class=\"frontier-items\"></div></div><p id=\"reopen-status\" class=\"search-status\" aria-live=\"polite\"></p></div></div><p class=\"fine\">Fixed h = {S:5, A:0, B:4, G:0}. The toggle deliberately demonstrates an unsafe closed-set policy.</p>",
+    "notes": "With reopening enabled, the selected sequence is S,A,B,A,G and the returned path S,B,A,G costs 5. With reopening disabled, the improved route to A is discarded and the returned path S,A,G costs 6. The counterexample is intentionally small so students can verify the guarantee rather than trust an animation. The heuristic is independent of the sliders on the preceding checker.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable reopening counterexample"
+  },
+  {
+    "ch": "A* and reopening",
+    "title": "The decisive improvement",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Event</th><th>g(A)</th><th>Best goal candidate</th><th>Meaning</th></tr></thead><tbody><tr><td>A expanded via S</td><td>3</td><td>G at cost 6</td><td>The first route is expensive.</td></tr><tr><td>B offers a better route</td><td>2</td><td>Still G at cost 6</td><td>A needs another expansion.</td></tr><tr><td>A reopened via B</td><td>2</td><td>G at cost 5</td><td>The goal path improves.</td></tr><tr><td>Non-stale G selected</td><td>—</td><td>Return cost 5</td><td>Old G(6) is irrelevant.</td></tr></tbody></table></div><p class=\"takeaway\">A revised parent chain is part of the improvement.</p>",
+    "notes": "The best-g map, frontier entry and path reconstruction must agree. Updating only the numeric best cost without propagating a new node can return the wrong path. This table follows the enabled-reopening simulation. It also separates generation of a cheaper goal from selecting the goal at minimum priority.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated reopening trace"
+  },
+  {
+    "ch": "A* guarantees",
+    "title": "Why an expensive goal must wait",
+    "body": "<div class=\"cols\"><div><h3>Candidate goal G</h3><p>Its heuristic is zero, so f(G)=g(G).</p><h3>Suppose G is suboptimal</h3><p>Then g(G) is greater than the optimal cost C*.</p></div><div><h3>Candidate on an optimal path</h3><p>With admissibility and correct path improvements, some frontier node n satisfies f(n) ≤ C*.</p><h3>Priority consequence</h3><p>n is selected before the expensive goal.</p></div></div><p class=\"takeaway\">The argument needs a correct frontier, an admissible h and appropriate handling of repeats.</p>",
+    "notes": "This is a proof sketch for the cost of the first selected goal. It relies on maintaining a frontier prefix of an optimal solution, which a no-reopening policy can destroy when h is inconsistent. It does not by itself establish termination on every infinite search space. Completeness requires separate assumptions about branching and costs.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied A* optimality topic · Expanded proof sketch"
+  },
+  {
+    "ch": "A* guarantees",
+    "title": "Conditions for A* guarantees",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Setting</th><th>Cost guarantee</th><th>Termination condition</th></tr></thead><tbody><tr><td>Tree A* with admissible h</td><td>First selected goal is optimal.</td><td>For standard completeness: finite branching, finite solution cost and c ≥ ε > 0.</td></tr><tr><td>Graph A* with consistent h</td><td>Optimal without reopening closed states.</td><td>Finite reachable graph, or the usual positive-cost infinite-space assumptions.</td></tr><tr><td>Graph A* with admissible, inconsistent h</td><td>Optimal with correct improvements and reopening.</td><td>The same distinction between finite and infinite spaces matters.</td></tr></tbody></table></div><p class=\"takeaway\">Nonnegative costs alone do not rule out an infinite zero-cost search region.</p>",
+    "notes": "We assume nonnegative h, h(goal)=0 and nonnegative step costs for the cost arguments. A finite reachable graph with finite branching and strict improvements handles zero-cost cycles using repeated-state control. In an infinite space, a positive cost lower bound limits the depth within any finite cost budget. Negative costs invalidate the standard argument. Report failure only after genuine exhaustion, not after a time or memory cap.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied guarantees · Explicit finite/infinite-space assumptions"
+  },
+  {
+    "ch": "Search efficiency",
+    "title": "Tie-breaking changes the amount of work",
+    "body": "<div class=\"cols\"><div><h3>Primary order</h3><p>Always choose a node with minimum f.</p><h3>Secondary order</h3><p>Lower h, then insertion sequence, is the convention used here.</p></div><div><div class=\"equation smaller\">Equal f ⇒ larger g<br>means smaller h</div><p>Those two tie rules are equivalent when f = g + h and the primary f value is equal.</p></div></div><p class=\"takeaway\">A deterministic rule makes traces reproducible. It does not make every run equally efficient.</p>",
+    "notes": "The source presents lower h and higher g as separate possibilities. For ordinary A* among exact equal-f ties, they express the same preference. Floating-point comparisons and more complex priorities need explicit handling. Nodes on the f=C* boundary can be treated differently by different tie breakers, affecting counts even with a perfect heuristic. Priority ties must never override a genuinely smaller f.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Heuristic quality",
+    "title": "Dominance compares lower bounds",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Condition</th><th>Meaning</th></tr></thead><tbody><tr><td>h₁ and h₂ are admissible</td><td>Both remain below the same true remaining cost.</td></tr><tr><td>h₂(s) ≥ h₁(s) for every state</td><td>h₂ dominates h₁ and provides an equally strong or stronger bound.</td></tr><tr><td>Evaluation cost also matters</td><td>A stronger estimate can take longer to compute.</td></tr></tbody></table></div><p class=\"takeaway\">Dominance alone does not promise a shorter runtime for every implementation and instance.</p>",
+    "notes": "For consistent A* under comparable conventions, stronger bounds reduce the set of nodes forced below the optimal-cost contour. Boundary ties, reexpansions with inconsistent heuristics, queue overhead and heuristic computation affect actual work. Benchmark under identical tasks and policies. Distinguish a theorem about bounds from a measured runtime claim.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Heuristic quality",
+    "title": "Combining heuristics with a maximum",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">h(s) = max(h₁(s), h₂(s))</div><p>If both estimates are lower bounds, their maximum remains a lower bound.</p></div><div><h3>Consistency is preserved too</h3><p>When each component is consistent under the same action costs, their maximum is consistent.</p><h3>A sum needs a further argument</h3><p>Two estimates may count the same paid action.</p></div></div><p class=\"takeaway\">Two heuristics can each equal 1 while only one action is needed. Their sum would overestimate.</p>",
+    "notes": "For consistency, choose the component i attaining the maximum at s. Then h(s)=h_i(s)≤c+h_i(s′)≤c+max_j h_j(s′). The one-move Loopover example later makes double-counting concrete. This rule concerns fixed state-based heuristics for the same problem and cost convention.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "The 8-puzzle",
+    "title": "A heuristic needs an explicit goal board",
+    "body": "<div class=\"cols\"><div><h3>Supplied starting board</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(3,1fr)\"><span class=\"\">2</span><span class=\"\">8</span><span class=\"\">3</span><span class=\"\">1</span><span class=\"\">6</span><span class=\"\">4</span><span class=\"\">7</span><span class=\"\">□</span><span class=\"\">5</span></div></div><div><h3>Goal used in this example</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(3,1fr)\"><span class=\"\">1</span><span class=\"\">2</span><span class=\"\">3</span><span class=\"\">8</span><span class=\"\">□</span><span class=\"\">4</span><span class=\"\">7</span><span class=\"\">6</span><span class=\"\">5</span></div></div></div><p class=\"takeaway\">Unit cost per legal blank move. The blank is excluded from both heuristic sums.</p>",
+    "notes": "The supplied slide shows the starting board but does not pair it with an explicit goal on that slide. We use the displayed spiral goal, which makes this example solvable in five moves. This differs from the row-major goal shown in Unit 2, so every distance must be computed against the goal displayed here. Misplaced tiles=4 and Manhattan distance=5 for this pair.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied start board · Explicit goal added for a complete example"
+  },
+  {
+    "ch": "The 8-puzzle",
+    "title": "Move a tile and inspect both heuristics",
+    "body": "<div class=\"puzzle-demo\"><div><p class=\"control-label\">Click a numbered tile next to the blank.</p><div id=\"puzzle-board\" class=\"puzzle-board\" role=\"group\" aria-label=\"Interactive 8-puzzle board\"></div><div class=\"demo-controls\"><button id=\"puzzle-reset\">Source example</button><button id=\"puzzle-near\">One move away</button><button id=\"puzzle-goal\">Goal</button></div></div><div><div class=\"readout\"><span>Misplaced numbered tiles</span><b id=\"puzzle-mis\"></b></div><div class=\"readout\"><span>Sum of Manhattan tile distances</span><b id=\"puzzle-md\"></b></div><p id=\"puzzle-status\" class=\"search-status\" aria-live=\"polite\"></p><p class=\"small\">Goal: 1 2 3 / 8 □ 4 / 7 6 5.<br>One legal move costs one.</p></div></div>",
+    "notes": "Only orthogonally adjacent tiles can move into the blank. Every move preserves reachability relative to the displayed goal. The source preset starts with h_mis=4 and h_MD=5. The one-move preset has both values equal to 1. Including the blank would produce an inadmissible count of 2 on that preset. The activity calculates heuristic values; it does not claim to solve every board automatically.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable 8-puzzle heuristic comparison"
+  },
+  {
+    "ch": "The 8-puzzle",
+    "title": "Why Manhattan dominates misplaced tiles",
+    "body": "<div class=\"rows\"><div><strong>Each misplaced numbered tile</strong><span>Contributes at least one unit to Manhattan distance.</span></div><div><strong>One legal blank move</strong><span>Moves exactly one numbered tile by one grid step.</span></div><div><strong>Lower-bound argument</strong><span>One action can reduce the total Manhattan distance by at most one.</span></div><div><strong>Consequence</strong><span>h_misplaced ≤ h_Manhattan ≤ the optimal number of moves.</span></div></div><p class=\"takeaway\">The argument relies on this puzzle’s movement and cost rules.</p>",
+    "notes": "Manhattan distance is the sum of |row−goal_row|+|column−goal_column| over numbered tiles. Each legal move changes that sum by exactly one in this grid puzzle, which also proves consistency. Misplaced count changes by at most one. Scaling Manhattan by two is not generally admissible: one move from the goal gives h=2 but true cost=1. The raw sums cannot be transferred unchanged to coupled Loopover.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "The 8-puzzle",
+    "title": "A five-move certificate",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Move</th><th>Blank direction</th><th>Numbered tile moved</th></tr></thead><tbody><tr><td>1</td><td>Up</td><td>6</td></tr><tr><td>2</td><td>Up</td><td>8</td></tr><tr><td>3</td><td>Left</td><td>2</td></tr><tr><td>4</td><td>Down</td><td>1</td></tr><tr><td>5</td><td>Right</td><td>8</td></tr></tbody></table></div><div class=\"cols\"><div><h3>Upper bound</h3><p>The legal five-move sequence reaches the displayed goal.</p></div><div><h3>Lower bound</h3><p>Initial Manhattan distance is 5.</p></div></div><p class=\"takeaway\">A cost-5 plan and a cost-5 lower bound together prove that the plan is optimal.</p>",
+    "notes": "The blank swaps with indices 4,1,0,3,4 in a row-major 0..8 encoding. The sequence transforms 283164705 into 123804765. Independent BFS confirms the shortest length is five. The lower-bound certificate is enough to prove optimality without enumerating all reachable arrangements.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated trace and lower-bound certificate"
+  },
+  {
+    "ch": "Heuristic construction",
+    "title": "Relaxation removes constraints",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Original</strong><span>Legal actions and costs</span></div><div class=\"flowstep\"><small>02</small><strong>Relax</strong><span>Allow extra possibilities</span></div><div class=\"flowstep\"><small>03</small><strong>Solve</strong><span>Find the relaxed optimum</span></div><div class=\"flowstep\"><small>04</small><strong>Use</strong><span>A lower bound for search</span></div></div><div class=\"cols\"><div><h3>Required relationship</h3><p>Every concrete plan must have a relaxed counterpart costing no more.</p></div><div><h3>Failure mode</h3><p>An altered problem that makes actions more expensive need not give a lower bound.</p></div></div><p class=\"takeaway\">The exact cost of a valid relaxation cannot exceed the original optimum.</p>",
+    "notes": "Manhattan distance can be understood by relaxing tile interactions so tiles may reach their target positions independently. For cost-preserving abstractions, the mapped solution remains possible. The proof comes from the relationship between plans, not merely from describing the second problem as easier. Computing the relaxed optimum may itself be too expensive unless the relaxation has structure.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Pattern databases",
+    "title": "Exact abstract costs can guide concrete search",
+    "body": "<div class=\"cols\"><div><h3>Concrete state</h3><p>All tile identities and positions.</p><h3>Abstract state</h3><p>Positions of selected tiles. Other identities are ignored.</p></div><div><h3>Stored value</h3><p>The cheapest abstract cost to the abstract goal.</p><h3>Lookup</h3><p>Map the concrete state to its pattern and retrieve the value.</p></div></div><p class=\"takeaway\">Every concrete action must map to an abstract transition of no greater cost.</p>",
+    "notes": "The supplied material introduces pattern databases as precomputed distances. For a cost-preserving abstraction, any concrete solution induces an abstract solution, giving a lower bound. The heuristic is exact for the abstract problem, not for the full puzzle. If an abstract edge is assigned the full concrete unit cost, exact abstract goal distances also satisfy the consistency inequality.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied PDB concept · Cost-preserving abstraction"
+  },
+  {
+    "ch": "Pattern databases",
+    "title": "A database of distances to the goal",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Project</strong><span>Choose pattern and abstract goal</span></div><div class=\"flowstep\"><small>02</small><strong>Reverse</strong><span>Generate predecessor edges</span></div><div class=\"flowstep\"><small>03</small><strong>Search</strong><span>BFS for unit costs</span></div><div class=\"flowstep\"><small>04</small><strong>Store</strong><span>Abstract state to distance</span></div></div><p class=\"takeaway\">Reverse Dijkstra is the corresponding choice for general nonnegative edge costs.</p>",
+    "notes": "Distances from the goal equal distances to the goal only when the relevant graph is symmetric. In a directed graph, traverse reversed edges from the goal. Reverse generation may use inverse transformations internally without changing which forward actions are legal. If costs are partitioned into zeros and ones, use an appropriate shortest-path method such as 0–1 BFS. A PDB built in the wrong direction can cease to be a valid goal-distance bound.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original directed-PDB implementation clarification"
+  },
+  {
+    "ch": "Pattern databases",
+    "title": "More tracked tiles require more storage",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Pattern tiles k</th><th>Distinct position assignments 16! / (16−k)!</th><th>Packed values at 1 byte each</th></tr></thead><tbody><tr><td>2</td><td>240</td><td>240 bytes</td></tr><tr><td>4</td><td>43,680</td><td>42.66 KiB</td></tr><tr><td>6</td><td>5,765,760</td><td>5.50 MiB</td></tr><tr><td>8</td><td>518,918,400</td><td>494.88 MiB</td></tr></tbody></table></div><p class=\"takeaway\">These are indexing counts and illustrative packed-value sizes, not measured Java memory use.</p>",
+    "notes": "The table counts placements of k distinct labelled tiles in 16 cells. Reachability and abstraction choices can change which entries are actually stored. A byte per value is possible only if all encoded distances and any sentinels fit. Keys, hash maps, queues and precomputation have additional overhead. The actual two-tile database in this presentation reaches all 240 states and its maximum stored distance is 4.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated permutation counts · Binary memory units"
+  },
+  {
+    "ch": "Pattern databases",
+    "title": "Adding patterns requires a cost budget",
+    "body": "<div class=\"cols\"><div><h3>Safe maximum</h3><p>max(PDB₁, PDB₂) preserves admissibility when both are lower bounds.</p><h3>Potentially unsafe sum</h3><p>Disjoint sets of tile labels can still benefit from the same action.</p></div><div><h3>Cost partitioning</h3><div class=\"equation smaller\">cᵢ(a) ≥ 0<br>Σᵢ cᵢ(a) ≤ c(a)</div><p>Build each PDB using its assigned action costs before summing.</p></div></div><p class=\"takeaway\">In coupled Loopover, one action moves several tiles, possibly from several patterns.</p>",
+    "notes": "Additive pattern databases need a justified allocation of each concrete action’s cost. Disjointness of tile labels alone does not prevent double-counting. A concrete plan projects to each pattern, and the sum of its allocated costs cannot exceed its real cost. Therefore the sum of optimal pattern costs remains a lower bound. This is a sufficient construction, not a promise that any arbitrary collection of PDBs is additive.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Felner, Korf & Hanan (2004), Additive Pattern Database Heuristics"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "The coupled action is the cost unit",
+    "body": "<div class=\"cols\"><div><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">00</span><span class=\"\">01</span><span class=\"\">02</span><span class=\"\">03</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><div class=\"rows\"><div><strong>State</strong><span>A full 4 × 4 board of distinct tiles 00–15.</span></div><div><strong>Action r c +</strong><span>Shift row r right, then column c down.</span></div><div><strong>Action r c −</strong><span>Shift row r left, then column c up.</span></div><div><strong>Cost</strong><span>One per complete coupled action.</span></div></div></div></div><p class=\"takeaway\">Column c refers to the fixed column index after the row phase.</p>",
+    "notes": "This matches Units 1 and 2 and the laboratory rules in the supplied material. The board is toroidal and has no blank. There are 4×4×2=32 action labels. Intermediate row-only boards are not one-step successors. We now derive heuristics specifically for this action model.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied geared Loopover model"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "One action moves seven distinct tiles",
+    "body": "<div class=\"cols\"><div><h3>Support of the transformation</h3><p>Four row positions and four column positions share one cell.</p><div class=\"equation smaller\">4 + 4 − 1 = 7</div></div><div><h3>Total elementary displacement</h3><p>The row phase moves four tiles one step. The column phase moves four tiles one step.</p><div class=\"equation smaller\">4 + 4 = 8</div></div></div><p class=\"takeaway\">One tile participates in both phases. Distinct tiles and unit displacements are different counts.</p>",
+    "notes": "The composed permutation changes only positions in the selected row or column. Its support has seven distinct cells. One tile experiences both a horizontal and a vertical shift; six other tiles experience one shift each. These facts provide upper bounds on how much one paid action can repair. The argument applies to either sign and all row/column choices.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original derivation from the supplied action rule"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "Raw tile counts can overestimate the cost",
+    "body": "<div class=\"cols\"><div><h3>One move before the goal</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">01</span><span class=\"\">06</span><span class=\"\">03</span><span class=\"\">00</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">10</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">14</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">02</span><span class=\"\">15</span></div></div><div><h3>Apply 02+</h3><p>The row-right then column-down action reaches the ordered goal.</p><h3>Before the action</h3><p>Misplaced tiles m = <b>7</b><br>Toroidal distance sum D = <b>8</b><br>True remaining cost = <b>1</b></p></div></div><p class=\"takeaway\">Neither raw m nor raw D is admissible under this coupled unit-cost model.</p>",
+    "notes": "The state is 01060300040510070809141112130215. It is a predecessor of the goal under action 02+, obtained by undoing column 2 first and row 0 second. It is not the state formed by applying 02+ to the goal. The distinction matters because the inverse transformation reverses phase order. This single counterexample disproves two tempting raw-count heuristics.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated one-action counterexample"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "A lower bound from misplaced tiles",
+    "body": "<div class=\"equation\">hₘ(s) = ⌈m(s) / 7⌉</div><div class=\"rows\"><div><strong>At most seven repairs</strong><span>One action affects seven distinct tile positions.</span></div><div><strong>Any solution of length L</strong><span>Can repair at most 7L currently misplaced tiles in total.</span></div><div><strong>Lower bound</strong><span>m(s) ≤ 7L, so every solution needs at least ⌈m/7⌉ actions.</span></div></div><p class=\"takeaway\">The ceiling matters because the action count is an integer.</p>",
+    "notes": "A move may also displace correct tiles, which only makes the actual solution longer. For consistency, m(s)≤7+m(s′) across a legal unit-cost edge. Taking ceilings gives h_m(s)≤1+h_m(s′). At the goal m=0. Thus the bound is both admissible and consistent, not just plausible on selected boards.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original proof for geared 4 × 4 Loopover"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "A lower bound from toroidal distance",
+    "body": "<div class=\"equation smaller\">D(s) = Σ tiles [min(|Δr|, 4−|Δr|)<br>+ min(|Δc|, 4−|Δc|)]<br>hᴅ(s) = ⌈D(s) / 8⌉</div><div class=\"cols\"><div><h3>Wraparound distance</h3><p>Row 0 and row 3 are one step apart on a four-cell ring.</p></div><div><h3>Per-action progress</h3><p>The eight elementary displacements can reduce D by at most eight.</p></div></div><p class=\"takeaway\">D(s) ≤ 8 + D(s′) also gives consistency of the rounded bound.</p>",
+    "notes": "For each tile, compare its current coordinates with the coordinates of its goal cell. A unit ring movement changes its toroidal Manhattan distance by at most one. Sum over the four row movements and four column movements. Even the tile moved in both phases contributes at most two units of reduction. Dividing by eight converts tile-step distance into a lower bound measured in coupled actions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original toroidal-distance proof for the supplied rules"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "A combined bound with a clear proof",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">h_basic = max(hₘ, hᴅ)</div><p>Both components are admissible and consistent.</p></div><div><h3>Adding a pattern database</h3><div class=\"equation smaller\">h = max(hₘ, hᴅ, h_PDB)</div><p>The same properties hold for a cost-preserving PDB.</p></div></div><p class=\"takeaway\">Using hₘ + hᴅ would already overestimate on the one-move example: 1 + 1 > 1.</p>",
+    "notes": "There is no need to assert that one analytical bound always dominates the other. The maximum is safe regardless. A PDB may improve the maximum in some states and contribute nothing in others. The live examples show both possibilities. The combined heuristic still might be weak for difficult instances; admissibility is a correctness property, not a speed guarantee.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original combination of the derived bounds"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "A live Loopover heuristic laboratory",
+    "body": "<div class=\"loop-heuristic-demo\"><div><div id=\"heur-loop-board\" class=\"loop-board\"></div><p id=\"heur-loop-state\" class=\"mono state-string\"></p><p class=\"fine\">Crimson tiles 00 and 01 form the pattern.</p></div><div><label class=\"control-label\" for=\"loop-preset\">Verified example</label><select id=\"loop-preset\"><option value=\"one\">One-move certificate</option><option value=\"two\">PDB improves the bound</option><option value=\"three\">Three-move certificate</option><option value=\"goal\">Ordered goal</option></select><div class=\"loop-selects\"><label>Row<select id=\"hloop-row\"><option>0</option><option>1</option><option>2</option><option>3</option></select></label><label>Column<select id=\"hloop-col\"><option >0</option><option >1</option><option selected>2</option><option >3</option></select></label><label>Sign<select id=\"hloop-sign\"><option value=\"1\">+</option><option value=\"-1\">−</option></select></label></div><div class=\"demo-controls\"><button id=\"hloop-apply\" class=\"primary\">Apply action</button><button id=\"hloop-undo\">Undo</button><button id=\"hloop-reset\">Reset example</button></div><div class=\"heur-metrics\" id=\"heur-metrics\"></div><p id=\"hloop-status\" class=\"small\" aria-live=\"polite\"></p></div></div>",
+    "notes": "The two-tile PDB tracks the positions of 00 and 01 and is built by reverse BFS over all 240 ordered distinct-position states. Every abstract forward edge costs one. The UI displays raw m and D, their rounded lower bounds, the exact abstract PDB value and the combined maximum. Undo restores the previous whole board from history; it does not assume that changing the action sign undoes a move. The full puzzle is not solved automatically.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable 240-state PDB · Derived analytical bounds"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "A pattern detects what counts miss",
+    "body": "<div class=\"cols\"><div><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">12</span><span class=\"\">01</span><span class=\"\">02</span><span class=\"\">00</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">03</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><h3>Only three tiles are misplaced</h3><p>m = 3, D = 4.<br>hₘ = 1 and hᴅ = 1.</p><h3>The two-tile abstraction says more</h3><p>h_PDB = <b>2</b>.</p><h3>A matching solution</h3><p>00+ followed by 00− reaches the goal.</p></div></div><p class=\"takeaway\">A two-step lower bound plus a two-step solution proves the optimum is 2.</p>",
+    "notes": "The concrete state is 12010200040506070809101103131415. The PDB only tracks tiles 00 and 01 but accounts for their shared action effects. The tracked pair needs an abstract route of at least two actions. Opposite signs in the same row-then-column phase order do not generally cancel; the example is also a useful test against that implementation mistake.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated two-action certificate using the exact abstract PDB"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "Reverse generation must reverse phase order",
+    "body": "<div class=\"cols\"><div><h3>Forward 02+</h3><p>1. Row 0 right.<br>2. Column 2 down.</p></div><div><h3>Predecessor transformation</h3><p>1. Column 2 up.<br>2. Row 0 left.</p></div></div><p class=\"takeaway\">The predecessor operation is for reverse search. It does not introduce a new legal forward action.</p>",
+    "notes": "For a composed action T=C∘R, the inverse is R⁻¹∘C⁻¹. Applying it to a target board executes C⁻¹ first and then R⁻¹. The forward action 02− instead executes row-left first and column-up second, so it is generally different. The PDB builder iterates the actual inverse transformation of each forward label to construct reversed abstract edges.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original reverse-edge derivation for geared Loopover"
+  },
+  {
+    "ch": "Loopover laboratory",
+    "title": "Three exact solution certificates",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Example</th><th>m / D</th><th>hₘ</th><th>hᴅ</th><th>h_PDB</th><th>Optimal cost</th></tr></thead><tbody><tr><td>One-move predecessor</td><td>7 / 8</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>Three displaced tiles</td><td>3 / 4</td><td>1</td><td>1</td><td>2</td><td>2</td></tr><tr><td>Three-action predecessor</td><td>15 / 22</td><td>3</td><td>3</td><td>2</td><td>3</td></tr></tbody></table></div><p class=\"takeaway\">Each optimum follows from a matching lower bound and a verified legal plan.</p>",
+    "notes": "The known plans are 02+ for the first case; 00+,00− for the second; and 02+,13−,31+ for the third. Their exact concrete initial encodings are stored in the interactive presentation. For the third case the analytical bound equals 3, so the legal three-action plan is optimal even though the two-tile PDB only supplies 2. These are computed teaching examples rather than a large benchmark.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated states, heuristic values and solution certificates"
+  },
+  {
+    "ch": "Search variants",
+    "title": "Weighted A* changes the priority",
+    "body": "<div class=\"equation\">f_w = g + w h</div><div class=\"cols\"><div><h3>At w = 1</h3><p>The priority is ordinary A*.</p><h3>At w &gt; 1</h3><p>The heuristic contributes more to the priority.</p></div><div><h3>On the six-state example</h3><div class=\"table-scroll\"><table><thead><tr><th>Weight</th><th>Returned cost</th><th>Expanded</th></tr></thead><tbody><tr><td>1</td><td>6</td><td>4</td></tr><tr><td>2</td><td>6</td><td>4</td></tr><tr><td>3</td><td>11</td><td>2</td></tr></tbody></table></div></div></div><p class=\"takeaway\">A larger weight can change the route. Fewer expansions are not guaranteed on every problem.</p>",
+    "notes": "Return to the search laboratory, choose Weighted A* and change w. At w=3, A is selected and generates G with priority 11. The candidate B has priority 2+3×4=14, so the goal is selected first. At w=2, B has priority 10 and the better route is still explored. The table reports this one graph, using the stated tie rule and excluding the goal from expansions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied Weighted A* topic · Calculated example"
+  },
+  {
+    "ch": "Search variants",
+    "title": "The Weighted A* cost bound",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">C_returned ≤ w C*</div><p>For fixed w ≥ 1 with an admissible nonnegative h and h(goal)=0.</p></div><div><h3>Implementation conditions</h3><p>Nonnegative action costs, minimum-priority removal, valid best-g improvements and reopening when required.</p><h3>Termination</h3><p>A finite reachable graph suffices here. Infinite spaces need further completeness assumptions.</p></div></div><p class=\"takeaway\">An arbitrary overestimating heuristic does not inherit this weight bound.</p>",
+    "notes": "A frontier node on an optimal path has g+w h≤w(g+h*)=w C*, since g≥0. Correct improvements preserve such a prefix until the goal is selected. The selected goal has h=0, so its cost cannot exceed that candidate priority. Do not transfer the ordinary consistent-A* no-reopening rule to Weighted A* without another argument. This is a cost bound, not a prediction of the actual error.",
+    "cls": "",
+    "sub": "",
+    "ref": "Hansen & Zhou (2007), Anytime Heuristic Search · Bound explanation"
+  },
+  {
+    "ch": "Memory limits",
+    "title": "IDA* deepens an f threshold",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Initialize</strong><span>threshold = h(start)</span></div><div class=\"flowstep\"><small>02</small><strong>Traverse</strong><span>Depth-first within g + h ≤ threshold</span></div><div class=\"flowstep\"><small>03</small><strong>Record</strong><span>Smallest exceeded f value</span></div><div class=\"flowstep\"><small>04</small><strong>Repeat</strong><span>Use that value as the next threshold</span></div></div><div class=\"cols\"><div><h3>Memory advantage</h3><p>Store the current path and limited traversal information.</p></div><div><h3>Work repeated</h3><p>The search regenerates states across thresholds.</p></div></div><p class=\"takeaway\">IDS deepens a depth bound. IDA* deepens a cost-estimate bound.</p>",
+    "notes": "With an admissible heuristic and standard positive-cost, finite-branching assumptions, IDA* can find optimal solutions while using much less memory than A*. Use path-cycle checks and stop when a threshold traversal finds a goal. The next threshold is the smallest exceeded f, not necessarily the previous threshold plus one, especially with noninteger costs. Implementation details affect repeated-state overhead.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Memory limits",
+    "title": "Other ways to limit search memory",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method</th><th>Main idea</th><th>What it gives up or needs</th></tr></thead><tbody><tr><td>RBFS</td><td>Follow the most promising path and retain backed-up alternatives.</td><td>May regenerate forgotten subtrees.</td></tr><tr><td>SMA*</td><td>Use a memory budget and forget poor leaves while backing up their values.</td><td>Guarantees depend on enough memory for relevant solution paths.</td></tr><tr><td>Full A*</td><td>Retain frontier candidates and cost records.</td><td>Memory may grow too large before the goal is selected.</td></tr></tbody></table></div><p class=\"takeaway\">A memory limit is a reported search outcome, not proof that a puzzle is unsolvable.</p>",
+    "notes": "These are conceptual extensions from the source lecture, not additional required lab implementations. Avoid saying that SMA* is complete for every arbitrary memory cap. A solver cannot retain a solution path longer than its available representation budget. Record resource exhaustion separately from failure after full frontier exhaustion.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Evaluation",
+    "title": "A useful benchmark isolates the heuristic",
+    "body": "<div class=\"rows\"><div><strong>Same task set</strong><span>Identical initial states, goals, action costs and successor order.</span></div><div><strong>Same correctness policy</strong><span>Best-g updates, reopening, stopping rule and tie breaker.</span></div><div><strong>Search effort</strong><span>Generated nodes, expansions, reexpansions and peak frontier.</span></div><div><strong>Actual cost</strong><span>Wall time, heuristic time, peak memory and returned solution cost.</span></div></div><p class=\"takeaway\">Count the PDB build cost and storage, and state whether they are amortized across many runs.</p>",
+    "notes": "Use fixed input instances and reproducible seeds. Separate a cold run that constructs the PDB from warm runs using an existing database. Report all resource limits. Compare returned cost with a proven optimum only where one is available; otherwise call it a reference bound. Never label a timeout as a failed proof of reachability. The presentation gives exact toy counts but makes no large-scale performance claims.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original laboratory measurement plan"
+  },
+  {
+    "ch": "Java laboratory",
+    "title": "Responsibilities carried over from Unit 2",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Course artefact</th><th>Responsibility in informed search</th></tr></thead><tbody><tr><td>Estado</td><td>Immutable board and equality by configuration.</td></tr><tr><td>Sucesor</td><td>Action, resulting state and step cost.</td></tr><tr><td>Nodo</td><td>Parent, action, g, depth and computed h or f.</td></tr><tr><td>Frontera</td><td>Minimum-priority removal with deterministic ties.</td></tr><tr><td>Heuristicas / HeuristicasPBD</td><td>State-based analytical bounds and pattern lookup.</td></tr><tr><td>Solver</td><td>Improvements, stale checks, reopening and path reconstruction.</td></tr></tbody></table></div><p class=\"takeaway\">The class names follow the supplied slides. Match exact filenames to the actual lab repository.</p>",
+    "notes": "The provided material uses Spanish Java identifiers, including the spelling HeuristicasPBD. They are retained as course artefacts. No Java source repository was attached, so this is a mapping of responsibilities rather than an assertion that those files or method signatures have been inspected. A single graph-search core can share mechanisms while the selected strategy changes priority.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied Java-lab mapping · Repository not supplied"
+  },
+  {
+    "ch": "Java laboratory",
+    "title": "The A* implementation contract",
+    "body": "<div class=\"rows\"><div><strong>Immutable queue records</strong><span>Changing an enqueued priority in place can invalidate the heap order.</span></div><div><strong>State-keyed best cost</strong><span>Equality identifies configurations, independent of parent or depth.</span></div><div><strong>Heuristic on the child</strong><span>Compute h from the resulting state and the correct goal.</span></div><div><strong>Revised path</strong><span>A cheaper g comes with the corresponding parent and action.</span></div><div><strong>Honest termination</strong><span>Solution, frontier exhausted, or an explicit resource limit.</span></div></div><p class=\"takeaway\">The implementation and the proof must describe the same algorithm.</p>",
+    "notes": "For Java PriorityQueue, a new entry plus stale-entry skipping is a straightforward alternative to decrease-key. The comparator should use safe numeric comparisons instead of subtracting values that may overflow. This is general design guidance, not an API-version-specific code sample. Keep h deterministic for a fixed problem unless the algorithm explicitly supports changing heuristic values.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  },
+  {
+    "ch": "Java laboratory",
+    "title": "Tests with known answers",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Test</th><th>Expected evidence</th></tr></thead><tbody><tr><td>Goal input</td><td>Empty plan, cost 0 and h=0.</td></tr><tr><td>Six-state graph</td><td>A*:6, UCS:6, Greedy:11 under the stated rules.</td></tr><tr><td>Inconsistent counterexample</td><td>A* with reopening returns 5.</td></tr><tr><td>One-move Loopover predecessor</td><td>02+ reaches the goal; derived bounds equal 1.</td></tr><tr><td>Two-tile abstract graph</td><td>240 reachable entries; h(goal)=0; every edge passes consistency.</td></tr><tr><td>Parent and inverse checks</td><td>No mutation of input; true inverse restores the board.</td></tr></tbody></table></div><p class=\"takeaway\">A finite sample can catch heuristic errors. A general claim still needs a proof.</p>",
+    "notes": "For the abstract graph, enumerate all 240 states and all 32 forward action labels. Check that each stored value is at most one plus its successor value. For the concrete analytical bounds, combine targeted counterexamples with the proofs from this unit. An algorithm can pass a solved-board test while still mishandling cheaper paths, which is why the reopening graph is included.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original validation cases · Independently computed expected results"
+  },
+  {
+    "ch": "Practice",
+    "title": "Workshop: trace A* and explain the stopping rule",
+    "body": "<div class=\"cols\"><div><div class=\"activity-time\">8 min</div><p>Use the six-state graph from the search laboratory.</p><p>Primary priority g+h.<br>Ties: lower h, then insertion.</p></div><div><div class=\"rows\"><div><strong>After S</strong><span>List A, B and D with g, h and f.</span></div><div><strong>After A</strong><span>Insert G and choose the next candidate.</span></div><div><strong>After B and C</strong><span>Update the goal path and identify stale entries.</span></div><div><strong>Explain</strong><span>Why is the first generated goal not accepted?</span></div></div></div></div><p class=\"takeaway\">Deliver a selection trace, a parent-based solution path and the final cost.</p>",
+    "notes": "Allow three minutes for frontier tables, three for the cost argument and two for comparing answers. Do not confuse the sequence of selected nodes with the returned path. The goal is checked after removal. Use the fixed h values printed on the graph, not estimated geometric distances from the picture.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original classroom activity"
+  },
+  {
+    "ch": "Practice",
+    "title": "Workshop solution",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>After selecting</th><th>Active frontier in priority order</th><th>Update</th></tr></thead><tbody><tr><td>S</td><td>A:2/1/3, B:2/4/6, D:1/10/11</td><td>Numbers are g / h / f.</td></tr><tr><td>A</td><td>B:2/4/6, G:11/0/11, D:1/10/11</td><td>An expensive goal is discovered.</td></tr><tr><td>B</td><td>C:4/2/6, G:11/0/11, D:1/10/11</td><td>C extends the cheaper route.</td></tr><tr><td>C</td><td>G:6/0/6, D:1/10/11</td><td>G(11) becomes stale.</td></tr><tr><td>G</td><td>Stop with cost 6</td><td>Path S → B → C → G.</td></tr></tbody></table></div><p class=\"takeaway\">A stays in the selection trace, but it does not appear in the returned solution path.</p>",
+    "notes": "The compact table omits stale entries once their better replacement exists; the live simulator shows them explicitly. After A, G and D tie at f=11, so G would win that tie by lower h, but B at f=6 has priority over both. Four non-goal nodes are expanded. The old goal candidate has a different parent chain and cost.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated answer under the declared policies"
+  },
+  {
+    "ch": "Practice",
+    "title": "Workshop: defend or reject a heuristic",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Proposed heuristic</th><th>Question to justify</th></tr></thead><tbody><tr><td>h=0 on the entire state space</td><td>What does it guarantee, and how much guidance does it provide?</td></tr><tr><td>2 × Manhattan for the unit-cost 8-puzzle</td><td>Can one nearby state refute admissibility?</td></tr><tr><td>Raw misplaced tiles for coupled Loopover</td><td>How many tiles can one paid action repair?</td></tr><tr><td>Sum of two full-cost disjoint-tile PDBs</td><td>Can one action help both patterns?</td></tr></tbody></table></div><p class=\"takeaway\">For a rejection, provide a counterexample. For acceptance, state a general argument.</p>",
+    "notes": "Suggested duration: six minutes in pairs. Require students to identify the action and cost model before classifying the proposal. A heuristic being cheap, informative or random is not by itself evidence of admissibility. Ask stronger students whether a randomly selected fixed value bounded by a proven h would be admissible; it would, although consistency would not follow automatically.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded activity based on the supplied admissibility questions"
+  },
+  {
+    "ch": "Practice",
+    "title": "Heuristic workshop: reasoned answers",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Proposal</th><th>Conclusion and evidence</th></tr></thead><tbody><tr><td>h=0</td><td>Admissible and consistent for nonnegative costs; A* becomes UCS.</td></tr><tr><td>2 × Manhattan</td><td>Not generally admissible: one move away gives 2 instead of 1.</td></tr><tr><td>Raw misplaced Loopover tiles</td><td>Not admissible here: the verified one-move state has 7 misplaced tiles.</td></tr><tr><td>Sum of full-cost PDBs</td><td>Not guaranteed: an action can be counted in both estimates. Use a maximum or prove a cost partition.</td></tr></tbody></table></div><p class=\"takeaway\">“Admissible” always refers to a particular problem, goal and cost model.</p>",
+    "notes": "Distinguish proof of invalidity from lack of a proof. The first two counterexamples explicitly exceed a known optimal cost. The PDB answer explains why the proposed general guarantee fails, rather than asserting that every possible sum fails on every state. Revisit the one-move Loopover board, where multiple independent-looking estimates each account for the same single action.",
+    "cls": "",
+    "sub": "",
+    "ref": "Worked solutions to the heuristic activity"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "Six checks for optimal A*",
+    "body": "<div class=\"check-grid\"><div class=\"check-item\"><b>01</b><p>What does g describe?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>The exact cost of this candidate path, not necessarily the cheapest path to its state.</div></div><div class=\"check-item\"><b>02</b><p>What does admissibility require?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>A lower bound on remaining cost for every relevant state.</div></div><div class=\"check-item\"><b>03</b><p>What does consistency add?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>An inequality for every legal edge, with h(goal)=0.</div></div><div class=\"check-item\"><b>04</b><p>When might A* reopen a state?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>When an inconsistent heuristic lets it expand a state before a cheaper path arrives.</div></div><div class=\"check-item\"><b>05</b><p>Why can a raw Loopover count fail?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>One coupled unit-cost action moves seven distinct tiles.</div></div><div class=\"check-item\"><b>06</b><p>When can PDB values be added?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>When a valid cost allocation prevents counting the same action cost more than once.</div></div></div>",
+    "notes": "Use these questions as short retrieval practice. Follow an answer with the corresponding graph, bound proof or one-move counterexample. The HTML hides explanations until requested. The PDF shows all six explanations for self-study.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original learning check"
+  },
+  {
+    "ch": "References",
+    "title": "Sources and further reading",
+    "body": "<div class=\"references\"><p><b>Supplied course deck</b><br>01_Presentacion_Tema3_Informed_Search_Algorithms(3).pptx, 42 slides. Scope, core definitions, 8-puzzle starting board and lab terminology.</p><p><b>Russell and Norvig · Artificial Intelligence: A Modern Approach</b><br><a href=\"https://aima.cs.berkeley.edu/\">Official textbook resources</a> · <a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/search/informed.html\">UC Berkeley CS188: Informed Search</a></p><p><b>Felner, Korf and Hanan (2004)</b><br>Additive Pattern Database Heuristics, JAIR 22, 279–318.<br><a href=\"https://tzin.bgu.ac.il/~felner/2004/jairpdb.pdf\">Author-hosted paper</a></p><p><b>Hansen and Zhou (2007)</b><br>Anytime Heuristic Search, JAIR 28, 267–297.<br><a href=\"https://arxiv.org/abs/1110.2737\">Paper and Weighted A* discussion</a></p></div>",
+    "notes": "The original course material supplies the core syllabus. External primary sources support the added clarifications on search properties, additive patterns and weighted search. The small graphs, their traces, the concrete Loopover bounds and the two-tile database are original teaching constructions calculated for this presentation. Source links need internet access; the presentation and simulations work offline.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source notes distinguish supplied content, literature and calculated examples"
+  },
+  {
+    "ch": "Next unit",
+    "title": "Constraints can change the search representation",
+    "body": "<div class=\"cols\"><div><h3>Unit 3</h3><p>Configurations, legal transitions and heuristic estimates.</p><div class=\"equation smaller\">g + h</div></div><div><h3>Unit 4</h3><p>Variables, domains and constraints.</p><div class=\"equation smaller\">X · D · C</div></div></div><p class=\"takeaway\">The next question: which choices can be ruled out before building a complete assignment?</p>",
+    "notes": "Use timetable design as the transition. Variables might represent class sessions, domains possible time slots, and constraints forbidden overlaps. CSP methods add propagation and ordering choices. This closes Unit 3 without claiming that every problem has to be reformulated as a CSP. Ask students which aspects of their state-space model could become constraints.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 3 material"
+  }
+]

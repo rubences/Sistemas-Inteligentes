@@ -1,0 +1,542 @@
+[
+  {
+    "ch": "Opening",
+    "title": "Adversarial<br>search",
+    "body": "<p class=\"cover-sub\">Unit 5 · Intelligent Systems</p><div class=\"cover-meta\">School of Computer Science · Ciudad Real<br>Universidad de Castilla-La Mancha<br><strong>Rubén Juárez Cádiz</strong></div>",
+    "notes": "This unit develops the supplied 44-slide lecture into 60 slides with five offline laboratories. It preserves the original minimax examples and adds explicit assumptions, bound semantics, a playable game and depth experiments. The cover is conceptual AI-generated artwork, not a legal chess position.",
+    "cls": "cover dark",
+    "sub": "",
+    "ref": "UCLM · Computer Science Degree"
+  },
+  {
+    "ch": "Opening",
+    "title": "A decision must survive the opponent’s reply",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Model</strong><span>Identify the player to move and the terminal outcome.</span></div><div class=\"flowstep\"><small>02</small><strong>Back up</strong><span>Propagate MAX and MIN values through the game tree.</span></div><div class=\"flowstep\"><small>03</small><strong>Reduce work</strong><span>Use bounds, move ordering and repeated positions.</span></div><div class=\"flowstep\"><small>04</small><strong>Extend</strong><span>Add estimates, chance or hidden information.</span></div></div><p class=\"takeaway\">Explain the selected action, the search evidence and the limits of the opponent model.</p>",
+    "notes": "Suggested sequence: three 80-minute classes. First, modelling and minimax. Second, evaluation, cutoffs and alpha-beta. Third, implementation, chance and exercises. Use the five laboratories for prediction before execution. The HTML includes teaching notes and keyboard navigation. The PDF exposes exercise answers for independent study.",
+    "cls": "",
+    "sub": "60 slides · Five laboratories · Worked solutions",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Course connection",
+    "title": "A puzzle asks for a path; a game asks for decisions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Aspect</th><th>Loopover / single-agent search</th><th>Adversarial game</th></tr></thead><tbody><tr><td>Who acts?</td><td>One planning agent.</td><td>Players take turns.</td></tr><tr><td>Outcome</td><td>Reach a goal, perhaps at minimum cost.</td><td>Obtain a terminal utility.</td></tr><tr><td>Returned object</td><td>A sequence of legal actions.</td><td>A move now and decisions for later states.</td></tr><tr><td>Uncertainty about continuation</td><td>Which path should the solver explore?</td><td>Which response will the opponent choose?</td></tr></tbody></table></div><p class=\"takeaway\">State, actions and transition functions remain useful. Control over future actions changes.</p>",
+    "notes": "This retains the source comparison with Loopover. A complete strategy specifies an action for every relevant decision state, not only a single predicted sequence. A game-playing program can compute a first action, observe the actual opponent response and search again. A principal variation is one anticipated line, not an entire strategy.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "The classical minimax model has explicit assumptions",
+    "body": "<div class=\"rows\"><div><strong>Two players</strong><span>MAX and MIN alternate turns in this unit’s examples.</span></div><div><strong>Zero-sum utility</strong><span>Every value uses MAX’s perspective; MIN prefers lower values.</span></div><div><strong>Deterministic transitions</strong><span>A legal action has one specified successor.</span></div><div><strong>Perfect information</strong><span>The current game state is observable to both players.</span></div></div><p class=\"takeaway\">Full-tree guarantees also require a finite game tree or correct handling of repetitions and draws.</p>",
+    "notes": "Zero-sum means U_MIN=−U_MAX, or an equivalent constant-sum normalization. Alternating turns simplify the presentation; a general implementation should ask the state who acts next rather than blindly flipping at every recursive call. Perfect information concerns observations of the game state. It does not require reading an opponent’s private intentions or plans.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Game model",
+    "title": "The game definition makes each search operation precise",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Operation</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial state</td><td>A legal starting position, including player to move.</td></tr><tr><td>Player(s)</td><td>Which player chooses the next action.</td></tr><tr><td>Actions(s)</td><td>Exactly the legal moves available in s.</td></tr><tr><td>Result(s,a)</td><td>The complete successor after applying a.</td></tr><tr><td>Terminal(s)</td><td>Whether play has ended under the game rules.</td></tr><tr><td>Utility(s)</td><td>The exact outcome for MAX at a terminal state.</td></tr></tbody></table></div>",
+    "notes": "The source lists five elements and includes player to move in the state. We make Player(s) explicit to avoid inferring turns incorrectly. Some games have extra turns, passes, repetitions or move counters. If such facts affect legal moves or termination, the state and transition model must include them. Nonterminal states with no ordinary moves may require a pass action, depending on the rules.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Game model",
+    "title": "A board diagram may be only part of the state",
+    "body": "<div class=\"cols\"><div><h3>Position and turn</h3><p>The same arrangement can offer different legal actions depending on who moves next.</p><h3>Relevant history</h3><p>Repetition rules or special-move rights may distinguish otherwise identical boards.</p></div><div><h3>A useful invariant</h3><p>State equality must imply the same legal continuations and outcome rules.</p><p>A cache key must preserve those distinctions.</p></div></div><p class=\"takeaway\">Merge positions only when they represent the same decision problem.</p>",
+    "notes": "Tic-tac-toe is especially convenient because the legal move counts imply whose turn it is, but we still state the convention explicitly. For more complex games, a board-only transposition key can be unsound. This is a modelling issue before it becomes a hashing issue. Utility remains from a fixed perspective throughout this unit.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded state-representation and caching guidance"
+  },
+  {
+    "ch": "Game trees",
+    "title": "One ply is one player’s action",
+    "body": "<div class=\"cols\"><div><svg class=\"game-tree\" viewBox=\"0 0 700 405\" role=\"img\" aria-label=\"MAX root with MIN children A and B. A leaves 3, 12. B leaves 8, 2.\"><line class=\"\" x1=\"350\" y1=\"55\" x2=\"180\" y2=\"185\"/><line class=\"\" x1=\"350\" y1=\"55\" x2=\"520\" y2=\"185\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"85\" y2=\"340\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"255\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"445\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"615\" y2=\"340\"/><g class=\"max \"><rect x=\"304\" y=\"20\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"350\" y=\"76\">?</text><text class=\"inside-role\" x=\"350\" y=\"45\">MAX</text></g><g class=\"min \"><rect x=\"134\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"180\" y=\"206\">?</text><text class=\"inside-role\" x=\"180\" y=\"175\">MIN · A</text></g><g class=\"min \"><rect x=\"474\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"520\" y=\"206\">?</text><text class=\"inside-role\" x=\"520\" y=\"175\">MIN · B</text></g><g class=\"terminal \"><rect x=\"39\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"85\" y=\"361\">3</text><text class=\"inside-role\" x=\"85\" y=\"330\">a1</text></g><g class=\"terminal \"><rect x=\"209\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"255\" y=\"361\">12</text><text class=\"inside-role\" x=\"255\" y=\"330\">a2</text></g><g class=\"terminal \"><rect x=\"399\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"445\" y=\"361\">8</text><text class=\"inside-role\" x=\"445\" y=\"330\">b1</text></g><g class=\"terminal \"><rect x=\"569\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"615\" y=\"361\">2</text><text class=\"inside-role\" x=\"615\" y=\"330\">b2</text></g></svg></div><div><h3>Root</h3><p>The current decision belongs to MAX.</p><h3>Next level</h3><p>MIN selects a response to A or B.</p><h3>Leaves</h3><p>Terminal utilities here: 3, 12, 8, 2.</p></div></div>",
+    "notes": "A depth of two plies includes one action by MAX and one reply by MIN in this alternating-turn model. It does not mean two complete rounds. The numbers in this small abstract game are specified terminal utilities, not chess material values. Distinguish search-tree nodes, which represent histories, from game states that different histories can reach.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied four-leaf game tree"
+  },
+  {
+    "ch": "Utility",
+    "title": "Every number uses the same player’s perspective",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Outcome</th><th>One possible utility scale for MAX</th></tr></thead><tbody><tr><td>MAX wins</td><td>+1</td></tr><tr><td>Draw</td><td>0</td></tr><tr><td>MIN wins</td><td>−1</td></tr></tbody></table></div><p class=\"takeaway\">At MIN nodes, choose the smallest MAX utility. Do not change its sign merely because it is MIN’s turn.</p>",
+    "notes": "Other numerical scales can be appropriate. Our tic-tac-toe laboratories use terminal values +100,0,−100 so heuristic estimates can stay strictly between the win and loss values. The abstract source trees use their given scores. Always declare the scale within an example and use it consistently. Negamax later uses a different, explicitly stated perspective convention.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Terminal states",
+    "title": "The source board already contains a win",
+    "body": "<div class=\"cols\"><div><div class=\"ttt-static\"><span class=\"win-cell mark-X\">X</span><span class=\"mark-O\">O</span><span class=\"empty\"></span><span class=\"empty\"></span><span class=\"win-cell mark-X\">X</span><span class=\"empty\"></span><span class=\"mark-O\">O</span><span class=\"empty\"></span><span class=\"win-cell mark-X\">X</span></div></div><div><h3>X occupies the main diagonal</h3><p>Squares 1, 5 and 9 form a completed line.</p><h3>Use the terminal rule</h3><p>Return the exact X-win utility.<br>In the laboratories: <b>+100</b>.</p></div></div><p class=\"takeaway\">Check Terminal(s) before a depth cutoff or a heuristic evaluation.</p>",
+    "notes": "The five marks are reconstructed from the supplied slide 23: X at top-left, centre and bottom-right; O at top-middle and bottom-left. That position is legal and terminal after X’s fifth-ply move. The original slide places it under evaluation features, so we turn it into a useful distinction: a terminal result does not need an approximate feature score.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied tic-tac-toe position · Corrected terminal interpretation"
+  },
+  {
+    "ch": "Minimax",
+    "title": "The backup rule follows the player who controls the node",
+    "body": "<div class=\"rows\"><div><strong>Terminal</strong><span>V(s) = U(s).</span></div><div><strong>MAX to move</strong><span>V(s) = maximum V(child) over legal actions.</span></div><div><strong>MIN to move</strong><span>V(s) = minimum V(child) over legal actions.</span></div></div><p class=\"takeaway\">The value describes optimal play in the specified game, not the outcome of every possible continuation.</p>",
+    "notes": "MAX chooses a branch, but MIN controls the next choice. If both players optimize their own zero-sum utility and the full game tree is evaluated correctly, the backed-up values are exact. A weaker opponent may allow MAX to achieve more than its guaranteed value. An opponent model can therefore be conservative without being internally inconsistent.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Minimax",
+    "title": "The four-leaf example backs up to 3",
+    "body": "<div class=\"cols\"><div><svg class=\"game-tree\" viewBox=\"0 0 700 405\" role=\"img\" aria-label=\"MAX root with MIN children A and B. A leaves 3, 12. B leaves 8, 2.\"><line class=\"\" x1=\"350\" y1=\"55\" x2=\"180\" y2=\"185\"/><line class=\"\" x1=\"350\" y1=\"55\" x2=\"520\" y2=\"185\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"85\" y2=\"340\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"255\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"445\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"615\" y2=\"340\"/><g class=\"max \"><rect x=\"304\" y=\"20\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"350\" y=\"76\">3</text><text class=\"inside-role\" x=\"350\" y=\"45\">MAX</text></g><g class=\"min \"><rect x=\"134\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"180\" y=\"206\">3</text><text class=\"inside-role\" x=\"180\" y=\"175\">MIN · A</text></g><g class=\"min \"><rect x=\"474\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"520\" y=\"206\">2</text><text class=\"inside-role\" x=\"520\" y=\"175\">MIN · B</text></g><g class=\"terminal \"><rect x=\"39\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"85\" y=\"361\">3</text><text class=\"inside-role\" x=\"85\" y=\"330\">a1</text></g><g class=\"terminal \"><rect x=\"209\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"255\" y=\"361\">12</text><text class=\"inside-role\" x=\"255\" y=\"330\">a2</text></g><g class=\"terminal \"><rect x=\"399\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"445\" y=\"361\">8</text><text class=\"inside-role\" x=\"445\" y=\"330\">b1</text></g><g class=\"terminal \"><rect x=\"569\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"615\" y=\"361\">2</text><text class=\"inside-role\" x=\"615\" y=\"330\">b2</text></g></svg></div><div><h3>Evaluate the MIN nodes</h3><p>A = min(3,12) = <b>3</b><br>B = min(8,2) = <b>2</b></p><h3>Then evaluate MAX</h3><p>V(root) = max(3,2) = <b>3</b>.</p><p>Choose action A.</p></div></div>",
+    "notes": "This combines the two worked steps in the supplied deck. No probability or averaging is involved. MIN can force the lower value in the selected pair. The value 3 is exact under the model. Returning the action A and returning the number 3 are related but distinct responsibilities.",
+    "cls": "",
+    "sub": "",
+    "ref": "Worked source example: 3,12,8,2"
+  },
+  {
+    "ch": "Minimax",
+    "title": "A large reachable payoff may be unavailable against MIN",
+    "body": "<div class=\"cols\"><div><div class=\"big-word\">12 is reachable.</div><p>It appears on a legal continuation below A.</p></div><div><div class=\"big-word\">3 is guaranteed.</div><p>MIN can choose 3 instead, so MAX cannot force 12.</p></div></div><p class=\"takeaway\">The opponent’s choice changes how values combine. An optimistic maximum over all leaves is incorrect.</p>",
+    "notes": "An ordinary maximization over every terminal leaf would choose the largest number but would ignore who controls the path to it. The correct recursion encodes agency at each node. This also explains why a game strategy must respond to different opponent choices rather than assume only the most favourable branch.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Interpretation of the supplied minimax example"
+  },
+  {
+    "ch": "Minimax",
+    "title": "A recursive value function and a root action",
+    "body": "<pre class=\"wide-code\"><code>VALUE(s):\n    if Terminal(s): return Utility(s)\n    values ← [VALUE(Result(s,a)) for a in Actions(s)]\n    if Player(s) == MAX: return max(values)\n    else:                return min(values)\n\nDECIDE(s):\n    if Terminal(s): return NO_MOVE\n    score[a] ← VALUE(Result(s,a)) for each legal action a\n    return first action with best score for Player(s)</code></pre><p class=\"takeaway\">A deterministic tie rule makes examples reproducible.</p>",
+    "notes": "The list comprehension is conceptual pseudocode. A memory-conscious implementation can process child values incrementally rather than storing whole subtrees. Terminal positions return NO_MOVE at the action interface. We use first action in the declared order to break ties, with strict improvement when updating the chosen action.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source minimax pseudocode"
+  },
+  {
+    "ch": "Minimax",
+    "title": "Value, first move and strategy answer different questions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Object</th><th>What it tells us</th></tr></thead><tbody><tr><td>Position value</td><td>The outcome obtainable under optimal play.</td></tr><tr><td>Root action</td><td>The next legal move selected by the search.</td></tr><tr><td>Principal variation</td><td>One optimal line under a particular tie policy.</td></tr><tr><td>Strategy</td><td>A conditional action choice for relevant future decision states.</td></tr></tbody></table></div><p class=\"takeaway\">After the opponent moves, the program can search the observed state again.</p>",
+    "notes": "A single minimax decision call does not automatically return a complete strategy object for every possible future state. It can compute the value and an optimal first action. The source rightly introduces the distinction between value and move; this slide also clarifies the difference between a principal variation and a conditional plan.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Laboratory 1",
+    "title": "A visible trace from leaves to the root",
+    "body": "<div class=\"tree-lab\"><div id=\"trace-tree\"></div><div><label class=\"control-label\" for=\"trace-case\">Leaf values</label><select id=\"trace-case\"><option value=\"source\">Source: 3, 12, 8, 2</option><option value=\"prune\">Pruning: 5, 6, 2, 9</option><option value=\"tie\">Tie trap: 5, 6, 5, 0</option></select><label class=\"control-label spaced\" for=\"trace-method\">Algorithm</label><select id=\"trace-method\"><option value=\"minimax\">Minimax</option><option value=\"ab\">Alpha–beta</option></select><div class=\"demo-controls\"><button id=\"trace-back\">Back</button><button id=\"trace-step\" class=\"primary\">Next event</button><button id=\"trace-run\">To result</button><button id=\"trace-reset\">Reset</button></div><p id=\"trace-event\" class=\"lab-status\" aria-live=\"polite\"></p><div id=\"trace-metrics\" class=\"small-metrics\"></div><p id=\"trace-result\" class=\"small\"></p></div></div><p class=\"fine\">Read left to right. Bright outline = current node. Dashed fade = skipped. A bound such as ≤5 is not an exact node value.</p>",
+    "notes": "Start with ordinary minimax on 3,12,8,2. Ask students to predict each backup before advancing. Revisit after the alpha-beta section using the pruning and tie examples. The display shows hidden values as question marks until evaluated. Every event records a state of the search, not elapsed time. The algorithm retains the first root action on equal scores.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable source examples and an original tie counterexample"
+  },
+  {
+    "ch": "Minimax guarantees",
+    "title": "The guarantee belongs to a precisely stated model",
+    "body": "<div class=\"cols\"><div><h3>Full finite search</h3><p>With legal transitions, exact terminal utilities and exhaustive backups, minimax finds an optimal action.</p></div><div><h3>What the result assumes</h3><p>The game is modelled correctly and the opponent can choose its best response.</p><p>A cutoff estimate changes the guarantee.</p></div></div><p class=\"takeaway\">“Optimal against optimal opposition” does not mean every real opponent behaves that way.</p>",
+    "notes": "Completeness needs termination. A finite branching factor alone does not make an unbounded game tree finite. Repetition and draw rules, cycle handling or other valid game-theoretic methods matter in games that may repeat. We do not claim full minimax optimality for a heuristic search stopped at an arbitrary depth or time limit.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Minimax cost",
+    "title": "The tree grows exponentially with depth",
+    "body": "<div class=\"cols\"><div><div class=\"equation\">O(bᵐ)</div><p>Time for a full depth-m tree with branching factor bounded by b.</p></div><div><h3>Depth-first storage</h3><p>O(bm) when each stack level retains its generated successors.</p><p>Lazy generation can reduce traversal storage toward O(m), excluding state and cache costs.</p></div></div><p class=\"takeaway\">A search budget makes leaf estimates necessary in large games.</p>",
+    "notes": "The source states O(bm) space for depth-first minimax. We preserve that standard representation assumption and distinguish it from retaining the entire explicit tree, which requires much more memory. Runtime also includes legal-move generation and evaluation costs. The bound is a worst-case model, not a measured chess-engine benchmark.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Limited search",
+    "title": "A depth cutoff changes what a leaf value means",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Leaf reached</th><th>Returned value</th><th>Interpretation</th></tr></thead><tbody><tr><td>Terminal position</td><td>Utility(s)</td><td>Exact game outcome.</td></tr><tr><td>Nonterminal at depth 0</td><td>Eval(s)</td><td>Estimated continuation value.</td></tr><tr><td>Nonterminal above the cutoff</td><td>MAX/MIN backup</td><td>Optimal for the searched tree and its leaf scores.</td></tr></tbody></table></div><p class=\"takeaway\">Cutoff minimax can be exact for its truncated tree while choosing a suboptimal move in the full game.</p>",
+    "notes": "Depth counts remaining plies. A deeper search is often useful, but more depth is not a general mathematical guarantee of a better move with arbitrary evaluation errors. Keep the searched model and the real game’s optimal value distinct. A zero evaluation means neutral according to that heuristic, not necessarily a forced draw.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Limited search",
+    "title": "Terminal outcomes take priority over the cutoff",
+    "body": "<pre class=\"wide-code\"><code>VALUE(s, depth):\n    if Terminal(s): return Utility(s)\n    if depth == 0:  return Eval(s)\n    values ← [VALUE(Result(s,a), depth-1)\n              for a in Actions(s)]\n    return max(values) if Player(s)==MAX else min(values)</code></pre><p class=\"takeaway\">A win found exactly at the depth limit must retain its true terminal utility.</p>",
+    "notes": "This corrects a possible misunderstanding in the source’s phrase replace the terminal test with a cutoff test. In a robust implementation, check true terminal states first. Then apply the nonterminal depth cutoff. A combined cutoff predicate can also work, but the leaf evaluator must still distinguish exact terminal outcomes from estimates.",
+    "cls": "",
+    "sub": "",
+    "ref": "Clarification of the supplied cutoff pseudocode"
+  },
+  {
+    "ch": "Evaluation design",
+    "title": "Features describe advantages from MAX’s perspective",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Feature difference</th><th>Precise definition in our tic-tac-toe lab</th></tr></thead><tbody><tr><td>Oₓ − Oₒ</td><td>Open lines for X minus open lines for O. An open line contains no opponent mark.</td></tr><tr><td>Tₓ − Tₒ</td><td>Immediate threats: exactly two own marks and one empty square.</td></tr><tr><td>C</td><td>+1 for an X in the centre, −1 for O, otherwise 0.</td></tr></tbody></table></div><p class=\"takeaway\">Eval = clamp(wₒ(Oₓ−Oₒ) + wₜ(Tₓ−Tₒ) + 2C, −90, 90).</p>",
+    "notes": "There are eight winning lines: three rows, three columns and two diagonals. An empty line is open to both players, so its contributions cancel in the difference. The clamp keeps every nonterminal estimate below a terminal win of +100 and above a terminal loss of −100. Defaults are w_o=3 and w_t=10. This precise model expands the source’s illustrative feature expression.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source feature idea · Explicit original feature and scale definitions"
+  },
+  {
+    "ch": "Evaluation design",
+    "title": "A promising feature score can miss a forced win",
+    "body": "<div class=\"cols\"><div><div class=\"ttt-static\"><span class=\"empty\">1</span><span class=\"empty\">2</span><span class=\"empty\">3</span><span class=\"empty\">4</span><span class=\"empty\">5</span><span class=\"empty\">6</span><span class=\"mark-O\">O</span><span class=\"empty\">8</span><span class=\"mark-X\">X</span></div></div><div><h3>X to move</h3><p>O occupies square 7.<br>X occupies square 9.</p><h3>Default one-ply search</h3><p>Square 5 scores <b>21</b>.<br>Square 3 scores <b>16</b>.</p><p>The full game favours square 3.</p></div></div><p class=\"takeaway\">The centre looks attractive to this evaluation function, but choosing it gives up a forced win.</p>",
+    "notes": "Square numbers run left to right, top to bottom. This position is reachable after X plays 9 and O plays 7. With the defined feature weights, one-ply search chooses 5. Exhaustive search shows that this move has value 0, whereas square 3 preserves value +100 for X. This is a calculated teaching case, not a general rule that the centre is a poor move.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original position · Independently checked by full game enumeration"
+  },
+  {
+    "ch": "Laboratory 2",
+    "title": "Search depth and feature weights change the choice",
+    "body": "<div class=\"eval-lab\"><div><label class=\"control-label\" for=\"eval-position\">Position</label><select id=\"eval-position\"><option value=\"horizon\">Missed win · X to move</option><option value=\"tactic\">Immediate win · X to move</option><option value=\"terminal\">Source board · X has won</option></select><div id=\"eval-board\"></div><p id=\"eval-features\" class=\"fine\"></p><button id=\"eval-reset\">Reset experiment</button></div><div><div class=\"slider-grid\"><label>Depth: <b id=\"depth-label\">1</b><input id=\"eval-depth\" type=\"range\" min=\"1\" max=\"4\" value=\"1\"></label><label>Open-line weight: <b id=\"open-label\">3</b><input id=\"eval-open\" type=\"range\" min=\"0\" max=\"6\" value=\"3\"></label><label>Threat weight: <b id=\"threat-label\">10</b><input id=\"eval-threat\" type=\"range\" min=\"0\" max=\"15\" value=\"10\"></label></div><div id=\"eval-scores\" class=\"eval-scores\"></div><p id=\"eval-status\" class=\"lab-status\" aria-live=\"polite\"></p></div></div><p class=\"fine\">Terminal utility: X +100, draw 0, O −100. Equal search scores use the lowest square number. “Exact” is a full-search reference.</p>",
+    "notes": "Compare depths 1 and 2 on the missed-win position. Depth 1 selects square 5 with score 21 and full-game move value 0. Depth 2 selects square 3 with search score 0 and full-game move value +100. The table separates estimated search scores from exact game values. Choose the source board to confirm that changing depth or weights cannot replace a completed win with a heuristic estimate.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable cutoff minimax · Exhaustive reference for this small game"
+  },
+  {
+    "ch": "Evaluation experiment",
+    "title": "Deeper search recovers the winning action in this case",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Search on O7 / X9</th><th>Selected square</th><th>Search score</th><th>True value after the move</th></tr></thead><tbody><tr><td>One ply, default weights</td><td>5</td><td>21, an estimate</td><td>0: a draw with optimal continuation.</td></tr><tr><td>Two plies, default weights</td><td>3</td><td>0, an estimate</td><td>+100: X can force a win.</td></tr><tr><td>Full search to terminal states</td><td>1, first best move</td><td>+100, exact</td><td>+100.</td></tr></tbody></table></div><p class=\"takeaway\">A search score of 0 and an exact value of 0 make different claims.</p>",
+    "notes": "These numbers come from the exact game model used by the lab. At depth 2, square 3 is the unique best action under the current cutoff scores. Full search may contain tied winning moves; the exact winning moves are 1,3,6, and the declared lowest-square tie rule chooses square 1. The observation illustrates an error and its repair on one state, not monotonic improvement of decision quality with all deeper searches.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated depth experiment with wₒ=3, wₜ=10 and centre weight 2"
+  },
+  {
+    "ch": "Search horizon",
+    "title": "A cutoff can hide the consequence of a move",
+    "body": "<div class=\"cols\"><div><h3>Before the horizon</h3><p>A position looks strong because of material, space or threats.</p><h3>Just beyond it</h3><p>The opponent has a forcing reply that changes the assessment.</p></div><div><h3>Useful responses</h3><p>Increase depth where feasible.</p><p>Improve tactical features.</p><p>Extend selected unstable positions using a justified rule.</p></div></div><p class=\"takeaway\">A heuristic game evaluator does not need the admissibility or edge-consistency condition used by A*.</p>",
+    "notes": "The source describes good evaluation as consistent in an informal quality sense. That is not the technical consistency inequality from Unit 3. An evaluation function estimates strategic utility rather than a lower bound on remaining path cost. The horizon effect is especially visible when a bad event can be pushed just outside a fixed search depth.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded comparison with Unit 3 and horizon effects"
+  },
+  {
+    "ch": "Search horizon",
+    "title": "Quiescence search extends selected tactical positions",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Reach cutoff</strong><span>The nominal depth limit has been reached.</span></div><div class=\"flowstep\"><small>02</small><strong>Check stability</strong><span>A domain rule identifies forcing tactical continuations.</span></div><div class=\"flowstep\"><small>03</small><strong>Extend selectively</strong><span>Search those moves before evaluating the position.</span></div></div><p class=\"takeaway\">The extension policy changes the searched tree and must have a termination rule.</p>",
+    "notes": "In chess, a quiescence search often examines forcing tactical moves such as captures, with special care for positions where the side to move is in check. A simplistic captures-only rule is not a universal solution. We introduce the idea conceptually without implementing a chess engine or claiming that quiescence removes all horizon errors.",
+    "cls": "",
+    "sub": "",
+    "ref": "Conceptual extension: selective tactical search"
+  },
+  {
+    "ch": "Alpha–beta",
+    "title": "A proven alternative can make a subtree irrelevant",
+    "body": "<div class=\"cols\"><div><h3>MAX already has value 5</h3><p>An earlier root action guarantees that score.</p></div><div><h3>A new MIN branch reaches 2</h3><p>MIN can hold this branch to at most 2, whatever the remaining leaves contain.</p></div></div><p class=\"takeaway\">MAX can retain 5 without determining the exact value of the inferior branch.</p>",
+    "notes": "This is the central pruning argument. A skipped branch is not illegal or impossible. Its exact result is unnecessary for the current root decision. Alpha-beta gives the same minimax root value for the same tree and leaf evaluation, provided it implements the bounds correctly. It may select a different tied optimal action under a different ordering.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Alpha–beta bounds",
+    "title": "The search carries a window of relevant values",
+    "body": "<div class=\"rows\"><div><strong>α: lower threshold</strong><span>An alternative already available to MAX along the current search path.</span></div><div><strong>β: upper threshold</strong><span>An alternative already available to MIN along the current search path.</span></div><div><strong>Cutoff</strong><span>Stop remaining children when α ≥ β.</span></div></div><p class=\"takeaway\">Bounds are relative to the current search context. They are not exact values of every descendant.</p>",
+    "notes": "The root starts with alpha=-infinity and beta=+infinity. At a MAX node, a better child can raise alpha. At a MIN node, a lower child can lower beta. Calling these guaranteed alternatives is meaningful relative to the ancestors that control the corresponding decisions. A subtree searched under a narrow window may return only a bound.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Alpha–beta example",
+    "title": "Only three leaves are needed here",
+    "body": "<div class=\"cols\"><div><svg class=\"game-tree\" viewBox=\"0 0 700 405\" role=\"img\" aria-label=\"MAX root with MIN children A and B. A leaves 5, 6. B leaves 2, 9.\"><line class=\"\" x1=\"350\" y1=\"55\" x2=\"180\" y2=\"185\"/><line class=\"\" x1=\"350\" y1=\"55\" x2=\"520\" y2=\"185\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"85\" y2=\"340\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"255\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"445\" y2=\"340\"/><line class=\"pruned-edge\" x1=\"520\" y1=\"185\" x2=\"615\" y2=\"340\"/><g class=\"max \"><rect x=\"304\" y=\"20\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"350\" y=\"76\">?</text><text class=\"inside-role\" x=\"350\" y=\"45\">MAX</text></g><g class=\"min \"><rect x=\"134\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"180\" y=\"206\">?</text><text class=\"inside-role\" x=\"180\" y=\"175\">MIN · A</text></g><g class=\"min \"><rect x=\"474\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"520\" y=\"206\">?</text><text class=\"inside-role\" x=\"520\" y=\"175\">MIN · B</text></g><g class=\"terminal \"><rect x=\"39\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"85\" y=\"361\">5</text><text class=\"inside-role\" x=\"85\" y=\"330\">a1</text></g><g class=\"terminal \"><rect x=\"209\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"255\" y=\"361\">6</text><text class=\"inside-role\" x=\"255\" y=\"330\">a2</text></g><g class=\"terminal \"><rect x=\"399\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"445\" y=\"361\">2</text><text class=\"inside-role\" x=\"445\" y=\"330\">b1</text></g><g class=\"terminal pruned-node\"><rect x=\"569\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"615\" y=\"361\">9</text><text class=\"inside-role\" x=\"615\" y=\"330\">b2</text></g></svg></div><div><h3>Read left to right</h3><p>A = min(5,6) = 5.<br>Root α becomes 5.</p><h3>Enter MIN branch B</h3><p>First leaf: 2, so β becomes 2.<br>β ≤ α: skip leaf 9.</p><p>Root keeps A with value <b>5</b>.</p></div></div><p class=\"takeaway\">The cutoff establishes B ≤ 2. The search did not need to learn whether B equals 2.</p>",
+    "notes": "The numerical leaves come from the source alpha-beta exercise. Our diagram leaves the internal nodes unknown to emphasize that pruning does not compute every exact subtree value. For this supplied complete tree, an independent full minimax check tells us B=2, but the pruned search itself establishes only the bound B≤2. Leaves evaluated: 5,6,2.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied pruning exercise: 5,6,2,9 · Explicit bound interpretation"
+  },
+  {
+    "ch": "Alpha–beta",
+    "title": "One recursive function with bounds",
+    "body": "<pre class=\"wide-code\"><code>AB(s, depth, α, β):\n    if Terminal(s): return Utility(s)\n    if depth == 0: return Eval(s)\n    v ← -infinity if Player(s)==MAX else +infinity\n    for a in ordered_actions(s):\n        child ← AB(Result(s,a), depth-1, α, β)\n        if Player(s)==MAX:\n            v ← max(v, child); α ← max(α, v)\n        else:\n            v ← min(v, child); β ← min(β, v)\n        if α ≥ β: break\n    return v</code></pre><p class=\"takeaway\">At the root, record an action only on strict improvement of its current best score.</p>",
+    "notes": "This is a fail-soft form: it returns the computed v even if it lies outside the original search window. At the root, initialize an available legal action and keep the first action on equal scores. A cutoff value from another root child can be a bound, so replacing an exact best action merely on equality can be wrong. Terminal checks precede heuristic cutoffs.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source alpha-beta pseudocode"
+  },
+  {
+    "ch": "Bounds and values",
+    "title": "A returned number can be exact, a lower bound or an upper bound",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Evidence from a search call</th><th>Meaning for that subtree</th></tr></thead><tbody><tr><td>A MAX cutoff at value v</td><td>The subtree value is at least v.</td></tr><tr><td>A MIN cutoff at value v</td><td>The subtree value is at most v.</td></tr><tr><td>A correctly completed full-window search</td><td>The returned minimax root value is exact for that searched tree.</td></tr></tbody></table></div><p class=\"takeaway\">A cache entry must preserve whether the number is EXACT, LOWER or UPPER.</p>",
+    "notes": "Do not infer exactness solely because one node happens not to perform its own local cutoff: descendants may return bounds under inherited windows. Classification should use the original alpha/beta window and the search contract. The implementation later describes the standard comparison with the original window. This distinction prevents unsound reuse of transposition-table values.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original clarification of fail-soft bounds and cache semantics"
+  },
+  {
+    "ch": "Ties",
+    "title": "An equal bound is not proof of an equal action value",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Search step</th><th>What is known</th></tr></thead><tbody><tr><td>A has leaves 5 and 6</td><td>A=5 exactly, so root α=5.</td></tr><tr><td>B first returns a leaf value 5</td><td>B≤5. Equality already permits a cutoff.</td></tr><tr><td>B has an unseen leaf 0</td><td>Its actual value is 0, though this search skipped that leaf.</td></tr><tr><td>Correct root policy</td><td>Keep A. Do not replace it with B merely because the returned bound is 5.</td></tr></tbody></table></div><p class=\"takeaway\">Alpha-beta preserves the optimal root value. Tie handling must respect bound semantics.</p>",
+    "notes": "This original counterexample uses A=(5,6),B=(5,0). The live trace’s tie preset demonstrates it. Standard strict improvement at the root preserves the established best action. Re-searching a candidate with a full window can establish its exact value when an application needs to compare ties exhaustively. Reordering genuine equal optima can legitimately change which optimal action is selected.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original tie counterexample · Exact root value 5"
+  },
+  {
+    "ch": "Move ordering",
+    "title": "Earlier strong alternatives create earlier cutoffs",
+    "body": "<div class=\"cols\"><div><h3>At MAX</h3><p>Promising high-value actions first.</p><h3>At MIN</h3><p>Promising low-value replies first.</p></div><div><h3>Practical hints</h3><p>Use previous search results, forcing moves or domain-specific scores.</p><p>Include the cost of ordering in a performance comparison.</p></div></div><p class=\"takeaway\">The true minimax values are generally unknown before searching.</p>",
+    "notes": "The next experiment includes an oracle ordering based on the fully known tiny tree. It demonstrates idealized pruning, not a free implementation technique. Practical engines estimate good order from prior iterations, cached moves and tactical rules. Alpha-beta can evaluate every leaf in an unfavourable order.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Laboratory 3",
+    "title": "The same tree, three exploration orders",
+    "body": "<div class=\"order-lab\"><div class=\"order-top\"><label>Traversal<select id=\"order-mode\"><option value=\"natural\">Listed order</option><option value=\"good\">Oracle: strong first</option><option value=\"bad\">Oracle: weak first</option></select></label><div class=\"demo-controls\"><button id=\"order-back\">Back</button><button id=\"order-step\" class=\"primary\">Next event</button><button id=\"order-run\">To result</button><button id=\"order-reset\">Reset</button></div></div><div id=\"order-tree\"></div><div class=\"order-bottom\"><p id=\"order-event\" class=\"lab-status\" aria-live=\"polite\"></p><div id=\"order-metrics\" class=\"small-metrics\"></div></div></div><p class=\"fine\">A: 4,11,7 · B: 1,8,9 · C: 6,3,10. Oracle order uses known full values for teaching; it is not a free search heuristic.</p>",
+    "notes": "The exact MIN values are A=4,B=1,C=3. Listed order visits A then B then C, with leaves as printed. Strong-first order visits A,C,B and ascending leaves within every MIN node. Weak-first order visits B,C,A and descending leaves within every MIN node. Counts are respectively 6,5,9 evaluated leaves. Root value remains 4 and action A remains optimal.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original nine-leaf tree · Calculated orders and pruning counts"
+  },
+  {
+    "ch": "Move ordering",
+    "title": "Move ordering changes the number of evaluated leaves",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method / order</th><th>Evaluated leaves</th><th>Skipped leaves</th><th>Root result</th></tr></thead><tbody><tr><td>Full minimax</td><td>9</td><td>0</td><td>A, value 4</td></tr><tr><td>Alpha-beta, listed order</td><td>6</td><td>3</td><td>A, value 4</td></tr><tr><td>Alpha-beta, oracle strong first</td><td>5</td><td>4</td><td>A, value 4</td></tr><tr><td>Alpha-beta, oracle weak first</td><td>9</td><td>0</td><td>A, value 4</td></tr></tbody></table></div><p class=\"takeaway\">These counts explain this tree. They do not establish a universal runtime ranking.</p>",
+    "notes": "In listed order, A consumes 3 leaves. B sees 1 and skips 8,9. C sees 6, then 3, and skips 10. In the strong order, A still needs its three leaves before the root has an alternative, then one low leaf suffices for each other MIN node. In weak order every candidate improves the root only after all its leaves have been checked.",
+    "cls": "",
+    "sub": "",
+    "ref": "Exact counts for the declared original tree"
+  },
+  {
+    "ch": "Alpha–beta cost",
+    "title": "Ordering determines how much of the tree survives",
+    "body": "<div class=\"cols\"><div><h3>Worst case</h3><div class=\"equation smaller\">O(bᵐ)</div><p>Pruning may save little or nothing.</p></div><div><h3>Ideal ordering</h3><div class=\"equation smaller\">about O(b<sup>m/2</sup>)</div><p>The familiar even-depth model can roughly double depth for the same leaf budget.</p></div></div><p class=\"takeaway\">The precise best-case leaf count in a uniform depth-m tree is b<sup>⌈m/2⌉</sup> + b<sup>⌊m/2⌋</sup> − 1.</p>",
+    "notes": "For odd depths the ceiling and floor matter. For depth two with b=3, the ideal count is 3+3−1=5, matching our laboratory. The square-root effective branching factor is an idealized growth comparison, not a guarantee for every game or depth. State generation, evaluation and ordering costs still affect actual wall time.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied alpha-beta complexity · Exact uniform-tree refinement"
+  },
+  {
+    "ch": "Time budgets",
+    "title": "Iterative deepening keeps a completed decision available",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Depth 1</strong><span>Finish a shallow search and keep its move.</span></div><div class=\"flowstep\"><small>02</small><strong>Depth 2, 3, …</strong><span>Use earlier results to order the next search.</span></div><div class=\"flowstep\"><small>03</small><strong>Budget ends</strong><span>Return the last completed iteration’s decision.</span></div></div><p class=\"takeaway\">A partly searched deeper iteration does not automatically provide a better justified move.</p>",
+    "notes": "A robust implementation has a legal fallback before starting and checks its stopping condition during search. Preserve the last fully completed iteration rather than overwrite it with an unfinished deeper result. Earlier principal variations can improve alpha-beta ordering. Iterative deepening repeats work, but its ordering and interruption behaviour can compensate.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source iterative-deepening guidance"
+  },
+  {
+    "ch": "Repeated positions",
+    "title": "A transposition table stores evidence about a state",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Stored field</th><th>Why it matters</th></tr></thead><tbody><tr><td>State key</td><td>Includes player to move and relevant rule state.</td></tr><tr><td>Search depth</td><td>States how much continuation the entry covers.</td></tr><tr><td>Value and type</td><td>EXACT, LOWER bound or UPPER bound.</td></tr><tr><td>Best known action</td><td>Useful for move ordering even when the value cannot be reused.</td></tr></tbody></table></div><p class=\"takeaway\">Compare a fail-soft result with the original window: ≤α₀ gives UPPER; ≥β₀ gives LOWER; inside gives EXACT.</p>",
+    "notes": "This is the standard classification for a correctly implemented fail-soft alpha-beta call. Retain the original window before updates. An exact stored value at adequate depth can be reused under the chosen depth policy; a bound can tighten the window or cause a justified cutoff. A deeper cutoff result need not equal the exact shallower heuristic result, so use an explicit depth-reuse convention when running controlled fixed-depth comparisons. Hash collisions and omitted state information must be handled safely.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original implementation extension: transpositions and bound types"
+  },
+  {
+    "ch": "Playable model",
+    "title": "Tic-tac-toe supplies a complete testable game",
+    "body": "<div class=\"cols\"><div><div class=\"ttt-static\"><span class=\"empty\">1</span><span class=\"empty\">2</span><span class=\"empty\">3</span><span class=\"empty\">4</span><span class=\"empty\">5</span><span class=\"empty\">6</span><span class=\"empty\">7</span><span class=\"empty\">8</span><span class=\"empty\">9</span></div></div><div><h3>Legal actions</h3><p>Place the current player’s mark in any empty square.</p><h3>Terminal states</h3><p>A completed row, column or diagonal, or a full board without a winner.</p><h3>Fixed viewpoint</h3><p>X is MAX (+100). O is MIN (−100). A draw is 0.</p></div></div>",
+    "notes": "The board has nine indexed squares. X moves first and turns alternate. A win ends the game immediately; do not generate successors after it. The exact solver can search all reachable states because this game is small. The next lab uses memoized full minimax and the lowest square number to break equal-value ties.",
+    "cls": "",
+    "sub": "",
+    "ref": "Explicit rules for the playable laboratory"
+  },
+  {
+    "ch": "Laboratory 4",
+    "title": "Play against an exact minimax opponent",
+    "body": "<div class=\"play-lab\"><div><div id=\"play-board\" class=\"ttt-play\" role=\"group\" aria-label=\"Tic-tac-toe board. You play X.\"></div><p class=\"fine\">You play X. Select an empty square. O responds using full minimax.</p></div><div><div class=\"demo-controls\"><button id=\"play-new\" class=\"primary\">New game</button><button id=\"play-best\">Play best X move</button><button id=\"play-undo\">Undo round</button></div><p id=\"play-status\" class=\"lab-status\" aria-live=\"polite\"></p><div class=\"readout\"><span>Exact value of the current position for X</span><b id=\"play-value\"></b></div><div class=\"readout\"><span>Last actions</span><b id=\"play-log\"></b></div><p class=\"small\">With optimal play from both sides, the empty board has value 0. A human mistake can give O a forced win.</p></div></div>",
+    "notes": "The AI is O and always chooses a move with the smallest exact X value. The help button plays an exact optimal X move and then allows the same automatic O response. Undo restores the state before the latest X move, including its paired O response if one occurred. Equal-valued actions use the lowest square. Terminal boards disable further moves.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable full minimax · Memoized legal states · No network required"
+  },
+  {
+    "ch": "Small-game evidence",
+    "title": "Exhaustive enumeration can check every reachable position",
+    "body": "<div class=\"rows\"><div><strong>Reachable states</strong><span>5,478 board positions, stopping immediately after a win.</span></div><div><strong>Empty-board value</strong><span>0 under optimal play.</span></div><div><strong>Validation</strong><span>Check legal actions, terminal outcomes and optimal decisions at every state.</span></div><div><strong>Scope</strong><span>This finite result does not establish performance on a larger game.</span></div></div><p class=\"takeaway\">Count states separately from move sequences. Different histories can reach the same board.</p>",
+    "notes": "The count includes the empty board and legal terminal states. It excludes boards only reachable by continuing after a completed win. The full state graph was enumerated for this teaching artefact and compared with the browser solver. The game lab’s guarantee follows from its complete model and exhaustive value calculation, not from a small set of demonstration matches.",
+    "cls": "",
+    "sub": "",
+    "ref": "Independent exhaustive computation for the specified tic-tac-toe rules"
+  },
+  {
+    "ch": "Optional extension",
+    "title": "Negamax changes the value convention",
+    "body": "<div class=\"cols\"><div><h3>Fixed MAX viewpoint</h3><p>MAX takes a maximum.<br>MIN takes a minimum.</p></div><div><h3>Current-player viewpoint</h3><p>In a zero-sum alternating game, negate the child’s value and always maximize.</p><div class=\"equation smaller\">N(s) = maxₐ −N(Result(s,a))</div></div></div><p class=\"takeaway\">Terminal and cutoff values must use the same current-player convention.</p>",
+    "notes": "Negamax is a compact reformulation, not a new opponent model. Under alternating turns and zero-sum utilities, the two players’ values are negatives of one another. If a program stores a fixed X-based evaluation, multiply by a colour/sign parameter before returning it in negamax. Blindly negating while still using inconsistent terminal perspectives is a common implementation error. Extra turns require adapting the sign logic.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original algebraic extension of the minimax recurrence"
+  },
+  {
+    "ch": "Chance",
+    "title": "A random outcome uses a weighted average",
+    "body": "<div class=\"cols\"><div><h3>MIN chooses</h3><p>Use the lowest child value when a strategic opponent controls the decision.</p></div><div><h3>Chance samples</h3><p>Use the probabilities supplied by the model.</p><div class=\"equation smaller\">V = Σᵢ pᵢ Vᵢ</div></div></div><p class=\"takeaway\">Require pᵢ ≥ 0 and Σᵢ pᵢ = 1. The probabilities need a justified source.</p>",
+    "notes": "A chance node can model a random transition or an explicitly probabilistic opponent model. These are different interpretations and should be labelled. Replacing MIN with a uniform average assumes uniform random behaviour; it is not a neutral way to remove uncertainty. Expected utility evaluates the distribution, not a guaranteed realised payoff.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  },
+  {
+    "ch": "Expectiminimax",
+    "title": "MAX, MIN and CHANCE can appear in one model",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Node type</th><th>Backup rule</th><th>Small example</th></tr></thead><tbody><tr><td>MAX</td><td>Largest child value.</td><td>max(4,5.2) = 5.2</td></tr><tr><td>MIN</td><td>Smallest child value.</td><td>min(5.2,6) = 5.2</td></tr><tr><td>CHANCE</td><td>Probability-weighted sum.</td><td>0.7×10 + 0.3×(−6) = 5.2</td></tr></tbody></table></div><p class=\"takeaway\">The node type comes from the game’s transition rules; levels need not repeat in a fixed pattern.</p>",
+    "notes": "For a combined example, let MAX choose a safe terminal 4 or a MIN node. At that MIN node the opponent can choose a lottery worth 5.2 in expectation or a terminal 6. MIN chooses the lottery, and MAX prefers its expected value 5.2 over 4. This uses expected-utility preferences with the stated probabilities. The next laboratory isolates MAX and chance to make the probability threshold easy to inspect.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source expectiminimax rules · Original numerical mixed-node example"
+  },
+  {
+    "ch": "Laboratory 5",
+    "title": "A probability can reverse the selected action",
+    "body": "<div class=\"chance-lab\"><div><svg class=\"chance-tree\" viewBox=\"0 0 700 395\" role=\"img\" aria-label=\"MAX chooses Safe with utility 4 or Risk with chance outcomes 10 with probability p and minus 6 with probability 1 minus p.\"><path d=\"M350 55 L160 210 M350 55 L495 210 M495 210 L395 340 M495 210 L605 340\"/><rect x=\"300\" y=\"25\" width=\"100\" height=\"60\" rx=\"5\"/><text x=\"350\" y=\"64\">MAX</text><rect x=\"115\" y=\"180\" width=\"90\" height=\"60\" rx=\"5\"/><text x=\"160\" y=\"220\">4</text><circle cx=\"495\" cy=\"210\" r=\"42\"/><text x=\"495\" y=\"219\">E</text><rect x=\"350\" y=\"315\" width=\"90\" height=\"58\" rx=\"5\"/><text x=\"395\" y=\"354\">10</text><rect x=\"560\" y=\"315\" width=\"90\" height=\"58\" rx=\"5\"/><text x=\"605\" y=\"354\">−6</text><text class=\"edge-label\" x=\"220\" y=\"118\">Safe</text><text class=\"edge-label\" x=\"465\" y=\"118\">Risk</text><text class=\"edge-label\" x=\"381\" y=\"281\">p</text><text class=\"edge-label\" x=\"602\" y=\"281\">1−p</text></svg></div><div><label class=\"slider-title\" for=\"chance-p\">Probability of +10: <b id=\"chance-p-label\">0.50</b></label><input id=\"chance-p\" type=\"range\" min=\"0\" max=\"1\" step=\"0.025\" value=\"0.5\"><div class=\"readout\"><span>Risk: 10p − 6(1−p)</span><b id=\"chance-value\"></b></div><div class=\"readout\"><span>Expected-utility decision</span><b id=\"chance-choice\"></b></div><div class=\"demo-controls\"><button id=\"chance-half\">p=0.5</button><button id=\"chance-tie\">p=0.625</button><button id=\"chance-high\">p=0.75</button></div><p id=\"chance-status\" class=\"lab-status\" aria-live=\"polite\"></p></div></div><p class=\"fine\">This is the MAX/CHANCE special case of expectiminimax. All outcomes remain specified even at probability 0.</p>",
+    "notes": "Safe returns utility 4 with certainty. Risk returns 10 with probability p and −6 with probability 1−p. Its expected value is 16p−6. MAX prefers Risk exactly when p>0.625; at equality both are optimal and the display uses Safe as the first action. A worst-case comparison over positive-probability outcomes would favour Safe for p<1, while at p=1 Risk is certain.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable original expected-utility example"
+  },
+  {
+    "ch": "Chance experiment",
+    "title": "The switch occurs at p = 0.625",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Probability p</th><th>Expected Risk value</th><th>Preferred action</th></tr></thead><tbody><tr><td>0.50</td><td>0.5×10 + 0.5×(−6) = 2</td><td>Safe, value 4.</td></tr><tr><td>0.625</td><td>0.625×10 + 0.375×(−6) = 4</td><td>Tie: Safe or Risk.</td></tr><tr><td>0.75</td><td>0.75×10 + 0.25×(−6) = 6</td><td>Risk, expected value 6.</td></tr></tbody></table></div><p class=\"takeaway\">16p − 6 > 4 precisely when p > 10/16 = 0.625.</p>",
+    "notes": "Expected utility 6 is not a guaranteed score of 6 on an individual play: the realised risk outcome is either 10 or −6. The expectation supports a preference under the chosen utility scale and probabilistic model. If the numbers are monetary payoffs but utility is nonlinear in money, apply the utility function before taking the expectation.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated threshold and expected values"
+  },
+  {
+    "ch": "Utility scales",
+    "title": "Averaging uses more than an ordering of outcomes",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Scale at p=0.5</th><th>Safe</th><th>Expected Risk</th><th>Choice</th></tr></thead><tbody><tr><td>Original utilities</td><td>4</td><td>(10−6)/2 = 2</td><td>Safe</td></tr><tr><td>Cubed utilities</td><td>64</td><td>(1000−216)/2 = 392</td><td>Risk</td></tr></tbody></table></div><p class=\"takeaway\">A strictly increasing transformation preserves deterministic minimax choices, but can change expected-utility choices.</p>",
+    "notes": "The cube function is strictly increasing, including for these negative values, so it preserves the ordering of individual outcomes. It changes the spacing between them and thus risk preferences under averaging. Positive affine transformations aU+b, with a>0, preserve expected-utility choices because expectation is linear. The laboratory’s values must therefore be interpreted as a declared utility scale, not arbitrary rank labels.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original utility-scale counterexample"
+  },
+  {
+    "ch": "Chance pruning",
+    "title": "A partial average needs bounds on the unseen outcomes",
+    "body": "<div class=\"cols\"><div><h3>Visited contribution</h3><p>S = sum of pᵢVᵢ for evaluated outcomes.</p><p>r = remaining probability mass.</p></div><div><h3>If every unseen value lies in [L,U]</h3><div class=\"equation smaller\">S + rL ≤ V ≤ S + rU</div><p>Only a justified interval can support an early decision.</p></div></div><p class=\"takeaway\">Ordinary MIN/MAX alpha-beta cutoffs cannot simply be copied onto an arbitrary chance node.</p>",
+    "notes": "In the p=0.5 lottery, after reading the +10 outcome, S=5 and r=0.5. With global bounds L=−6,U=10, the expectation remains in [2,10], which straddles the safe alternative 4. No decision is yet proved by those bounds. Once the other outcome is evaluated, the expectation is 2. Specialized chance-pruning algorithms can use such finite intervals.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original interval calculation · Berkeley CS188: bounded chance pruning"
+  },
+  {
+    "ch": "Hidden information",
+    "title": "A policy must respect what the player can observe",
+    "body": "<div class=\"cols\"><div><h3>One observed situation</h3><p>Several hidden states can look identical to the acting player.</p><p>The policy must choose using the available information.</p></div><div><h3>A modelling error</h3><p>Solving each hidden state separately and selecting a different action can use information the player does not have.</p></div></div><p class=\"takeaway\">Beliefs and information sets replace the assumption that the full current state is visible.</p>",
+    "notes": "An information set groups histories that the acting player cannot distinguish under the game’s observation model. Strategies may need randomization and reasoning about beliefs. Classical perfect-information minimax alone does not solve that modelling problem. Hidden cards are state information; an opponent’s unknown intention is not by itself the formal definition of an imperfect-information game.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source distinction between perfect and imperfect information"
+  },
+  {
+    "ch": "Search and learning",
+    "title": "AlphaZero combines learned estimates with lookahead",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Self-play</strong><span>Generate games using the current system.</span></div><div class=\"flowstep\"><small>02</small><strong>Learn</strong><span>Fit policy and value predictions from play.</span></div><div class=\"flowstep\"><small>03</small><strong>Search</strong><span>Use those predictions to guide Monte Carlo tree search.</span></div></div><p class=\"takeaway\">A learned value function and a search algorithm can improve one another.</p>",
+    "notes": "AlphaZero combined self-play reinforcement learning with neural policy/value estimates and Monte Carlo tree search for chess, shogi and Go. This is a historical illustration of search plus learning, not a claim that it is standard alpha-beta with different weights. The next unit develops reinforcement learning. We do not infer general optimality of neural search from success on particular game benchmarks.",
+    "cls": "",
+    "sub": "",
+    "ref": "Silver et al. · AlphaZero · Official DeepMind account, 2018"
+  },
+  {
+    "ch": "Implementation",
+    "title": "A reliable game-search interface has clear contracts",
+    "body": "<div class=\"rows\"><div><strong>State transition</strong><span>Generate legal moves and preserve the input state when exploring a child.</span></div><div><strong>Perspective</strong><span>Use one declared value convention in terminal and heuristic code.</span></div><div><strong>Search control</strong><span>Check terminal states, count plies and keep a legal fallback under limits.</span></div><div><strong>Result type</strong><span>Return action, score, depth and the meaning of any bound.</span></div></div><p class=\"takeaway\">A correct numeric backup cannot rescue an incorrect game model.</p>",
+    "notes": "For a mutable board representation, undo every change before exploring the next sibling, including player and rule-state fields. Immutable states can simplify this contract. Avoid sorting actions by an unrelated cost that changes the legal model. Keep display traces separate from solver state so stepping backward in a visualization cannot alter the mathematical search result.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original laboratory implementation checklist"
+  },
+  {
+    "ch": "Validation",
+    "title": "Small examples provide exact expected answers",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Test</th><th>Expected evidence</th></tr></thead><tbody><tr><td>Source minimax tree 3,12,8,2</td><td>Root value 3, action A.</td></tr><tr><td>Pruning tree 5,6,2,9</td><td>Root 5, action A; 3 evaluated leaves.</td></tr><tr><td>Tie tree 5,6,5,0</td><td>Root 5, keep A; B returns only an upper bound.</td></tr><tr><td>Source tic-tac-toe board</td><td>Terminal X win; no further legal continuation.</td></tr><tr><td>Empty tic-tac-toe board</td><td>Exact value 0.</td></tr><tr><td>Chance p=0.625</td><td>Both actions have expected utility 4.</td></tr></tbody></table></div><p class=\"takeaway\">Compare alpha-beta with exhaustive minimax on many small trees, including ties and negative values.</p>",
+    "notes": "The supplied deck’s exercises become regression cases with declared order and tie rules. The browser solver is also checked against an independent exact enumeration of reachable tic-tac-toe states. Test state immutability and terminal-first behaviour explicitly. Comparing only selected root values can miss an illegal action or an incorrect tie update.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source exercises and original correctness cases"
+  },
+  {
+    "ch": "Workshop",
+    "title": "Minimax backup with the source exercise",
+    "body": "<div class=\"cols\"><div><svg class=\"game-tree\" viewBox=\"0 0 700 405\" role=\"img\" aria-label=\"MAX root with MIN children A and B. A leaves 4, 7. B leaves 6, 1.\"><line class=\"\" x1=\"350\" y1=\"55\" x2=\"180\" y2=\"185\"/><line class=\"\" x1=\"350\" y1=\"55\" x2=\"520\" y2=\"185\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"85\" y2=\"340\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"255\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"445\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"615\" y2=\"340\"/><g class=\"max \"><rect x=\"304\" y=\"20\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"350\" y=\"76\">?</text><text class=\"inside-role\" x=\"350\" y=\"45\">MAX</text></g><g class=\"min \"><rect x=\"134\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"180\" y=\"206\">?</text><text class=\"inside-role\" x=\"180\" y=\"175\">MIN · A</text></g><g class=\"min \"><rect x=\"474\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"520\" y=\"206\">?</text><text class=\"inside-role\" x=\"520\" y=\"175\">MIN · B</text></g><g class=\"terminal \"><rect x=\"39\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"85\" y=\"361\">4</text><text class=\"inside-role\" x=\"85\" y=\"330\">a1</text></g><g class=\"terminal \"><rect x=\"209\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"255\" y=\"361\">7</text><text class=\"inside-role\" x=\"255\" y=\"330\">a2</text></g><g class=\"terminal \"><rect x=\"399\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"445\" y=\"361\">6</text><text class=\"inside-role\" x=\"445\" y=\"330\">b1</text></g><g class=\"terminal \"><rect x=\"569\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"615\" y=\"361\">1</text><text class=\"inside-role\" x=\"615\" y=\"330\">b2</text></g></svg></div><div><div class=\"activity-time\">5 min</div><p>1. Compute A and B.</p><p>2. Compute the root value.</p><p>3. State the action.</p><p>4. Explain why the leaf value 7 is not guaranteed.</p></div></div><p class=\"takeaway\">The leaves are terminal utilities for MAX. MIN controls both second-level nodes.</p>",
+    "notes": "Work individually for two minutes, then compare explanations in pairs. Require separate answers for value and action. Ask students to justify why 7 cannot be guaranteed without using the vague phrase because minimax says so. The opponent chooses between 4 and 7 below A.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied minimax exercise: 4,7,6,1"
+  },
+  {
+    "ch": "Workshop solution",
+    "title": "The root chooses A with guaranteed value 4",
+    "body": "<div class=\"cols\"><div><svg class=\"game-tree\" viewBox=\"0 0 700 405\" role=\"img\" aria-label=\"MAX root with MIN children A and B. A leaves 4, 7. B leaves 6, 1.\"><line class=\"\" x1=\"350\" y1=\"55\" x2=\"180\" y2=\"185\"/><line class=\"\" x1=\"350\" y1=\"55\" x2=\"520\" y2=\"185\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"85\" y2=\"340\"/><line class=\"\" x1=\"180\" y1=\"185\" x2=\"255\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"445\" y2=\"340\"/><line class=\"\" x1=\"520\" y1=\"185\" x2=\"615\" y2=\"340\"/><g class=\"max \"><rect x=\"304\" y=\"20\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"350\" y=\"76\">4</text><text class=\"inside-role\" x=\"350\" y=\"45\">MAX</text></g><g class=\"min \"><rect x=\"134\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"180\" y=\"206\">4</text><text class=\"inside-role\" x=\"180\" y=\"175\">MIN · A</text></g><g class=\"min \"><rect x=\"474\" y=\"150\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"520\" y=\"206\">1</text><text class=\"inside-role\" x=\"520\" y=\"175\">MIN · B</text></g><g class=\"terminal \"><rect x=\"39\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"85\" y=\"361\">4</text><text class=\"inside-role\" x=\"85\" y=\"330\">a1</text></g><g class=\"terminal \"><rect x=\"209\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"255\" y=\"361\">7</text><text class=\"inside-role\" x=\"255\" y=\"330\">a2</text></g><g class=\"terminal \"><rect x=\"399\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"445\" y=\"361\">6</text><text class=\"inside-role\" x=\"445\" y=\"330\">b1</text></g><g class=\"terminal \"><rect x=\"569\" y=\"305\" width=\"92\" height=\"70\" rx=\"5\"/><text x=\"615\" y=\"361\">1</text><text class=\"inside-role\" x=\"615\" y=\"330\">b2</text></g></svg></div><div><h3>MIN backups</h3><p>A = min(4,7) = 4.<br>B = min(6,1) = 1.</p><h3>MAX decision</h3><p>max(4,1) = 4.<br>Choose A.</p><p>MIN can choose 4 instead of 7.</p></div></div>",
+    "notes": "This is an exact full-tree solution. In left-to-right alpha-beta on this four-leaf tree, the right subtree sees 6 and then 1. The cutoff threshold is reached only after its last leaf, so no leaf is actually skipped. That useful distinction prevents students from counting a final satisfied cutoff condition as saved work.",
+    "cls": "",
+    "sub": "",
+    "ref": "Worked answer to the supplied minimax exercise"
+  },
+  {
+    "ch": "Workshop",
+    "title": "Pruning depends on the order and on what is still unknown",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Case</th><th>Task</th></tr></thead><tbody><tr><td>A=(5,6), B=(2,9)</td><td>Run alpha-beta left to right. List evaluated and skipped leaves.</td></tr><tr><td>A=(5,6), B=(9,2)</td><td>Repeat after reversing only B’s leaf order.</td></tr><tr><td>A=(5,6), B=(5,0)</td><td>Explain the equality cutoff and which root action must be retained.</td></tr></tbody></table></div><p class=\"takeaway\">Report the root value, chosen action and whether the returned B score is exact or only a bound.</p>",
+    "notes": "Suggested duration: eight minutes. These examples deliberately separate node values from returned bounds and actual pruning from merely testing a condition. Use the laboratory to check predictions after writing the trace. In the tie case, the unseen 0 is known to the exercise reader but not to the pruned search.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source alpha-beta exercise"
+  },
+  {
+    "ch": "Workshop solution",
+    "title": "Three traces, one correct root action",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>B leaf order</th><th>Leaves evaluated</th><th>Skipped</th><th>Knowledge about B</th></tr></thead><tbody><tr><td>2,9</td><td>5,6,2</td><td>9</td><td>B≤2 from the search.</td></tr><tr><td>9,2</td><td>5,6,9,2</td><td>None</td><td>B=2 after both leaves.</td></tr><tr><td>5,0</td><td>5,6,5</td><td>0</td><td>B≤5 from the search; actual B=0.</td></tr></tbody></table></div><p class=\"takeaway\">All three return A with root value 5. Equal bounds must not replace an established exact best action.</p>",
+    "notes": "For B=(9,2), observing 9 does not lower beta below root alpha=5. After observing 2 there are no remaining leaves to skip. The exact value is therefore available from the fully visited two-leaf subtree. For B=(5,0), equality allows pruning under the root’s first-best policy; the unsearched move must not win a tie simply because its upper bound equals 5.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated solutions with left-to-right traversal"
+  },
+  {
+    "ch": "Game-modelling activity",
+    "title": "A take-away game with four tokens",
+    "body": "<div class=\"cols\"><div><div class=\"tokens\"><i></i><i></i><i></i><i></i></div><div class=\"activity-time\">8 min</div><p>On each turn remove 1 or 2 tokens.<br>The player taking the last token wins.</p></div><div><div class=\"rows\"><div><strong>Specify the state</strong><span>Include tokens remaining and player to move.</span></div><div><strong>Define the rules</strong><span>Actions, transition, termination and MAX utility.</span></div><div><strong>Evaluate MAX’s opening</strong><span>Compare removing 1 with removing 2.</span></div><div><strong>Explain a strategy</strong><span>What response preserves a win after MIN moves?</span></div></div></div></div><p class=\"takeaway\">This is normal play. Changing the last-token rule creates a different game.</p>",
+    "notes": "This instantiates the source’s open-ended game-modelling classroom activity with a fully specified small game. Use utilities +1 for a MAX win and −1 for a MIN win. There are no draws. Reaching zero tokens means that the player who just moved won, so terminal utility cannot be assigned merely by assuming the player now to move is the winner.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original complete activity inspired by the source’s Nim option"
+  },
+  {
+    "ch": "Game-modelling solution",
+    "title": "Leaving three tokens gives MAX a winning strategy",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>MAX opening</th><th>MIN’s possible continuation</th><th>Result under optimal play</th></tr></thead><tbody><tr><td>Remove 1 → leave 3</td><td>MIN removes 1: leave 2; MAX takes 2.</td><td>MAX wins.</td></tr><tr><td>Remove 1 → leave 3</td><td>MIN removes 2: leave 1; MAX takes 1.</td><td>MAX wins.</td></tr><tr><td>Remove 2 → leave 2</td><td>MIN takes 2 immediately.</td><td>MIN wins.</td></tr></tbody></table></div><p class=\"takeaway\">Choose removal 1. Thereafter make each MIN/MAX pair of removals sum to 3.</p>",
+    "notes": "Model s=(n,p), Actions={k in {1,2}:k≤n}, Result=(n−k,other(p)), Terminal when n=0. Utility then belongs to the player who took the final token, the opposite of p in this representation. MAX’s initial action values are +1 for remove 1 and −1 for remove 2. This is a conditional winning strategy, not merely one predicted play sequence.",
+    "cls": "",
+    "sub": "",
+    "ref": "Worked game model and complete two-response strategy"
+  },
+  {
+    "ch": "Learning check",
+    "title": "Six distinctions that prevent search errors",
+    "body": "<div class=\"check-grid\"><div class=\"check-item\"><b>01</b><p>Why does MIN take a minimum?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Values use MAX’s perspective, and the zero-sum opponent prefers the least favourable outcome for MAX.</div></div><div class=\"check-item\"><b>02</b><p>What does a cutoff score prove?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>It is a result for the truncated tree and chosen evaluator, not generally the exact full-game value.</div></div><div class=\"check-item\"><b>03</b><p>When can alpha-beta stop?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>When α≥β makes the remaining children irrelevant to the established root decision.</div></div><div class=\"check-item\"><b>04</b><p>Can a pruned node return a bound?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Yes. A MAX cutoff gives a lower bound; a MIN cutoff gives an upper bound.</div></div><div class=\"check-item\"><b>05</b><p>Does ordering change the optimal value?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>For the same tree and leaf values, no. It changes work and can change the selected tied optimal action.</div></div><div class=\"check-item\"><b>06</b><p>Why average at chance nodes?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>The model assigns probabilities to outcomes. Expected utility combines their values with those weights.</div></div></div>",
+    "notes": "Use short verbal answers followed by one concrete example. In particular, ask for the tie counterexample when discussing bounds, and for the missed-win tic-tac-toe position when discussing evaluation. The PDF includes every explanation. The HTML keeps each hidden until the student or teacher chooses to reveal it.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source mini-test and recap"
+  },
+  {
+    "ch": "References",
+    "title": "Sources and further reading",
+    "body": "<div class=\"references\"><p><b>Supplied UCLM course material · 44 slides</b><br>01_Presentacion_Tema5_Adversarial_Search(3).pptx.<br>Scope, numerical minimax exercises and the tic-tac-toe illustration.</p><p><b>Russell and Norvig · Artificial Intelligence: A Modern Approach</b><br><a href=\"https://aima.cs.berkeley.edu/\">Official textbook resources</a> · Adversarial Search and Games.</p><p><b>UC Berkeley · CS188</b><br><a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/games/minimax.html\">Minimax and alpha-beta</a> · <a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/games/expectimax.html\">Expectimax and mixed node types</a></p><p><b>Silver, Hubert, Schrittwieser and Hassabis · 2018</b><br><a href=\"https://deepmind.google/blog/alphazero-shedding-new-light-on-chess-shogi-and-go/\">Official account of AlphaZero’s search and self-play learning</a></p></div>",
+    "notes": "The original slides provide the syllabus and the four-leaf numerical examples. The nine-leaf ordering experiment, bound/tie counterexample, probability experiment and take-away game are original teaching constructions. Tic-tac-toe calculations were checked by exhaustive enumeration. External primary teaching and research sources support the extensions. The presentation works offline; reference links need internet access.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source distinction: supplied content, primary references and verified teaching examples"
+  },
+  {
+    "ch": "Next unit",
+    "title": "A value estimate can be learned from experience",
+    "body": "<div class=\"cols\"><div><h3>Unit 5</h3><p>A model predicts continuations.<br>Search compares the resulting values.</p><div class=\"equation smaller\">look ahead · evaluate · act</div></div><div><h3>Unit 6</h3><p>Interaction produces experience.<br>Rewards help improve future decisions.</p><div class=\"equation smaller\">experience · reward · learning</div></div></div><p class=\"takeaway\">Next: reinforcement learning, value functions and the exploration–exploitation tradeoff.</p>",
+    "notes": "This follows the course’s transition to reinforcement learning. Search and learning solve different parts of a decision problem and can be combined. Reinforcement learning does not require an adversarial opponent; rewards and interaction can arise in many environments. Ask students which quantities in today’s game evaluator could be learned instead of manually assigned.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 5 material"
+  }
+]

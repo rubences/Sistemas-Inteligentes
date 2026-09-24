@@ -1,0 +1,488 @@
+[
+  {
+    "ch": "Opening",
+    "title": "Constraint<br>satisfaction",
+    "body": "<p class=\"cover-sub\">Unit 4 · Intelligent Systems</p><div class=\"cover-meta\">School of Computer Science · Ciudad Real<br>Universidad de Castilla-La Mancha<br><strong>Rubén Juárez Cádiz</strong></div>",
+    "notes": "The supplied 31-slide deck defines the syllabus. This expanded unit adds five offline laboratories, worked answers and implementation cautions. The cover is conceptual AI-generated artwork, not a constraint graph. Use the index to move between modelling, systematic search, propagation and local repair.",
+    "cls": "cover dark",
+    "sub": "",
+    "ref": "UCLM · Computer Science Degree"
+  },
+  {
+    "ch": "Opening",
+    "title": "Make structure do the work",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Model</strong><span>Variables, candidate values and relationships.</span></div><div class=\"flowstep\"><small>02</small><strong>Search</strong><span>Choose a variable, try a value, recover from failure.</span></div><div class=\"flowstep\"><small>03</small><strong>Propagate</strong><span>Remove values that have lost their support.</span></div><div class=\"flowstep\"><small>04</small><strong>Repair</strong><span>Start complete and reduce conflicts.</span></div></div><p class=\"takeaway\">By the end, explain both a solver’s answer and the conditions that justify it.</p>",
+    "notes": "Suggested teaching sequence: three 80-minute sessions. First: modelling, graph colouring and backtracking. Second: ordering, forward checking, AC-3 and global constraints. Third: N-Queens, local repair and the workshop. Each laboratory has a static companion explanation, so the PDF remains useful. HTML controls, teaching notes and simulations work offline.",
+    "cls": "",
+    "sub": "54 slides · Five laboratories · Worked activities",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "From Unit 3",
+    "title": "A different representation of the same challenge",
+    "body": "<div class=\"cols\"><div><h3>State-space search</h3><p>Represent configurations, transitions and a goal test.</p><div class=\"equation smaller\">state → action → state</div></div><div><h3>Constraint satisfaction</h3><p>Represent decisions and the combinations that are allowed.</p><div class=\"equation smaller\">variables · domains · constraints</div></div></div><p class=\"takeaway\">A CSP solution is an assignment. The order used to construct it is usually irrelevant.</p>",
+    "notes": "In ordinary finite satisfaction problems, we do not minimize the number of assignments made while solving. Those assignments are an algorithmic process, not an application plan. A planning problem can also be encoded as a CSP, for example with variables indexed by time, but its modelling assumptions must be explicit. This unit focuses on finite-domain CSPs.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "The model is a triple: ⟨X, D, C⟩",
+    "body": "<div class=\"rows\"><div><strong>Variables X</strong><span>The decisions to make: X₁, X₂, …, Xₙ.</span></div><div><strong>Domains D</strong><span>For each Xᵢ, a finite set Dᵢ of candidate values.</span></div><div><strong>Constraints C</strong><span>Relations specifying allowed combinations of values.</span></div></div><p class=\"takeaway\">A solution assigns one value to every variable and satisfies every constraint.</p>",
+    "notes": "A constraint has a scope, the variables it mentions, and a relation over their domains. Domains need not all have the same size or value type. A candidate in a domain is not necessarily part of any complete solution. Distinguish the original domains from the current domains after pruning. With n variables and at most d values each, there are at most d^n complete assignments.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "A domain is a set of possibilities",
+    "body": "<div class=\"cols\"><div><h3>Initial domains</h3><p>For a session S, D(S) = {09:00, 10:00, 11:00}.</p><p>An unavailable lecturer can rule out 09:00 immediately.</p></div><div><h3>Current domains</h3><p>After other decisions, more values may be removed.</p><p>Branch-specific removals must be restored when the branch is abandoned.</p></div></div><p class=\"takeaway\">Encoding a unary restriction by reducing a domain is valid modelling.</p>",
+    "notes": "The source warning about encoding constraints as domains needs this qualification. A unary restriction such as S≠09:00 can be applied directly to D(S). A relationship such as S≠T cannot generally be replaced by independent fixed domains without losing information or excluding valid solutions. Original and current domains play different roles.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded clarification of the source modelling checklist"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Three useful kinds of constraint",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Kind</th><th>Example</th><th>Scope</th></tr></thead><tbody><tr><td>Unary</td><td>S ≠ 09:00</td><td>One variable.</td></tr><tr><td>Binary</td><td>WA ≠ NT</td><td>A pair of variables.</td></tr><tr><td>Global</td><td>AllDifferent(X₁, …, Xₖ)</td><td>A named relation over several variables.</td></tr></tbody></table></div><p class=\"takeaway\">The relation defines correctness; its propagator determines what can be pruned efficiently.</p>",
+    "notes": "An n-ary constraint can mention any number of variables. Global constraints such as AllDifferent expose common structure that a solver can exploit. AllDifferent is logically equivalent to all pairwise inequalities over the same variables, but a strong global propagator can remove more values than enforcing arc consistency on the binary decomposition. We demonstrate that difference later.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied scope classification · Choco documentation: constraint / propagator distinction"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Complete and consistent are different properties",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Assignment</th><th>Complete?</th><th>Violates an assigned edge?</th></tr></thead><tbody><tr><td>WA=R</td><td>No</td><td>No.</td></tr><tr><td>WA=R, NT=R</td><td>No</td><td>Yes: WA–NT.</td></tr><tr><td>All seven regions set, with WA=NT</td><td>Yes</td><td>Yes.</td></tr><tr><td>All seven regions set, all edges unequal</td><td>Yes</td><td>No: it is a solution.</td></tr></tbody></table></div><p class=\"takeaway\">A locally consistent partial assignment may still have no valid completion.</p>",
+    "notes": "Here, a partial assignment is locally consistent when it violates no constraint whose scope is fully assigned. Stronger propagation can also detect failure involving unassigned variables. Do not equate this local definition with extendability to a complete solution. On a two-colour triangle, assigning only one vertex violates no fully assigned edge, but there is no completion.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Map colouring",
+    "title": "Australia as a finite CSP",
+    "body": "<div class=\"cols\"><div><h3>Variables</h3><p>WA, NT, Q, SA, NSW, V, T.</p><h3>Domains</h3><p>{R, G, B} for every region.</p></div><div><h3>Constraints</h3><p>Regions sharing a land border must have different colours.</p><h3>Goal</h3><p>A complete assignment satisfying all nine adjacency constraints.</p></div></div><p class=\"takeaway\">R, G and B are value labels. Geometric distance between nodes has no meaning.</p>",
+    "notes": "The graph in the next slide is a schematic dependency diagram, not a geographical map. T is Tasmania and is isolated under the chosen land-border rule. We do not add a ferry, bridge or proximity constraint. WA=Western Australia, NT=Northern Territory, Q=Queensland, SA=South Australia, NSW=New South Wales, V=Victoria.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Map colouring",
+    "title": "The graph exposes the dependencies",
+    "body": "<div class=\"cols\"><div><svg class=\"csp-graph\" viewBox=\"0 0 720 490\" role=\"img\" aria-label=\"Constraint graph. Edges require different colors: WA–NT, WA–SA, NT–SA, NT–Q, SA–Q, SA–NSW, SA–V, Q–NSW, NSW–V. T is isolated.\"><line data-csp-edge=\"WA-NT\" x1=\"70\" y1=\"215\" x2=\"235\" y2=\"65\"/><line data-csp-edge=\"WA-SA\" x1=\"70\" y1=\"215\" x2=\"260\" y2=\"285\"/><line data-csp-edge=\"NT-SA\" x1=\"235\" y1=\"65\" x2=\"260\" y2=\"285\"/><line data-csp-edge=\"NT-Q\" x1=\"235\" y1=\"65\" x2=\"430\" y2=\"65\"/><line data-csp-edge=\"SA-Q\" x1=\"260\" y1=\"285\" x2=\"430\" y2=\"65\"/><line data-csp-edge=\"SA-NSW\" x1=\"260\" y1=\"285\" x2=\"485\" y2=\"245\"/><line data-csp-edge=\"SA-V\" x1=\"260\" y1=\"285\" x2=\"450\" y2=\"410\"/><line data-csp-edge=\"Q-NSW\" x1=\"430\" y1=\"65\" x2=\"485\" y2=\"245\"/><line data-csp-edge=\"NSW-V\" x1=\"485\" y1=\"245\" x2=\"450\" y2=\"410\"/><g data-csp-node=\"WA\" class=\"color-\"><circle cx=\"70\" cy=\"215\" r=\"36\"/><text x=\"70\" y=\"223\" text-anchor=\"middle\">WA</text><text class=\"node-value\" x=\"70\" y=\"279\" text-anchor=\"middle\"></text></g><g data-csp-node=\"NT\" class=\"color-\"><circle cx=\"235\" cy=\"65\" r=\"36\"/><text x=\"235\" y=\"73\" text-anchor=\"middle\">NT</text><text class=\"node-value\" x=\"235\" y=\"21\" text-anchor=\"middle\"></text></g><g data-csp-node=\"Q\" class=\"color-\"><circle cx=\"430\" cy=\"65\" r=\"36\"/><text x=\"430\" y=\"73\" text-anchor=\"middle\">Q</text><text class=\"node-value\" x=\"430\" y=\"129\" text-anchor=\"middle\"></text></g><g data-csp-node=\"SA\" class=\"color-\"><circle cx=\"260\" cy=\"285\" r=\"36\"/><text x=\"260\" y=\"293\" text-anchor=\"middle\">SA</text><text class=\"node-value\" x=\"260\" y=\"349\" text-anchor=\"middle\"></text></g><g data-csp-node=\"NSW\" class=\"color-\"><circle cx=\"485\" cy=\"245\" r=\"36\"/><text x=\"485\" y=\"253\" text-anchor=\"middle\">NSW</text><text class=\"node-value\" x=\"485\" y=\"309\" text-anchor=\"middle\"></text></g><g data-csp-node=\"V\" class=\"color-\"><circle cx=\"450\" cy=\"410\" r=\"36\"/><text x=\"450\" y=\"418\" text-anchor=\"middle\">V</text><text class=\"node-value\" x=\"450\" y=\"474\" text-anchor=\"middle\"></text></g><g data-csp-node=\"T\" class=\"color-\"><circle cx=\"635\" cy=\"410\" r=\"36\"/><text x=\"635\" y=\"418\" text-anchor=\"middle\">T</text><text class=\"node-value\" x=\"635\" y=\"474\" text-anchor=\"middle\"></text></g></svg></div><div><h3>One edge, one inequality</h3><p>WA–NT · WA–SA<br>NT–SA · NT–Q<br>SA–Q · SA–NSW · SA–V<br>Q–NSW · NSW–V</p><h3>T is independent</h3><p>Its colour cannot create a mainland conflict.</p></div></div>",
+    "notes": "The nine undirected edges represent binary constraints. For arc consistency, each becomes two directed arcs. SA has degree five, NT and NSW degree three, WA, Q and V degree two, and T degree zero. Degree in a search heuristic counts only still-unassigned neighbours. Preserve Tasmania in the model even though it is not connected to the mainland.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied Australia example · Explicit adjacency model"
+  },
+  {
+    "ch": "Laboratory 1",
+    "title": "Colour the graph and inspect the domains",
+    "body": "<div class=\"csp-lab\"><div id=\"map-graph\"><svg class=\"csp-graph\" viewBox=\"0 0 720 490\" role=\"img\" aria-label=\"Constraint graph. Edges require different colors: WA–NT, WA–SA, NT–SA, NT–Q, SA–Q, SA–NSW, SA–V, Q–NSW, NSW–V. T is isolated.\"><line data-csp-edge=\"WA-NT\" x1=\"70\" y1=\"215\" x2=\"235\" y2=\"65\"/><line data-csp-edge=\"WA-SA\" x1=\"70\" y1=\"215\" x2=\"260\" y2=\"285\"/><line data-csp-edge=\"NT-SA\" x1=\"235\" y1=\"65\" x2=\"260\" y2=\"285\"/><line data-csp-edge=\"NT-Q\" x1=\"235\" y1=\"65\" x2=\"430\" y2=\"65\"/><line data-csp-edge=\"SA-Q\" x1=\"260\" y1=\"285\" x2=\"430\" y2=\"65\"/><line data-csp-edge=\"SA-NSW\" x1=\"260\" y1=\"285\" x2=\"485\" y2=\"245\"/><line data-csp-edge=\"SA-V\" x1=\"260\" y1=\"285\" x2=\"450\" y2=\"410\"/><line data-csp-edge=\"Q-NSW\" x1=\"430\" y1=\"65\" x2=\"485\" y2=\"245\"/><line data-csp-edge=\"NSW-V\" x1=\"485\" y1=\"245\" x2=\"450\" y2=\"410\"/><g data-csp-node=\"WA\" class=\"color-\"><circle cx=\"70\" cy=\"215\" r=\"36\"/><text x=\"70\" y=\"223\" text-anchor=\"middle\">WA</text><text class=\"node-value\" x=\"70\" y=\"279\" text-anchor=\"middle\"></text></g><g data-csp-node=\"NT\" class=\"color-\"><circle cx=\"235\" cy=\"65\" r=\"36\"/><text x=\"235\" y=\"73\" text-anchor=\"middle\">NT</text><text class=\"node-value\" x=\"235\" y=\"21\" text-anchor=\"middle\"></text></g><g data-csp-node=\"Q\" class=\"color-\"><circle cx=\"430\" cy=\"65\" r=\"36\"/><text x=\"430\" y=\"73\" text-anchor=\"middle\">Q</text><text class=\"node-value\" x=\"430\" y=\"129\" text-anchor=\"middle\"></text></g><g data-csp-node=\"SA\" class=\"color-\"><circle cx=\"260\" cy=\"285\" r=\"36\"/><text x=\"260\" y=\"293\" text-anchor=\"middle\">SA</text><text class=\"node-value\" x=\"260\" y=\"349\" text-anchor=\"middle\"></text></g><g data-csp-node=\"NSW\" class=\"color-\"><circle cx=\"485\" cy=\"245\" r=\"36\"/><text x=\"485\" y=\"253\" text-anchor=\"middle\">NSW</text><text class=\"node-value\" x=\"485\" y=\"309\" text-anchor=\"middle\"></text></g><g data-csp-node=\"V\" class=\"color-\"><circle cx=\"450\" cy=\"410\" r=\"36\"/><text x=\"450\" y=\"418\" text-anchor=\"middle\">V</text><text class=\"node-value\" x=\"450\" y=\"474\" text-anchor=\"middle\"></text></g><g data-csp-node=\"T\" class=\"color-\"><circle cx=\"635\" cy=\"410\" r=\"36\"/><text x=\"635\" y=\"418\" text-anchor=\"middle\">T</text><text class=\"node-value\" x=\"635\" y=\"474\" text-anchor=\"middle\"></text></g></svg></div><div><div class=\"compact-controls\"><label>Region<select id=\"map-var\"><option>WA</option><option>NT</option><option>Q</option><option>SA</option><option>NSW</option><option>V</option><option>T</option></select></label><label>Value<select id=\"map-value\"><option>R</option><option>G</option><option>B</option><option value=\"\">Unassigned</option></select></label></div><div class=\"demo-controls\"><button id=\"map-set\" class=\"primary\">Assign</button><button id=\"map-clear\">Clear all</button><button id=\"map-example\">WA=R, Q=G</button></div><div id=\"map-domains\" class=\"domain-list\"></div><p id=\"map-status\" class=\"lab-status\" aria-live=\"polite\"></p></div></div><p class=\"fine\">Domains show filtering by assigned neighbours only. Conflicting choices remain selectable for diagnosis.</p>",
+    "notes": "Try WA=R and Q=G: NT and SA both retain only B, while NSW retains R,B. No assigned edge is violated, yet NT and SA cannot both be B. Forward checking alone has not noticed this unassigned-to-unassigned conflict. Set NT=B and observe SA becoming empty. Letters supplement the colour coding for accessibility.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable example · Forward-checking view, not full propagation"
+  },
+  {
+    "ch": "Map colouring",
+    "title": "A valid colouring — and a useful failed branch",
+    "body": "<div class=\"cols\"><div><svg class=\"csp-graph\" viewBox=\"0 0 720 490\" role=\"img\" aria-label=\"Constraint graph. Edges require different colors: WA–NT, WA–SA, NT–SA, NT–Q, SA–Q, SA–NSW, SA–V, Q–NSW, NSW–V. T is isolated.\"><line data-csp-edge=\"WA-NT\" x1=\"70\" y1=\"215\" x2=\"235\" y2=\"65\"/><line data-csp-edge=\"WA-SA\" x1=\"70\" y1=\"215\" x2=\"260\" y2=\"285\"/><line data-csp-edge=\"NT-SA\" x1=\"235\" y1=\"65\" x2=\"260\" y2=\"285\"/><line data-csp-edge=\"NT-Q\" x1=\"235\" y1=\"65\" x2=\"430\" y2=\"65\"/><line data-csp-edge=\"SA-Q\" x1=\"260\" y1=\"285\" x2=\"430\" y2=\"65\"/><line data-csp-edge=\"SA-NSW\" x1=\"260\" y1=\"285\" x2=\"485\" y2=\"245\"/><line data-csp-edge=\"SA-V\" x1=\"260\" y1=\"285\" x2=\"450\" y2=\"410\"/><line data-csp-edge=\"Q-NSW\" x1=\"430\" y1=\"65\" x2=\"485\" y2=\"245\"/><line data-csp-edge=\"NSW-V\" x1=\"485\" y1=\"245\" x2=\"450\" y2=\"410\"/><g data-csp-node=\"WA\" class=\"color-R\"><circle cx=\"70\" cy=\"215\" r=\"36\"/><text x=\"70\" y=\"223\" text-anchor=\"middle\">WA</text><text class=\"node-value\" x=\"70\" y=\"279\" text-anchor=\"middle\">R</text></g><g data-csp-node=\"NT\" class=\"color-G\"><circle cx=\"235\" cy=\"65\" r=\"36\"/><text x=\"235\" y=\"73\" text-anchor=\"middle\">NT</text><text class=\"node-value\" x=\"235\" y=\"21\" text-anchor=\"middle\">G</text></g><g data-csp-node=\"Q\" class=\"color-R\"><circle cx=\"430\" cy=\"65\" r=\"36\"/><text x=\"430\" y=\"73\" text-anchor=\"middle\">Q</text><text class=\"node-value\" x=\"430\" y=\"129\" text-anchor=\"middle\">R</text></g><g data-csp-node=\"SA\" class=\"color-B\"><circle cx=\"260\" cy=\"285\" r=\"36\"/><text x=\"260\" y=\"293\" text-anchor=\"middle\">SA</text><text class=\"node-value\" x=\"260\" y=\"349\" text-anchor=\"middle\">B</text></g><g data-csp-node=\"NSW\" class=\"color-G\"><circle cx=\"485\" cy=\"245\" r=\"36\"/><text x=\"485\" y=\"253\" text-anchor=\"middle\">NSW</text><text class=\"node-value\" x=\"485\" y=\"309\" text-anchor=\"middle\">G</text></g><g data-csp-node=\"V\" class=\"color-R\"><circle cx=\"450\" cy=\"410\" r=\"36\"/><text x=\"450\" y=\"418\" text-anchor=\"middle\">V</text><text class=\"node-value\" x=\"450\" y=\"474\" text-anchor=\"middle\">R</text></g><g data-csp-node=\"T\" class=\"color-B\"><circle cx=\"635\" cy=\"410\" r=\"36\"/><text x=\"635\" y=\"418\" text-anchor=\"middle\">T</text><text class=\"node-value\" x=\"635\" y=\"474\" text-anchor=\"middle\">B</text></g></svg></div><div><h3>One solution</h3><p>WA=R, NT=G, Q=R,<br>SA=B, NSW=G, V=R, T=B.</p><h3>A branch to reject</h3><p>WA=R and Q=G force both NT and SA to B.</p><p>But NT and SA are adjacent.</p></div></div>",
+    "notes": "The displayed complete solution passes all nine edge checks. There are 18 labelled three-colour solutions: choose the three distinct colours of the WA–NT–SA triangle in 6 ways; Q, NSW and V are then forced; T has 3 independent choices. This count is also checked by enumerating all 3^7 assignments. The failed branch is an original teaching example.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated examples · 18 labelled solutions"
+  },
+  {
+    "ch": "Modelling",
+    "title": "A timetable becomes a network of decisions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Component</th><th>A deliberately small model</th></tr></thead><tbody><tr><td>Variables</td><td>A, B, C: the start slot of three one-slot classes.</td></tr><tr><td>Domains</td><td>A∈{1,2}; B∈{1,2,3}; C∈{2,3}.</td></tr><tr><td>Resource conflict</td><td>A ≠ B: they need the same lecturer.</td></tr><tr><td>Shared students</td><td>B ≠ C: the same group attends both.</td></tr><tr><td>Precedence</td><td>A < C: A must finish before C begins.</td></tr></tbody></table></div><p class=\"takeaway\">Slot lengths, room capacity and overlapping durations need explicit rules in a richer model.</p>",
+    "notes": "This is a toy timetable, not a real UCLM schedule. Sessions last exactly one slot and have no travel time. A=1,B=2,C=3 is a feasible assignment. With unequal durations, inequality of start times does not ensure non-overlap. Model the actual resource and duration semantics before choosing a search method.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original teaching model"
+  },
+  {
+    "ch": "Systematic search",
+    "title": "Backtracking builds one assignment at a time",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Select</strong><span>Choose an unassigned variable.</span></div><div class=\"flowstep\"><small>02</small><strong>Try</strong><span>Assign a value that passes local checks.</span></div><div class=\"flowstep\"><small>03</small><strong>Infer</strong><span>Prune values and detect failure.</span></div><div class=\"flowstep\"><small>04</small><strong>Recurse / undo</strong><span>Continue or restore and try the next value.</span></div></div><p class=\"takeaway\">Assign one variable per level: avoid permuting the order of the same decisions.</p>",
+    "notes": "Assignments are commutative in the sense that their final set of variable-value pairs does not depend on construction order. A backtracking solver chooses a single variable at each node and branches over its values. This avoids a redundant factor from trying all variable assignment orders. It does not remove the exponential worst case.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Systematic search",
+    "title": "A solver needs an explicit undo operation",
+    "body": "<pre class=\"wide-code\"><code>solve(assignment, domains):\n    if complete(assignment): return copy(assignment)\n    X ← choose_unassigned_variable(assignment, domains)\n    for value in ordered_values(X, domains):\n        if consistent(X=value, assignment):\n            mark ← trail.checkpoint()\n            assign(X, value); restrict_domain(X, {value})\n            if propagate(domains) != FAILURE:\n                result ← solve(assignment, domains)\n                if result != FAILURE: return result\n            unassign(X); trail.restore(mark)\n    return FAILURE</code></pre><p class=\"takeaway\">Every domain change in the failed branch must be undone before the next value.</p>",
+    "notes": "The initial domains should first pass the relevant unary filtering. The base case assumes each assignment and inference step preserves all applicable constraints; a final independent solution validator is still useful. A trail records reversible changes, while copying domains at each node is a simpler teaching alternative. Completeness requires all remaining values to be tried, sound pruning and no premature resource cap.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source pseudocode · Reversible domain updates"
+  },
+  {
+    "ch": "Systematic search",
+    "title": "Backtracking must restore more than the variable",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Moment</th><th>D(NT)</th><th>D(SA)</th><th>Meaning</th></tr></thead><tbody><tr><td>Before WA=R</td><td>{R,G,B}</td><td>{R,G,B}</td><td>Parent domains.</td></tr><tr><td>After forward checking</td><td>{G,B}</td><td>{G,B}</td><td>R removed in this branch.</td></tr><tr><td>After undoing WA=R</td><td>{R,G,B}</td><td>{R,G,B}</td><td>Restore both removals.</td></tr><tr><td>Trying WA=G</td><td>{R,B}</td><td>{R,B}</td><td>Filter again from the restored parent.</td></tr></tbody></table></div><p class=\"takeaway\">Keeping an old removal can turn a satisfiable instance into an incorrect “no solution”.</p>",
+    "notes": "A deep failure can cause many removals several levels below the current decision. Restoring only the chosen variable is insufficient. The laboratory uses snapshots for clarity. Production solvers often use trails and reversible data structures to avoid copying every domain at every node. A value ruled out at the root remains ruled out: restore to the checkpoint, not necessarily to the original full domains.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original restoration example"
+  },
+  {
+    "ch": "Laboratory 2",
+    "title": "Watch assignment, pruning and restoration",
+    "body": "<div class=\"csp-lab trace-lab\"><div><div class=\"compact-controls\"><label>Instance<select id=\"bt-colors\"><option value=\"3\">Australia · 3 colours</option><option value=\"2\">Australia · 2 colours</option></select></label><label>Variable order<select id=\"bt-order\"><option value=\"mrv\">MRV + degree</option><option value=\"fixed\">Fixed: WA, NT, Q, SA…</option></select></label><label>Inference<select id=\"bt-inference\"><option value=\"fc\">Forward checking</option><option value=\"mac\">MAC / AC-3</option><option value=\"none\">Local checks only</option></select></label><label>Value order<select id=\"bt-values\"><option value=\"fixed\">R, G, B</option><option value=\"lcv\">LCV</option></select></label></div><div class=\"demo-controls\"><button id=\"bt-back\">Back</button><button id=\"bt-step\" class=\"primary\">Next event</button><button id=\"bt-run\">To result</button><button id=\"bt-reset\">Reset</button></div><p id=\"bt-event\" class=\"lab-status\" aria-live=\"polite\"></p><p id=\"bt-counts\" class=\"fine\"></p></div><div><div id=\"bt-domains\" class=\"domain-list\"></div><p id=\"bt-assignment\" class=\"small\"></p></div></div><p class=\"fine\">A trace event is a teaching snapshot, not a timing measurement. Ties use WA, NT, Q, SA, NSW, V, T.</p>",
+    "notes": "The solver creates a deterministic trace and the controls move through its recorded events. Select two colours to see a fully exhausted unsatisfiable instance, including undo events. Select MAC to detect contradictions earlier. MRV uses values consistent with already assigned neighbours; degree counts unassigned neighbours. LCV counts one-step deletions from unassigned neighbours, with colour order breaking ties.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable complete search on a finite toy CSP"
+  },
+  {
+    "ch": "Systematic search",
+    "title": "What exhaustive backtracking can establish",
+    "body": "<div class=\"cols\"><div><h3>A solution was found</h3><p>The complete assignment can be checked directly against the model.</p><h3>All branches were exhausted</h3><p>With sound pruning and correct restoration, no solution exists.</p></div><div><h3>The run was stopped</h3><p>A time or node limit says only that this run did not finish.</p><h3>Worst-case size</h3><p>Up to dⁿ complete assignments for n variables with at most d values.</p></div></div><p class=\"takeaway\">SAT, UNSAT and UNKNOWN are different outcomes.</p>",
+    "notes": "Finite domains, finite constraint checks and exhaustive branching imply termination. A resource-limited run loses that exhaustiveness. The toy backtracking laboratory has no cutoff and can justify its two-colour UNSAT outcome. The local-search laboratory later has a step budget and must report that limit honestly. Correctness always refers to the encoded model, which may still omit a real-world rule.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Variable ordering",
+    "title": "MRV: expose a restricted choice early",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Unassigned variable</th><th>Current legal values</th><th>Count</th></tr></thead><tbody><tr><td>NT</td><td>{B}</td><td>1</td></tr><tr><td>SA</td><td>{B}</td><td>1</td></tr><tr><td>NSW</td><td>{R,B}</td><td>2</td></tr><tr><td>V</td><td>{R,G,B}</td><td>3</td></tr><tr><td>T</td><td>{R,G,B}</td><td>3</td></tr></tbody></table></div><p class=\"takeaway\">After WA=R, Q=G, MRV chooses NT or SA. A zero-value variable signals failure.</p>",
+    "notes": "This is an exact forward-checking snapshot of our Australia model. MRV means minimum remaining values, among unassigned variables. Assigned singleton domains are excluded from the choice. If current domains have not been filtered against assigned neighbours, compute legal values before comparing counts. MRV prioritizes a bottleneck but does not by itself prove the branch feasible.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied MRV principle · Original exact snapshot"
+  },
+  {
+    "ch": "Variable ordering",
+    "title": "Degree breaks an MRV tie",
+    "body": "<div class=\"cols\"><div><h3>The same snapshot</h3><p>WA=R and Q=G.</p><p>NT and SA each have one candidate: B.</p></div><div><h3>Unassigned neighbours</h3><p>NT: SA → <b>1</b><br>SA: NT, NSW, V → <b>3</b></p><p>Choose SA among the MRV tie.</p></div></div><p class=\"takeaway\">Use the remaining graph, not the original degree, when implementing this tie breaker.</p>",
+    "notes": "The source introduced degree with a schematic table; this version uses a fully specified state. NT originally had three neighbours, but WA and Q are already assigned. SA originally had five, with three still unassigned. Selecting SA=B and forward checking makes NT empty immediately. Either tied variable eventually exposes the same contradiction.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated degrees for the declared partial assignment"
+  },
+  {
+    "ch": "Value ordering",
+    "title": "LCV preserves options for the other variables",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Try X = …</th><th>Values removed from Y={R,G} and Z={R,B}</th><th>Score</th></tr></thead><tbody><tr><td>R</td><td>Remove R from Y and R from Z.</td><td>2</td></tr><tr><td>G</td><td>Remove G from Y; remove nothing from Z.</td><td>1</td></tr><tr><td>B</td><td>Remove nothing from Y; remove B from Z.</td><td>1</td></tr></tbody></table></div><p class=\"takeaway\">For constraints X≠Y and X≠Z, try G or B before R. Declare how ties are resolved.</p>",
+    "notes": "Assume D(X)={R,G,B}; Y and Z are unassigned and have no other relevant constraint in this scoring example. This LCV score is one-step deletion count, not the number of complete solutions. A lookahead-based variant may score the full propagation effect but costs more. In our lab ties use R,G,B order, so this example selects G.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original numerical LCV example"
+  },
+  {
+    "ch": "Ordering",
+    "title": "Variable choice and value choice answer different questions",
+    "body": "<div class=\"cols\"><div><h3>MRV + degree</h3><div class=\"big-word\">Where next?</div><p>Choose a variable whose decision is likely to matter now.</p></div><div><h3>LCV</h3><div class=\"big-word\">Which value?</div><p>Prefer a candidate that leaves more room for future decisions.</p></div></div><p class=\"takeaway\">Ordering changes the work needed to explore the tree; it does not change the model’s solutions.</p>",
+    "notes": "If every remaining value is eventually explored and pruning is sound, reordering branches preserves completeness. A heuristic can be useful without winning on every instance. Its evaluation cost is part of total solving cost. Use deterministic tie rules when comparing traces, and distinguish a chosen order from a proof that it is universally best.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Inference",
+    "title": "Forward checking looks one step ahead",
+    "body": "<div class=\"cols\"><div><h3>On assigning X=v</h3><p>For each unassigned neighbour Y, remove values inconsistent with X=v.</p><p>An empty domain rejects the branch immediately.</p></div><div><h3>What it does not do</h3><p>A reduced domain of Y does not automatically trigger further filtering through its other neighbours.</p></div></div><p class=\"takeaway\">Forward checking reacts to the assigned variable, not to every new domain reduction.</p>",
+    "notes": "Use binary constraints for this basic description. The map lab recomputes all values compatible with all assigned neighbours, which produces the same view as incremental forward checking from an initially unpruned binary inequality model. It deliberately does not enforce relationships between two unassigned regions. The distinction is algorithmic, not just a difference in how a graph is drawn.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Inference",
+    "title": "Nonempty domains can hide an immediate conflict",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>After WA=R, Q=G</th><th>Forward-checking domain</th><th>Still unassigned</th></tr></thead><tbody><tr><td>NT</td><td>{B}</td><td>Yes.</td></tr><tr><td>SA</td><td>{B}</td><td>Yes.</td></tr><tr><td>NSW</td><td>{R,B}</td><td>Yes.</td></tr><tr><td>V</td><td>{R,G,B}</td><td>Yes.</td></tr></tbody></table></div><p class=\"takeaway\">The constraint NT≠SA is impossible, although every displayed domain is nonempty.</p>",
+    "notes": "This is a small counterexample to the claim that forward checking ensures a viable continuation. It has an explanation involving only the adjacent singleton domains of NT and SA. Revising the arc NT→SA deletes B from NT. A complete propagator for the binary arc relation therefore discovers failure before assigning either one.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated counterexample on the course map"
+  },
+  {
+    "ch": "Arc consistency",
+    "title": "Every value needs a supporting value",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">Xᵢ → Xⱼ</div><p>For each a in D(Xᵢ), there must be some b in D(Xⱼ) satisfying the binary relation.</p></div><div><h3>REVISE removes from the tail</h3><p>If a has no support, delete a from D(Xᵢ).</p><p>The reverse arc must be checked separately.</p></div></div><p class=\"takeaway\">Support is existential and local: different values may rely on different supports.</p>",
+    "notes": "For the constraint X<Y, the reverse check uses the same relation with the arguments correctly oriented: a Y value needs a smaller X value. It does not impose Y<X. Arc consistency assumes constraints can be evaluated for pairs of domain values. Multiple constraints on the same pair can be combined as one conjunctive binary relation.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Arc consistency",
+    "title": "A directed revision, worked value by value",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>X candidate</th><th>Any support in D(Y)={2}, with X<Y?</th><th>Keep?</th></tr></thead><tbody><tr><td>1</td><td>1 < 2: yes.</td><td>Yes.</td></tr><tr><td>2</td><td>2 < 2: no.</td><td>No.</td></tr><tr><td>3</td><td>3 < 2: no.</td><td>No.</td></tr></tbody></table></div><div class=\"cols\"><div><h3>Before</h3><p>D(X)={1,2,3}, D(Y)={2}.</p></div><div><h3>After REVISE(X,Y)</h3><p>D(X)={1}, D(Y)={2}.</p></div></div>",
+    "notes": "This keeps the exact numerical relation from the supplied source. Revising X→Y changes only D(X). If we then revise Y→X, Y=2 has support X=1 and remains. A graph edge is drawn undirected for a binary relation even when the relation itself, such as less-than, is not symmetric.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Arc consistency",
+    "title": "AC-3 propagates changes through a queue",
+    "body": "<pre class=\"wide-code\"><code>Q ← all directed arcs\nwhile Q is not empty:\n    (Xi, Xj) ← Q.pop_front()\n    if REVISE(Xi, Xj):\n        if D(Xi) is empty: return FAILURE\n        for Xk in neighbours(Xi), Xk != Xj:\n            add (Xk, Xi) to Q if not already queued\nreturn ARC_CONSISTENT</code></pre><p class=\"takeaway\">A smaller D(Xᵢ) can remove supports for values in its other neighbours.</p>",
+    "notes": "REVISE returns true only if it deletes at least one value from the first variable. The excluded reverse arc cannot have lost support through this revision when the two directed checks use the same binary relation with correct argument orientation. Reject an initially empty domain before running the queue. The return status deliberately says ARC_CONSISTENT, not SOLVED.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied AC-3 algorithm · Explicit return semantics"
+  },
+  {
+    "ch": "Laboratory 3",
+    "title": "Follow the AC-3 queue",
+    "body": "<div class=\"csp-lab ac-lab\"><div><label class=\"control-label\" for=\"ac-case\">Constraint system</label><select id=\"ac-case\"><option value=\"chain\">X &lt; Y &lt; Z · domains {1,2,3}</option><option value=\"triangle\">A ≠ B ≠ C ≠ A · domains {R,G}</option></select><div class=\"demo-controls\"><button id=\"ac-back\">Back</button><button id=\"ac-step\" class=\"primary\">Revise next arc</button><button id=\"ac-run\">To fixed point</button><button id=\"ac-reset\">Reset</button></div><p id=\"ac-event\" class=\"lab-status\" aria-live=\"polite\"></p><div class=\"readout\"><span>FIFO queue · next first</span><div id=\"ac-queue\" class=\"queue-items\"></div></div></div><div><div id=\"ac-domains\" class=\"domain-list\"></div><div class=\"readout\"><span>Exact complete assignments, independently enumerated</span><b id=\"ac-solutions\"></b></div><p class=\"small\">A nonempty fixed point is a filtering result. It can still have zero solutions.</p></div></div>",
+    "notes": "For the chain, all variables initially have {1,2,3}; the fixed point is X={1},Y={2},Z={3}, with one solution. The initial FIFO order is X→Y,Y→X,Y→Z,Z→Y. For the two-colour triangle, all six arcs are consistent immediately, yet enumeration finds no solution. Enumeration is an independent teaching oracle for these tiny examples; AC-3 itself does not perform it.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable AC-3 · Independent exhaustive oracle for two tiny examples"
+  },
+  {
+    "ch": "Arc consistency",
+    "title": "A queue trace makes propagation visible",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Arc revised</th><th>Deletion</th><th>Domains afterwards</th></tr></thead><tbody><tr><td>X → Y</td><td>X loses 3.</td><td>X={1,2}; Y={1,2,3}; Z={1,2,3}</td></tr><tr><td>Y → X</td><td>Y loses 1.</td><td>X={1,2}; Y={2,3}; Z={1,2,3}</td></tr><tr><td>Y → Z</td><td>Y loses 3.</td><td>X={1,2}; Y={2}; Z={1,2,3}</td></tr><tr><td>Z → Y</td><td>Z loses 1,2.</td><td>X={1,2}; Y={2}; Z={3}</td></tr><tr><td>X → Y</td><td>X loses 2.</td><td>X={1}; Y={2}; Z={3}</td></tr></tbody></table></div><p class=\"takeaway\">The change to Y causes X→Y to be checked again. Final domains identify the unique solution.</p>",
+    "notes": "The queue uses duplicate suppression. When Y loses 1 on Y→X, Z→Y is already pending, so it is not added twice. When Y loses 3 on Y→Z, X→Y is requeued. The fixed point is reached after five revisions for the declared initial order. Other fair queue orders can do a different amount of work but reach the same arc-consistent closure.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated FIFO trace for X<Y<Z"
+  },
+  {
+    "ch": "Arc consistency",
+    "title": "Arc-consistent does not mean satisfiable",
+    "body": "<div class=\"cols\"><div><svg class=\"triangle-svg\" viewBox=\"0 0 450 300\" role=\"img\" aria-label=\"Triangle with inequality constraints A–B, B–C and C–A\"><path d=\"M225 45 L60 245 L390 245 Z\"/><circle cx=\"225\" cy=\"45\" r=\"35\"/><circle cx=\"60\" cy=\"245\" r=\"35\"/><circle cx=\"390\" cy=\"245\" r=\"35\"/><text x=\"225\" y=\"56\">A</text><text x=\"60\" y=\"256\">B</text><text x=\"390\" y=\"256\">C</text></svg><p class=\"small\">Edges: A–B, B–C, C–A.<br>Every edge requires different colours.</p></div><div><h3>Only two colours: {R,G}</h3><p>R always has support G on each neighbouring arc, and G has support R.</p><h3>But the triangle needs three colours</h3><p>Pairwise supports cannot all be combined into one assignment.</p></div></div><p class=\"takeaway\">Empty domain ⇒ failure. All domains nonempty after AC-3 ⇏ solution.</p>",
+    "notes": "Proof: if A=R, both B and C must be G, violating B≠C. The case A=G is symmetric. This is a proof of unsatisfiability independent of any cutoff. By contrast, the three-variable chain in the preceding lab is solved by propagation alone. AC-3 is a filtering algorithm, not a complete decision procedure for general cyclic CSPs.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original counterexample · Exact enumeration: 0 solutions"
+  },
+  {
+    "ch": "Search + inference",
+    "title": "MAC runs arc consistency inside backtracking",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Decide</strong><span>Choose X=v and restrict its domain.</span></div><div class=\"flowstep\"><small>02</small><strong>Propagate</strong><span>Run AC-3 until a fixed point or empty domain.</span></div><div class=\"flowstep\"><small>03</small><strong>Continue</strong><span>Recurse if the branch survives.</span></div><div class=\"flowstep\"><small>04</small><strong>Recover</strong><span>Restore all changes after failure.</span></div></div><p class=\"takeaway\">Maintaining arc consistency combines systematic search with repeated filtering.</p>",
+    "notes": "MAC means maintaining arc consistency. Our educational solver runs AC-3 on all arcs at the root and after each decision for simplicity. An incremental implementation can seed arcs directed into a newly restricted variable, assuming the previous domains were already arc-consistent; propagation then requeues affected neighbours. Singleton domains need not be marked assigned until the solver selects them.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Inference cost",
+    "title": "Stronger filtering has a cost",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Technique</th><th>What is checked</th><th>Practical tradeoff</th></tr></thead><tbody><tr><td>Local checks</td><td>New assignment against assigned neighbours.</td><td>Cheap per decision; may discover failure deep in the tree.</td></tr><tr><td>Forward checking</td><td>Assigned variable against unassigned neighbours.</td><td>Prunes one step ahead.</td></tr><tr><td>MAC with AC-3</td><td>Supports across all affected binary arcs.</td><td>More work per decision; may save many branches.</td></tr></tbody></table></div><p class=\"takeaway\">Naive AC-3: O(e d³), where e counts directed arcs and d is the largest domain size.</p>",
+    "notes": "The bound assumes explicit finite domains and a constant-time binary constraint test. One revision may compare O(d²) pairs; a domain can shrink at most d times, triggering O(e d) arc processing overall in the usual analysis. Better support bookkeeping changes the bound and practical cost. Benchmark end-to-end work instead of assuming stronger filtering is always faster.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied inference comparison · Berkeley CS188: naive AC-3 complexity"
+  },
+  {
+    "ch": "Global constraints",
+    "title": "AllDifferent can see a shared bottleneck",
+    "body": "<div class=\"cols\"><div><h3>Three variables</h3><p>A∈{1,2}<br>B∈{1,2}<br>C∈{1,2,3}</p><div class=\"equation smaller\">AllDifferent(A,B,C)</div></div><div><h3>A and B consume {1,2}</h3><p>The two variables must use those two values in some order.</p><p>Therefore C must be 3.</p></div></div><p class=\"takeaway\">Pairwise arc consistency on A≠B, A≠C, B≠C does not make this deduction.</p>",
+    "notes": "A pairwise support check can support C=1 with A=2 and separately with B=2, without noticing that A and B cannot both be 2. A generalized arc-consistent AllDifferent propagator requires each candidate to occur in a complete valid tuple for that constraint. The two-variable set {A,B} with a two-value union {1,2} is a Hall set. Global constraint implementations can enforce different strengths.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original AllDifferent example · Choco documentation on alternative propagators"
+  },
+  {
+    "ch": "Laboratory 4",
+    "title": "Compare binary and global propagation",
+    "body": "<div class=\"csp-lab\"><div><label class=\"control-label\" for=\"all-case\">Domains</label><select id=\"all-case\"><option value=\"hall\">A={1,2}, B={1,2}, C={1,2,3}</option><option value=\"pigeon\">A=B=C={1,2}</option></select><div class=\"demo-controls\"><button id=\"all-pair\" class=\"primary\">Pairwise AC</button><button id=\"all-global\">Global GAC</button><button id=\"all-reset\">Reset</button></div><p id=\"all-status\" class=\"lab-status\" aria-live=\"polite\"></p><p class=\"small\">The global demonstration enumerates all valid triples and retains values appearing in at least one.</p></div><div><div id=\"all-domains\" class=\"domain-list\"></div><div class=\"readout\"><span>Valid distinct-value triples in the original domains</span><b id=\"all-tuples\"></b></div><p class=\"fine\">Each button starts from the selected original domains, allowing a fair comparison.</p></div></div>",
+    "notes": "In the Hall-set case, the only tuples are (1,2,3) and (2,1,3), so C becomes {3}. In the pigeonhole case there are zero distinct-value triples, and global propagation detects failure. Pairwise AC leaves both examples unchanged. This tiny exhaustive demonstrator is not a scalable implementation of a matching-based AllDifferent propagator.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable 3-variable demonstration · Exact tuple enumeration"
+  },
+  {
+    "ch": "Sudoku",
+    "title": "81 decisions, 27 AllDifferent constraints",
+    "body": "<div class=\"cols\"><div><div class=\"sudoku\"><span>5</span><span>3</span><span></span><span></span><span>7</span><span></span><span></span><span></span><span></span><span>6</span><span></span><span></span><span>1</span><span>9</span><span>5</span><span></span><span></span><span></span><span></span><span>9</span><span>8</span><span></span><span></span><span></span><span></span><span>6</span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div><h3>Variables and domains</h3><p>One variable per cell; values 1–9.<br>Given digits have singleton domains.</p><h3>Constraints</h3><p>9 rows, 9 columns, 9 boxes.<br>Each group uses AllDifferent.</p><p class=\"fine\">Illustrative givens from the source. This is not a claim of a uniquely solvable puzzle.</p></div></div>",
+    "notes": "This preserves the source’s partial grid: only the first three rows contain givens. Boxes are 3×3. Nine distinct values drawn from {1,…,9} must form a permutation of those digits, so no separate sum rule is required. The source illustration is not enough to claim a unique puzzle. A solution count or uniqueness result would need a complete specification and a search.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied Sudoku illustration · Explicit model and uniqueness caveat"
+  },
+  {
+    "ch": "Sudoku",
+    "title": "A candidate is not a solved cell",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Cell in the illustration</th><th>Values excluded by its groups</th><th>Candidates</th></tr></thead><tbody><tr><td>r1c3</td><td>Row: 3,5,7; column: 8; box: 3,5,6,8,9.</td><td>{1,2,4}</td></tr><tr><td>r1c4</td><td>Row: 3,5,7; column: 1; box: 1,5,7,9.</td><td>{2,4,6,8}</td></tr></tbody></table></div><p class=\"takeaway\">Candidate filtering uses the union of exclusions from the row, column and box.</p>",
+    "notes": "Coordinates are one-based. For r1c3, the row contains 5,3,7, the column has 8 at row 3, and the top-left box has 5,3,6,9,8. The union is {3,5,6,7,8,9}. For r1c4, the union is {1,3,5,7,9}. These local candidates are not asserted to appear in every completion. More powerful propagation or search may reduce them further.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated candidates from the displayed givens"
+  },
+  {
+    "ch": "N-Queens",
+    "title": "One variable per column",
+    "body": "<div class=\"cols\"><div><div class=\"equation smaller\">Qᵢ ∈ {1, …, N}</div><p>Qᵢ is the row of the queen in column i.</p><p>Exactly one queen per column is built into the representation.</p></div><div><h3>For every i &lt; j</h3><p>Different rows:<br><b>Qᵢ ≠ Qⱼ</b></p><p>Different diagonals:<br><b>|Qᵢ − Qⱼ| ≠ |i − j|</b></p></div></div><p class=\"takeaway\">The diagonal equation compares row separation with column separation.</p>",
+    "notes": "Rows and columns are numbered from 1. Two queens attack along a diagonal when the absolute differences of their coordinates match. The variable model already enforces the column rule, so do not add a redundant column variable or confuse Q_i with a Boolean occupancy variable. This same model can be solved systematically or by repairing a complete row vector.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "N-Queens",
+    "title": "A solution you can validate directly",
+    "body": "<div class=\"cols\"><div><div class=\"queens-static\"><span class=\"queen\">Q</span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade queen\">Q</span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade queen\">Q</span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"queen\">Q</span><span class=\"shade \"></span><span class=\"\"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"queen\">Q</span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade queen\">Q</span><span class=\"\"></span><span class=\"\"></span><span class=\"shade queen\">Q</span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"queen\">Q</span><span class=\"shade \"></span><span class=\"\"></span><span class=\"shade \"></span><span class=\"\"></span></div></div><div><h3>Rows by column</h3><p class=\"mono\">[1, 7, 5, 8, 2, 4, 6, 3]</p><h3>Check all 28 pairs</h3><p>No shared row.<br>No equal row and column separation.</p><p>Number of attacking pairs: <b>0</b>.</p></div></div>",
+    "notes": "This reconstructs the eight-queen positions in the supplied slide as a row-per-column vector. An independent pairwise check verifies all 8 choose 2 = 28 pairs. The visual board uses Q letters so it does not rely on special chess fonts. Row 1 is at the top and column 1 at the left.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied eight-queen arrangement · Independently verified"
+  },
+  {
+    "ch": "Local search",
+    "title": "Start complete, then repair conflicts",
+    "body": "<div class=\"cols\"><div><h3>Backtracking</h3><p>Keep a partial assignment and extend it while detecting contradictions.</p></div><div><h3>Local repair</h3><p>Keep every variable assigned, even if constraints are violated, and change selected values.</p></div></div><p class=\"takeaway\">Completeness of an assignment is not completeness of an algorithm.</p>",
+    "notes": "A complete N-Queens state has one queen in every column but can contain many attacking pairs. A complete algorithm is one that is guaranteed to find a solution when one exists under its assumptions. These uses of the word complete must not be confused. Local repair can work very well on suitable large instances, but a finite unsuccessful run does not establish unsatisfiability.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Local search",
+    "title": "Min-conflicts repairs a selected variable",
+    "body": "<pre class=\"wide-code\"><code>state ← a complete initial assignment\nfor step in 0 .. max_steps-1:\n    if all constraints hold: return SOLUTION(state)\n    X ← random variable involved in a violated constraint\n    value ← argmin_v conflicts_if(X=v, other values fixed)\n    state[X] ← value          # random tie breaking\nif all constraints hold: return SOLUTION(state)\nreturn BUDGET_EXHAUSTED</code></pre><p class=\"takeaway\">A best repair can leave the score unchanged. Plateaus and repeated states are possible.</p>",
+    "notes": "For N-Queens, conflicts_if counts pairs involving the selected queen. The remaining pairs do not change, so minimizing that local count also minimizes the new total for this selected variable. Include the current value among candidates. Thus a step may be a no-op. Randomized tie choices can move across plateaus; a restart is a new attempt, not a proof. The final goal check avoids missing a solution reached on the last allowed step.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Laboratory 5",
+    "title": "Repair an eight-queen board",
+    "body": "<div class=\"queen-lab\"><div><div id=\"queen-board\" class=\"queens-interactive\" role=\"group\" aria-label=\"Eight-queen board. Click a cell to move its column’s queen.\"></div><p class=\"fine\">Click a square to move that column’s queen. Rows 1–8 run from top to bottom.</p></div><div><div class=\"compact-controls\"><label>Restart seed<input id=\"queen-seed\" type=\"number\" value=\"1\" min=\"1\" max=\"999999\"></label></div><div class=\"demo-controls\"><button id=\"queen-step\" class=\"primary\">Repair one</button><button id=\"queen-run\">Run to 200 steps</button><button id=\"queen-reset\">Restart</button><button id=\"queen-solution\">Load solution</button></div><div class=\"readout\"><span>Attacking pairs / 28 possible pairs</span><b id=\"queen-conflicts\"></b></div><p id=\"queen-status\" class=\"lab-status\" aria-live=\"polite\"></p><p id=\"queen-vector\" class=\"mono small\"></p></div></div>",
+    "notes": "Restart draws a complete board using a reproducible pseudorandom seed. Each repair selects a random conflicted column, evaluates all eight rows and chooses a minimum-conflict row with random tie breaking. The run budget is 200 repair attempts from the latest restart or manual edit. Conflicted queens use pink as well as an accessible label. Load solution restores the independently validated source arrangement. With this exact algorithm, seed 1 reaches a solution in 41 attempts. Seed 42 uses all 200 attempts with one attacking pair remaining; compare the two to discuss limits and restarts.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable seeded min-conflicts · No solution guarantee within the budget"
+  },
+  {
+    "ch": "Local search",
+    "title": "Read the termination status precisely",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Status</th><th>What the evidence supports</th></tr></thead><tbody><tr><td>SOLUTION</td><td>The current complete assignment passes every constraint.</td></tr><tr><td>BUDGET_EXHAUSTED</td><td>The configured number of repair attempts was used without a solution.</td></tr><tr><td>UNSAT after exhaustive search</td><td>Every possible branch was soundly ruled out.</td></tr><tr><td>Another restart succeeds</td><td>The earlier unsuccessful run was not a proof of impossibility.</td></tr></tbody></table></div><p class=\"takeaway\">Do not label a local-search timeout as “no solution exists”.</p>",
+    "notes": "A solver can validate a found assignment with an independent constraint checker. It cannot turn an arbitrary stopping threshold into an impossibility proof. Some optimization solvers can also provide certified bounds, but that is beyond this min-conflicts demonstration. Even an UNSAT proof applies only to the encoded constraints; an overly restrictive model may be the real mistake.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  },
+  {
+    "ch": "Evaluation",
+    "title": "Compare methods on reproducible evidence",
+    "body": "<div class=\"rows\"><div><strong>Hold the model fixed</strong><span>Same variables, domains, constraints and stopping criteria.</span></div><div><strong>Record search work</strong><span>Decisions, rejected values, backtracks and domain deletions.</span></div><div><strong>Measure actual cost</strong><span>Wall time and peak memory, including propagation overhead.</span></div><div><strong>Treat randomness honestly</strong><span>Seeds, restarts, success rate and limits over multiple runs.</span></div></div><p class=\"takeaway\">A short trace explains behaviour; it is not a general performance benchmark.</p>",
+    "notes": "For local repair, also count attempted repairs and total constraint checks. For systematic search, define whether a decision means trying a candidate or accepting an assignment. Compare distributions on a declared instance set rather than a single favourable seed. Report failures due to limits separately from proved unsatisfiable cases. No large-instance runtime claims are made in this presentation.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original experimental-design guidance"
+  },
+  {
+    "ch": "Structure",
+    "title": "Disconnected components can be solved separately",
+    "body": "<div class=\"cols\"><div><h3>Australia</h3><p>The mainland and T are independent components under the land-border rule.</p><p>Combine one solution from each component.</p></div><div><h3>Counting solutions</h3><div class=\"equation\">6 × 3 = 18</div><p>Six mainland colourings and three choices for Tasmania.</p></div></div><p class=\"takeaway\">For independent components, solution sets combine by a Cartesian product.</p>",
+    "notes": "No constraint may cross the component boundary for this decomposition to be valid. A global relation can connect variables that look separate if one draws only some binary edges. Binary tree-structured CSPs offer another special case: an appropriate backward consistency pass followed by a forward assignment finds a solution or failure in O(n d²) with constant-time relation tests. This is a structural result, not a bound for all CSPs.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original component count · Berkeley CS188: tree-structured CSP extension"
+  },
+  {
+    "ch": "Modelling",
+    "title": "A compact model still needs all the rules",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Pitfall</th><th>Correction</th></tr></thead><tbody><tr><td>A missing relationship</td><td>Check every real-world conflict, precedence and capacity rule.</td></tr><tr><td>Domains used instead of a relation</td><td>Unary filtering is valid; cross-variable dependencies need constraints.</td></tr><tr><td>AllDifferent treated as a magic algorithm</td><td>State the actual propagation strength or solver configuration.</td></tr><tr><td>A global constraint omitted from the graph</td><td>Use a factor/hypergraph view or make its scope explicit.</td></tr><tr><td>Too many interchangeable representations</td><td>Add justified symmetry breaking or use a simpler variable encoding.</td></tr></tbody></table></div><p class=\"takeaway\">Small instances with known solutions and contradictions are useful model tests.</p>",
+    "notes": "Symmetry breaking must preserve at least one representative of every relevant equivalence class. In pure colour-labelled map feasibility, fixing one region to R can be safe because colour names are interchangeable, but it changes the number of labelled solutions counted. Do not add that restriction if colour labels have costs or region-specific meaning.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source modelling checklist"
+  },
+  {
+    "ch": "Application",
+    "title": "Complete the small timetable",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Rule</th><th>Check for A=1, B=2, C=3</th></tr></thead><tbody><tr><td>A∈{1,2}, B∈{1,2,3}, C∈{2,3}</td><td>All selected values belong to their domains.</td></tr><tr><td>A ≠ B</td><td>1 ≠ 2: satisfied.</td></tr><tr><td>B ≠ C</td><td>2 ≠ 3: satisfied.</td></tr><tr><td>A < C</td><td>1 < 3: satisfied.</td></tr></tbody></table></div><p class=\"takeaway\">Feasible (A,B,C) tuples: (1,3,2), (1,2,3), (2,1,3).</p>",
+    "notes": "The complete feasible tuple list (A,B,C) is (1,3,2), (1,2,3), (2,1,3). Each obeys the domain, inequality and precedence rules. Enumeration checks every tuple in the original product of 2×3×2=12 candidates. This exercise separates checking one solution from counting all solutions. The objective on the next slide minimizes B and selects (2,1,3), with objective value 1.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original worked timetable · Exhaustive enumeration"
+  },
+  {
+    "ch": "Beyond feasibility",
+    "title": "A preference introduces an objective",
+    "body": "<div class=\"cols\"><div><h3>Hard constraints</h3><p>Feasible assignments must satisfy resource, attendance and precedence rules.</p></div><div><h3>Soft preference</h3><p>Among feasible schedules, prefer class B in an earlier slot.</p><div class=\"equation smaller\">minimize B</div><p>Optimal schedule: A=2, B=1, C=3.</p></div></div><p class=\"takeaway\">Constraint satisfaction asks for any feasible assignment. Optimization asks for the best objective value.</p>",
+    "notes": "This objective is only an illustrative preference for scheduling B early. Among the three feasible tuples (1,3,2), (1,2,3), (2,1,3), the optimum is (2,1,3) with B=1. The lower domain bound B≥1 proves that no feasible schedule can do better. It does not alter the hard constraints. A solver that returns the first feasible assignment has not generally proved optimality. Enumerating every feasible assignment can establish the optimum for a tiny case; larger models need appropriate optimization algorithms and valid bounds.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original satisfaction / optimization extension"
+  },
+  {
+    "ch": "Workshop",
+    "title": "Model and trace a five-region colouring",
+    "body": "<div class=\"cols\"><div><svg class=\"csp-graph\" viewBox=\"0 0 600 420\" role=\"img\" aria-label=\"Constraint graph. Edges require different colors: A–B, A–D, B–C, B–D, B–E, C–E, D–E.\"><line data-csp-edge=\"A-B\" x1=\"70\" y1=\"120\" x2=\"300\" y2=\"50\"/><line data-csp-edge=\"A-D\" x1=\"70\" y1=\"120\" x2=\"175\" y2=\"330\"/><line data-csp-edge=\"B-C\" x1=\"300\" y1=\"50\" x2=\"530\" y2=\"120\"/><line data-csp-edge=\"B-D\" x1=\"300\" y1=\"50\" x2=\"175\" y2=\"330\"/><line data-csp-edge=\"B-E\" x1=\"300\" y1=\"50\" x2=\"425\" y2=\"330\"/><line data-csp-edge=\"C-E\" x1=\"530\" y1=\"120\" x2=\"425\" y2=\"330\"/><line data-csp-edge=\"D-E\" x1=\"175\" y1=\"330\" x2=\"425\" y2=\"330\"/><g data-csp-node=\"A\" class=\"color-\"><circle cx=\"70\" cy=\"120\" r=\"36\"/><text x=\"70\" y=\"128\" text-anchor=\"middle\">A</text><text class=\"node-value\" x=\"70\" y=\"184\" text-anchor=\"middle\"></text></g><g data-csp-node=\"B\" class=\"color-\"><circle cx=\"300\" cy=\"50\" r=\"36\"/><text x=\"300\" y=\"58\" text-anchor=\"middle\">B</text><text class=\"node-value\" x=\"300\" y=\"114\" text-anchor=\"middle\"></text></g><g data-csp-node=\"C\" class=\"color-\"><circle cx=\"530\" cy=\"120\" r=\"36\"/><text x=\"530\" y=\"128\" text-anchor=\"middle\">C</text><text class=\"node-value\" x=\"530\" y=\"184\" text-anchor=\"middle\"></text></g><g data-csp-node=\"D\" class=\"color-\"><circle cx=\"175\" cy=\"330\" r=\"36\"/><text x=\"175\" y=\"338\" text-anchor=\"middle\">D</text><text class=\"node-value\" x=\"175\" y=\"394\" text-anchor=\"middle\"></text></g><g data-csp-node=\"E\" class=\"color-\"><circle cx=\"425\" cy=\"330\" r=\"36\"/><text x=\"425\" y=\"338\" text-anchor=\"middle\">E</text><text class=\"node-value\" x=\"425\" y=\"394\" text-anchor=\"middle\"></text></g></svg></div><div><div class=\"activity-time\">10 min</div><p>Domains: {R,G,B}.<br>Edges require unequal values.</p><p>1. Select the first variable by MRV + degree.<br>2. Try R; apply forward checking.<br>3. Select the next variable and finish a solution.</p></div></div><p class=\"takeaway\">Edges: AB, AD, BC, BD, BE, CE, DE. Ties use A, B, C, D, E; values use R, G, B.</p>",
+    "notes": "This expands the supplied mini-map activity into an explicit graph, removing ambiguity about adjacency. All domains start at size three. B has degree four, D and E degree three, and A and C degree two. After assigning B=R, all remaining domains have size two. D and E each have two unassigned neighbours, so alphabetic tie-breaking selects D. The rules fix a reproducible trace.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source mini-map activity · Explicit new edge set"
+  },
+  {
+    "ch": "Workshop solution",
+    "title": "The first two choices expose the structure",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Decision</th><th>Forward-checking effect</th><th>Next choice</th></tr></thead><tbody><tr><td>B=R</td><td>A, C, D, E all become {G,B}.</td><td>MRV tie; degree tie D/E; choose D.</td></tr><tr><td>D=G</td><td>A and E become {B}; C stays {G,B}.</td><td>MRV tie A/E; degree chooses E.</td></tr><tr><td>E=B</td><td>C becomes {G}; A remains {B}.</td><td>A and C tie; alphabetic order chooses A.</td></tr><tr><td>A=B, C=G</td><td>All seven edges are satisfied.</td><td>Solution: A=B, B=R, C=G, D=G, E=B.</td></tr></tbody></table></div><p class=\"takeaway\">The letter B can denote a variable or the colour blue: read each assignment carefully.</p>",
+    "notes": "To avoid notational ambiguity when teaching aloud, say region A is blue, region B is red, region C is green, region D is green, and region E is blue. The source uses colour labels R,G,B; we retain those labels while explaining their roles. The sequence is fixed by the declared MRV, degree and alphabetic tie rules. Verify all seven inequalities after completion.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated answer under the stated tie rules"
+  },
+  {
+    "ch": "Workshop",
+    "title": "Explain what propagation can and cannot prove",
+    "body": "<div class=\"cols\"><div><div class=\"activity-time\">8 min</div><p>X &lt; Y, with D(X)={1,2,3}, D(Y)={2,3}.</p><p>Then compare a two-colour triangle.</p></div><div><div class=\"rows\"><div><strong>Revise X→Y</strong><span>Which X values lose all support?</span></div><div><strong>Revise Y→X</strong><span>Does either Y value lose support now?</span></div><div><strong>List solutions</strong><span>Enumerate valid (X,Y) pairs.</span></div><div><strong>Explain the triangle</strong><span>Why can all arcs be consistent with no complete solution?</span></div></div></div></div><p class=\"takeaway\">Give a supporting value for every value you keep.</p>",
+    "notes": "Work in pairs, using the exact binary relation rather than a vague statement that values look compatible. Students should not infer a unique solution just because domains shrink. Ask one student to play the tail variable and one the head variable to emphasize the direction of revision.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original support-checking activity"
+  },
+  {
+    "ch": "Workshop solution",
+    "title": "Supports are local witnesses",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Question</th><th>Answer</th></tr></thead><tbody><tr><td>X→Y</td><td>Delete X=3. Keep 1 (supported by 2 or 3) and 2 (supported by 3).</td></tr><tr><td>Y→X</td><td>Keep Y=2 (supported by X=1) and Y=3 (supported by X=1 or 2).</td></tr><tr><td>Complete solutions</td><td>(1,2), (1,3), (2,3).</td></tr><tr><td>Two-colour triangle</td><td>Each edge has a different-colour support, but the three choices cannot be made simultaneously.</td></tr></tbody></table></div><p class=\"takeaway\">A support certifies one relation. A solution certifies all relations together.</p>",
+    "notes": "The revised domains are X={1,2},Y={2,3}. Their Cartesian product contains four pairs, but (2,2) is still invalid: domain filtering alone does not replace the constraint. This is a particularly useful follow-up question. Arc consistency reduces a representation; it does not generally turn the solution set into a Cartesian product.",
+    "cls": "",
+    "sub": "",
+    "ref": "Calculated support and solution sets"
+  },
+  {
+    "ch": "Choosing a method",
+    "title": "Match the method to the evidence you need",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Need</th><th>A reasonable starting point</th></tr></thead><tbody><tr><td>Find a solution and prove absence if none exists</td><td>Complete backtracking with sound propagation and explicit limits.</td></tr><tr><td>Reduce branching in a finite model</td><td>MRV + degree, with FC or MAC; measure the total cost.</td></tr><tr><td>Exploit structured relations</td><td>Use appropriate global constraints and inspect propagation strength.</td></tr><tr><td>Find a feasible large assignment quickly</td><td>Consider min-conflicts when local repair fits the model; use seeds and restarts.</td></tr><tr><td>Optimize preferences</td><td>Add an objective and use a method that can report bounds or an optimality proof.</td></tr></tbody></table></div><p class=\"takeaway\">A good model comes first. Algorithm selection follows its structure and required guarantees.</p>",
+    "notes": "These are methodological starting points, not claims that one solver or strategy dominates. The model’s constraints, domain sizes and graph structure matter. A complete solver with a runtime cap may still end in UNKNOWN. A local method that finds a verified solution has succeeded at satisfaction even though it cannot generally certify nonexistence.",
+    "cls": "",
+    "sub": "",
+    "ref": "Synthesis of the unit’s models, algorithms and guarantees"
+  },
+  {
+    "ch": "Learning check",
+    "title": "Six questions to carry forward",
+    "body": "<div class=\"check-grid\"><div class=\"check-item\"><b>01</b><p>What defines a CSP?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Variables, one domain per variable and constraints over their values.</div></div><div class=\"check-item\"><b>02</b><p>Does partial consistency imply a solution?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>No. A partial assignment can violate no assigned relation and still have no completion.</div></div><div class=\"check-item\"><b>03</b><p>What does MRV select?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>An unassigned variable with the fewest currently legal values.</div></div><div class=\"check-item\"><b>04</b><p>What must backtracking restore?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>The assignment and every branch-specific domain removal.</div></div><div class=\"check-item\"><b>05</b><p>Does AC-3 prove satisfiability?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Not generally. A two-colour triangle is arc-consistent but unsatisfiable.</div></div><div class=\"check-item\"><b>06</b><p>What does a min-conflicts limit prove?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Only that this run used its budget without a solution; it does not prove UNSAT.</div></div></div>",
+    "notes": "Use this as short retrieval practice. The HTML reveals one explanation at a time; the PDF displays all explanations. Ask students for a counterexample when an implication is false, and for assumptions when they claim a solver is complete. Revisit the laboratories to connect verbal definitions to visible changes in domains.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source knowledge check"
+  },
+  {
+    "ch": "References",
+    "title": "Sources and further study",
+    "body": "<div class=\"references\"><p><b>Supplied course material · 31 slides</b><br>01_Presentacion_Tema4_Constraint_Satisfaction_Problems(3).pptx.<br>Core scope, Australia, directed revision, Sudoku illustration and N-Queens.</p><p><b>Russell and Norvig · Artificial Intelligence: A Modern Approach</b><br><a href=\"https://aima.cs.berkeley.edu/\">Official textbook resources</a> · Constraint Satisfaction Problems.</p><p><b>UC Berkeley · CS188</b><br><a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/csp/filtering.html\">Filtering and AC-3</a> · <a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/csp/ordering.html\">Ordering and structural methods</a></p><p><b>Choco-solver · Official modelling documentation</b><br><a href=\"https://choco-solver.org/docs/modeling/constraints/\">Constraints, propagators and AllDifferent alternatives</a></p></div>",
+    "notes": "The supplied course deck is the basis of the unit. External primary teaching/documentation sources support the added discussion of filtering cost, structural methods and global-constraint propagation strength. All toy traces, solution counts, activities and simulator states were constructed or checked for this presentation. Links require internet access; the lecture and its five laboratories work offline. References checked September 2026.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source distinction: supplied syllabus, primary references and calculated examples"
+  },
+  {
+    "ch": "Next unit",
+    "title": "What changes when another agent opposes you?",
+    "body": "<div class=\"cols\"><div><h3>Constraint satisfaction</h3><p>Find values that satisfy a fixed collection of relationships.</p><div class=\"equation smaller\">choose → propagate → repair</div></div><div><h3>Adversarial search</h3><p>Choose actions while anticipating an opponent’s responses.</p><div class=\"equation smaller\">minimax · alpha–beta</div></div></div><p class=\"takeaway\">Next: decisions in competitive environments and how to prune a game tree safely.</p>",
+    "notes": "This follows the transition in the source lecture. In a CSP, constraints determine allowable combinations; in a game, other agents choose responses that can oppose our objective. Both settings reward exploiting structure, but the meaning of a branch and the justification for pruning differ. Ask students which guarantee must be re-examined when the environment contains a strategic opponent.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied Unit 4 material"
+  }
+]

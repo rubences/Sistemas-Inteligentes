@@ -1,0 +1,434 @@
+[
+  {
+    "ch": "Opening",
+    "title": "Intelligent<br>agents",
+    "body": "<p class=\"cover-sub\">An introduction to artificial intelligence</p><div class=\"cover-meta\">Intelligent Systems<br>School of Computer Science · Ciudad Real<br><strong>Rubén Juárez Cádiz</strong></div>",
+    "notes": "This unit develops the ability to specify, design and evaluate an agent. The cover is a conceptual AI-generated illustration, not a real system or a plan of the campus. The supplied lecture is the main foundation, with expanded examples and activities. Keep returning to two questions: what information does the agent have, and what criterion determines its action?",
+    "cls": "cover dark",
+    "sub": "",
+    "ref": "UCLM · Computer Science Degree"
+  },
+  {
+    "ch": "Opening",
+    "title": "A route towards agent design",
+    "body": "<div class=\"rows\"><div><strong>01 · Foundations</strong><span>What AI means and how an agent interacts with its environment.</span></div><div><strong>02 · Decisions</strong><span>Rationality, utility, performance measures and constraints.</span></div><div><strong>03 · Design</strong><span>PEAS, environment properties and agent architectures.</span></div><div><strong>04 · Applications</strong><span>LLM-based agents and the geared Loopover laboratory.</span></div></div><p class=\"takeaway\">By the end, you should justify what an agent must perceive, remember, decide and learn.</p>",
+    "notes": "Suggested use: two 80-minute sessions. Session one covers foundations, the vacuum world, rationality and PEAS. Session two covers environments, architectures, LLM-based agents and the laboratory. Extension material can be used for independent study. Controls: arrows or space to navigate, I for the index, N for notes, F for full screen and E for study mode. Simulations work offline. The PDF shows initial examples and exercise answers without running simulations. No answers are stored or transmitted.",
+    "cls": "",
+    "sub": "Learning outcomes and classroom use",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "The robot arrives.<br>Was its action good?",
+    "body": "<p class=\"statement\">It delivers the parcel in 4 minutes.<br>It crossed a prohibited area.</p><p class=\"prompt\">What else do we need to evaluate its decision?</p>",
+    "notes": "Opening activity, 2 minutes. Collect responses before explaining. Speed measures only one aspect of performance. We also need the goal, constraints, available information, alternatives and consequences. The campus delivery example is fictional and returns throughout the unit. It does not imply that UCLM operates such a service.",
+    "cls": "red question",
+    "sub": "Running example · An autonomous campus delivery",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Four approaches to artificial intelligence",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th></th><th>Human perspective</th><th>Rational perspective</th></tr></thead><tbody><tr><td>Thinking</td><td>Model human cognitive processes.</td><td>Derive conclusions using formal rules.</td></tr><tr><td>Acting</td><td>Produce behaviour comparable to human behaviour.</td><td>Choose actions that support a goal using the available information.</td></tr></tbody></table></div><p class=\"takeaway\">This course mainly adopts the rational-agent perspective.</p>",
+    "notes": "The table crosses two questions: do we focus on thought processes or observable behaviour, and do we use people or a normative rationality criterion as the reference? No single cell describes the whole field. Agents may use logic, search or learning. They do not require neural networks. Ask for an example in each cell: a cognitive model, a theorem prover, a conversational system and a planner.",
+    "cls": "",
+    "sub": "Thinking / acting · Humanly / rationally",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "The Turing Test and its limits",
+    "body": "<div class=\"cols\"><div><div class=\"big-word\">Observable<br>behaviour</div><p>The imitation game compares responses through written conversation.</p></div><div><h3>Conversational test</h3><p>Language processing, knowledge representation, reasoning and learning.</p><h3>Total version</h3><p>Adds perceptual and physical interaction, such as vision and robotics.</p></div></div><p class=\"takeaway\">Convincing conversation does not certify safety, truthfulness or competence at every task.</p>",
+    "notes": "Computer vision and robotics belong to the extension called the Total Turing Test, rather than requirements of the basic conversational test. Turing proposed the imitation game in 1950. It is an operational approach to behaviour, not a universal test of consciousness or general intelligence. Ask which evaluation would suit a vacuum robot that cannot hold a conversation.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied material · Turing (1950), Computing Machinery and Intelligence"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Ideas accumulate",
+    "body": "<div class=\"timeline\"><div><b>1950</b><h3>Imitation</h3><p>Observable behaviour and conversation.</p></div><div><b>1956</b><h3>Dartmouth</h3><p>The field acquires its name.</p></div><div><b>1980s</b><h3>Expert systems</h3><p>Explicit knowledge and rules.</p></div><div><b>2012</b><h3>Deep learning</h3><p>Major progress in visual recognition.</p></div><div><b>2023</b><h3>ReAct</h3><p>Language models interleave reasoning and actions.</p></div></div><p class=\"takeaway\">Intelligent agents predate LLMs. Search, logic, learning and control continue to work together.</p>",
+    "notes": "These milestones are a selective overview, not a sequence in which each approach replaces the previous one. Agent-based thinking belongs to classical AI and predates LLMs. ReAct appeared as a preprint in 2022 and as an ICLR paper in 2023. Do not date the origin of intelligent agents to 2025. The 2012 milestone refers to progress in image classification, not the invention of all neural networks.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Yao et al. (ICLR 2023)"
+  },
+  {
+    "ch": "Foundations",
+    "title": "The basic relationship: agent and environment",
+    "body": "<div class=\"agent-cycle\" aria-label=\"The environment produces observations for the agent. The agent selects actions that change the environment.\"><div class=\"cycle-label top\">Observations · sensors</div><div class=\"cycle-box env\"><small>ENVIRONMENT</small><b>What happens</b><p>Campus, people,<br>doors and obstacles</p></div><div class=\"cycle-link\">⇄</div><div class=\"cycle-box agent\"><small>AGENT</small><b>What decides</b><p>Internal state,<br>goals and program</p></div><div class=\"cycle-label bottom\">Actions · actuators</div></div><p class=\"takeaway\">An observation informs the agent. An action may change the world and future observations.</p>",
+    "notes": "Interpret this relationship as a causal cycle. Cameras and proximity sensors provide observations to a robot, while motors execute actions. For software, one API can read information and another can modify a system. The same component may play different roles depending on how it is used. The environment includes what the agent program does not directly control.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "Function, program and architecture",
+    "body": "<div class=\"cols\"><div><div class=\"equation\">f : P* → A</div><p><b>P*</b>: all finite percept histories.<br><b>A</b>: the set of possible actions.</p><p>The function specifies an action for each history.</p></div><div><div class=\"rows\"><div><strong>Function</strong><span>An abstract description of behaviour.</span></div><div><strong>Program</strong><span>An implementation that computes an action.</span></div><div><strong>Architecture</strong><span>The platform that runs the program and connects inputs and outputs.</span></div></div></div></div><p class=\"takeaway\">Agent = architecture + program</p>",
+    "notes": "The same vacuum rule can run in a simulator or a physical robot. The agent function describes behaviour, while the program realizes that behaviour. P* includes histories of different lengths. A program can summarize the past in memory rather than store every percept. For randomized behaviour, a more general description returns a probability distribution over actions. Do not confuse agent architecture with neural network architecture.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Foundations",
+    "title": "State, observation and belief",
+    "body": "<div class=\"cols\"><div><div class=\"rows\"><div><strong>World state · sₜ</strong><span>The door is closed and someone is behind it.</span></div><div><strong>Observation · oₜ</strong><span>The camera only sees the door.</span></div><div><strong>Belief · bₜ</strong><span>Several hidden states remain possible.</span></div></div></div><div><div class=\"equation smaller\">bₜ(s) = P(sₜ = s | hₜ)</div><p>A probabilistic belief summarizes which states are plausible given the history of observations and actions.</p><p class=\"emphasis\">Partial observation may require memory or inference.</p></div></div>",
+    "notes": "The history hₜ contains observations and previous actions. A belief may be represented as a set of possibilities or a probability distribution. It is not the same as an LLM verbally claiming confidence. Internal state may also include a map, goals and execution memory. Bayesian filtering algorithms are beyond the scope of this introductory unit.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied material · CS188, Agents · Original teaching example"
+  },
+  {
+    "ch": "Vacuum world",
+    "title": "A small world with real decisions",
+    "body": "<div class=\"cols\"><div><div class=\"vac-static\"><div><small>A</small><b>Robot</b><span>Dirty</span></div><div><small>B</small><b>?</b><span>Dirty</span></div></div></div><div><div class=\"rows\"><div><strong>Percept</strong><span>Current location and local dirt status.</span></div><div><strong>Actions</strong><span>Left, right, suck and wait.</span></div><div><strong>Assumptions</strong><span>Two squares. Accurate sensors. Dirt does not return.</span></div><div><strong>Challenge</strong><span>Clean the world while avoiding unnecessary actions.</span></div></div></div></div><p class=\"takeaway\">The lecturer sees both squares. The agent only senses its current square.</p>",
+    "notes": "Distinguish the simulator view from the agent input. Two locations and two dirt conditions per square give 2 × 2 × 2 = 8 world states. A local percept may be consistent with several world states. Actions are deterministic under these assumptions. This demonstration excludes sensor noise, battery limits and new dirt.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Vacuum world",
+    "title": "A perception and memory laboratory",
+    "body": "<div class=\"demo-split\"><div><div id=\"vac-world\" class=\"vac-static\"></div><div class=\"demo-controls\"><button id=\"vac-step\" class=\"primary\">Execute one step</button><button id=\"vac-reset\">Reset</button></div><label class=\"control-label\" for=\"vac-policy\">Agent program</label><select id=\"vac-policy\"><option value=\"reflex\">Simple reflex</option><option value=\"memory\">With memory</option></select><p class=\"fine\">World view for the observer. The agent receives only its local percept.</p></div><div><div class=\"readout\"><span>Available percept</span><b id=\"vac-percept\"></b></div><div class=\"readout\"><span>Agent memory</span><b id=\"vac-memory\"></b></div><div class=\"readout\"><span>Last action / steps</span><b id=\"vac-action\"></b></div><p id=\"vac-log\" class=\"mono small\"></p></div></div><p class=\"takeaway\">When can the agent justify choosing “wait”?</p>",
+    "notes": "Demonstration, 5 minutes. Execute six steps with the reflex agent. It continues moving after both squares are clean. Reset, select memory and repeat. This agent stores known clean, known dirty or unknown for each square. It incorporates local observations and the known deterministic result of sucking. Once both squares are known clean, it waits. This depends on dirt not returning. Changing the policy resets the experiment for a controlled comparison. The PDF shows the initial state, followed by a comparison trace.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied material · Original teaching simulation"
+  },
+  {
+    "ch": "Vacuum world",
+    "title": "Memory changes later actions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Step</th><th>Simple reflex</th><th>With memory</th></tr></thead><tbody><tr><td>1</td><td>Suck in A</td><td>Suck in A</td></tr><tr><td>2</td><td>Move to B</td><td>Move to B</td></tr><tr><td>3</td><td>Suck in B</td><td>Suck in B</td></tr><tr><td>4</td><td>Move to A</td><td>Wait</td></tr><tr><td>5 and 6</td><td>Keep alternating</td><td>Wait</td></tr></tbody></table></div><p class=\"takeaway\">If movement consumes energy, the same cleanliness with less movement can improve performance.</p>",
+    "notes": "Both runs start in A with two dirty squares. After sucking, the memory-based agent incorporates the known effect into its model, so it can wait at step four without revisiting A. A purely reactive policy may be rational if the performance measure does not penalize movement. There is no universally superior program without assumptions and a criterion. Ask what would change if new dirt could appear.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Simulator trace"
+  },
+  {
+    "ch": "Decisions",
+    "title": "Rationality: deciding with what is available",
+    "body": "<p class=\"statement compact\">Choose the action with the best expected performance, given the evidence and the agent’s knowledge.</p><div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Criterion</strong><span>What matters</span></div><div class=\"flowstep\"><small>02</small><strong>Knowledge</strong><span>What is known</span></div><div class=\"flowstep\"><small>03</small><strong>Options</strong><span>What can be done</span></div><div class=\"flowstep\"><small>04</small><strong>History</strong><span>What has been observed</span></div></div>",
+    "notes": "Evaluate rationality when the decision is made. Later outcomes do not retroactively change the information that was available. A rational agent is neither omniscient nor infallible. It should also consider useful information that can be acquired at reasonable cost. Connect this definition to the opening example: delivery speed was only part of the task.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Decisions",
+    "title": "A good decision can still fail",
+    "body": "<div class=\"cols\"><div><p class=\"eyebrow\">TWO ROUTES · HYPOTHETICAL EXAMPLE</p><div class=\"table-scroll\"><table><thead><tr><th>Route</th><th>Outcome</th><th>Utility</th></tr></thead><tbody><tr><td>Safe</td><td>Always arrives</td><td>+6</td></tr><tr><td>Fast</td><td>80% success</td><td>+10</td></tr><tr><td>Fast</td><td>20% failure</td><td>−8</td></tr></tbody></table></div></div><div><div class=\"equation smaller\">EU(fast)<br>= 0.8 · 10 + 0.2 · (−8)<br>= <strong>6.4</strong></div><p>EU(safe) = 6</p><p>The fast route has higher expected utility, although it may fail.</p></div></div><p class=\"takeaway\">Utilities encode the preferences in this example. They are neither minutes nor percentages.</p>",
+    "notes": "The model assumes comparable cardinal utilities and known probabilities. With these values, the fast route is better by 0.4 utility units. If failure were ruled out by a mandatory constraint, this utility comparison would not authorize the route. Utility is not synonymous with money. Ask whether one failure proves irrationality. It does not, unless the agent ignored relevant information available at decision time.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original numerical example · Expected utility"
+  },
+  {
+    "ch": "Decisions",
+    "title": "When does the decision change?",
+    "body": "<div class=\"demo-split\"><div><label class=\"slider-title\" for=\"prob\">Success probability of the fast route</label><div id=\"prob-value\" class=\"giant\">80%</div><input id=\"prob\" type=\"range\" min=\"0\" max=\"100\" value=\"80\"><p>Success: +10 · Failure: −8<br>Safe route: +6</p><p class=\"fine\">Adjust the probability and observe the recommendation.</p></div><div><div class=\"utility-row\"><span>Fast</span><b id=\"fast-eu\">6.4</b><div class=\"bar-track\"><div id=\"fast-bar\" class=\"bar\"></div></div></div><div class=\"utility-row\"><span>Safe</span><b>6.0</b><div class=\"bar-track\"><div class=\"bar safe\"></div></div></div><p id=\"eu-choice\" class=\"emphasis\"></p><p class=\"fine\">Bar length: EU + 8 on a common scale from 0 to 18. The numbers show expected utility.</p></div></div><p class=\"takeaway\">The indifference threshold is p = 14/18 ≈ 77.8%.</p>",
+    "notes": "EU(fast) = 10p − 8(1−p) = 18p−8. Set it equal to 6 to obtain p = 14/18. The slider uses integer percentages, so the visible change occurs between 77% and 78%. Bars are shifted by +8 only to display negative utilities as positive lengths. Do not confuse the display scale with the decision criterion. The simulator compares exact expected values rather than sampling outcomes. The PDF retains p = 0.80.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original teaching simulation"
+  },
+  {
+    "ch": "Decisions",
+    "title": "The metric shapes behaviour",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Isolated metric</th><th>Possible unintended behaviour</th><th>More complete evaluation</th></tr></thead><tbody><tr><td>Alerts closed</td><td>Close alerts without investigation.</td><td>Confirmed detection, errors and response time.</td></tr><tr><td>Tutor messages</td><td>Prolong the conversation.</td><td>Learning on a new task and quality of support.</td></tr><tr><td>Parcels per hour</td><td>Take inappropriate shortcuts.</td><td>Verified deliveries within safety constraints.</td></tr></tbody></table></div><p class=\"takeaway\">External performance, training reward and internal utility can differ.</p>",
+    "notes": "These are hypothetical design examples, not study findings. Distinguish performance measure, which evaluates a trajectory externally; reward, which supplies a learning signal; and utility, which represents decision preferences. An approximate reward does not guarantee the real objective. Ask for another unwanted consequence and a measurement that would reveal it.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Original examples"
+  },
+  {
+    "ch": "Decisions",
+    "title": "Preferences and constraints",
+    "body": "<div class=\"cols\"><div><h3>Preferences with trade-offs</h3><p>Shorter delivery time.<br>Lower energy consumption.<br>Greater comfort.</p><div class=\"equation smaller\">maximize E[U]</div></div><div><h3>Mandatory conditions</h3><p>Respect authorized access.<br>Avoid excluded areas.<br>Stop if a risk remains unresolved.</p><div class=\"equation smaller\">a ∈ A<sub>allowed</sub></div></div></div><p class=\"takeaway\">A high reward does not make a prohibited action permissible.</p>",
+    "notes": "This is a design extension, not a statement of legal requirements. A finite penalty may be offset by another benefit if everything is combined into one sum. Mandatory conditions may instead require action filtering or an independent control. A software agent should check tool permissions before execution. Safe behaviour also requires recognizing uncertainty and escalating when appropriate.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Teaching extension · Constraints of the fictional scenario"
+  },
+  {
+    "ch": "PEAS",
+    "title": "PEAS: specifying the task",
+    "body": "<div class=\"peas\"><div><b>P</b><h3>Performance</h3><p>How is success evaluated?</p></div><div><b>E</b><h3>Environment</h3><p>What world does it operate in?</p></div><div><b>A</b><h3>Actuators</h3><p>What can it change?</p></div><div><b>S</b><h3>Sensors</h3><p>What information does it receive?</p></div></div><p class=\"takeaway\">PEAS describes the task. An architecture explains how the agent tackles it.</p>",
+    "notes": "Check that sensors are not goals and actuators are not algorithms. A tutor’s text response is an action. A document collection may belong to the environment, while the retrieval mechanism acts as a sensor. The exact boundary depends on the specification. Performance should be measurable, and priorities or constraints should be clear when it has several dimensions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "PEAS",
+    "title": "PEAS for the delivery robot",
+    "body": "<div class=\"rows\"><div><strong>P · Performance</strong><span>Correct delivery, time and energy. Prohibited access is a constraint.</span></div><div><strong>E · Environment</strong><span>Buildings, routes, pedestrians, doors and delivery points.</span></div><div><strong>A · Actuators</strong><span>Motors, brake, indicators and delivery notification.</span></div><div><strong>S · Sensors</strong><span>Camera, proximity, localization and battery status.</span></div></div><p class=\"takeaway\">Scenario assumption: the robot receives an authorized destination and may stop or request help.</p>",
+    "notes": "This example is constructed for teaching. Distinguish a notification issued by the agent from a message received from a user. Candidate measures include verified delivery rate, median time and energy per delivery. No arbitrary weights are assigned here. Constraints must hold independently of these weights. Ask which sensor or information source would be needed if localization failed indoors.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original teaching example"
+  },
+  {
+    "ch": "PEAS",
+    "title": "Activity: a tutor for this course",
+    "body": "<div class=\"cols\"><div><div class=\"activity-time\">6 min</div><p>In pairs, specify PEAS and suggest a metric that could encourage unwanted behaviour.</p><p><b>Deliverable:</b> four rows and a justification.</p></div><div><div class=\"reveal-question\"><h3>One possible answer</h3><button class=\"reveal\" aria-expanded=\"false\">Show proposal</button><div class=\"answer\" hidden><div class=\"rows\"><div><strong>P</strong><span>Learning on a new problem and correctness.</span></div><div><strong>E</strong><span>Student, materials and conversation.</span></div><div><strong>A</strong><span>Explain, give hints and request a check.</span></div><div><strong>S</strong><span>Student responses, history and documents.</span></div></div></div></div></div></div><p class=\"takeaway\">Counting quick answers may reward solving the task without helping the student learn.</p>",
+    "notes": "Allow two minutes for P and E, two for A and S, and two for discussion. Do not grade by exact wording. Reward measures that reflect learning and distinguish outputs from inputs. The proposed answer can be revealed in HTML and is visible in the PDF. Satisfaction and message count do not alone demonstrate learning. An unaided transfer problem is one possible evaluation.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Expanded classroom activity"
+  },
+  {
+    "ch": "Environments",
+    "title": "The environment shapes the design",
+    "body": "<p class=\"statement compact\">Before choosing an algorithm,<br>we need to describe the problem.</p><div class=\"dimension-list\">Observability · Uncertainty · Temporal dependence<br>Dynamics · Representation · Other agents · Knowledge</div>",
+    "notes": "Introduce seven dimensions: the original six plus known versus unknown. These describe the task model, rather than giving absolute labels to a technology. The same system can face different environments. Every classification should state its assumptions and explain a resulting design choice.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Environments",
+    "title": "Observing and knowing are different questions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Dimension</th><th>Question</th><th>Design implication</th></tr></thead><tbody><tr><td>Observability</td><td>Can I observe all relevant state information?</td><td>Missing information may call for memory or inference.</td></tr><tr><td>Determinism</td><td>Do the state and action determine the next state?</td><td>Multiple possible outcomes require uncertainty modelling.</td></tr><tr><td>Known / unknown</td><td>Do I know the transition rules or probabilities?</td><td>Unknown rules must be estimated or learned.</td></tr></tbody></table></div><p class=\"takeaway\">The next roll of a fair die has an uncertain outcome and a known distribution.</p>",
+    "notes": "Unknown dynamics and partial observability are different. We can know the laws of a world while being unable to see its state, or see the state without knowing how actions affect it. Determinism refers to a fully specified state and, where relevant, the actions of all agents. Not knowing an opponent’s choice does not imply that the game rules are random.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · CS188, Agents"
+  },
+  {
+    "ch": "Environments",
+    "title": "Time, representation and other agents",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Dimension</th><th>Contrast</th><th>Example with explicit assumptions</th></tr></thead><tbody><tr><td>Temporal dependence</td><td>Episodic / sequential</td><td>Independent image labels / route planning.</td></tr><tr><td>Change during deliberation</td><td>Static / dynamic / semidynamic</td><td>Untimed puzzle / traffic / timed chess.</td></tr><tr><td>Representation</td><td>Discrete / continuous</td><td>Grid squares / real-valued position and speed.</td></tr><tr><td>Interaction</td><td>Single-agent / multi-agent</td><td>Solo puzzle / a game with an opponent.</td></tr></tbody></table></div><p class=\"takeaway\">Discrete spaces may be finite or countably infinite. A task may mix discrete and continuous variables.</p>",
+    "notes": "Discrete does not necessarily mean finite. In a semidynamic setting, the relevant world does not change while the agent deliberates, but performance may change with time. In timed chess, the pieces remain fixed during a player’s turn while the clock runs down. Episodic means that a decision does not affect later tasks within the model, not merely that a task has an ending.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Conceptual clarifications"
+  },
+  {
+    "ch": "Environments",
+    "title": "Classification depends on assumptions",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Property</th><th>Classroom Loopover</th><th>Timed chess</th><th>Campus robot</th></tr></thead><tbody><tr><td>Observation</td><td>Full</td><td>Full¹</td><td>Partial</td></tr><tr><td>Transition</td><td>Deterministic</td><td>Deterministic²</td><td>Stochastic in the model</td></tr><tr><td>Decisions</td><td>Sequential</td><td>Sequential</td><td>Sequential</td></tr><tr><td>During deliberation</td><td>Static, no clock</td><td>Semidynamic</td><td>Dynamic</td></tr><tr><td>Representation</td><td>Discrete</td><td>Discrete + clock</td><td>Mixed</td></tr><tr><td>Agents / rules</td><td>One / known</td><td>Several / known</td><td>Several / partly known</td></tr></tbody></table></div><p class=\"fine\">¹ Game state and clock are available. ² The rules determine each move’s effect. The opponent introduces strategic uncertainty.</p>",
+    "notes": "Use this table to reason rather than memorize labels. In chess, an opponent’s intentions are not part of the formal game state. The clock introduces a time variable. Robot transitions are represented as stochastic because movement and environmental evolution are uncertain. Loopover is static because its board does not change during computation. A timed variant would require revisiting that classification.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Reasoned comparison"
+  },
+  {
+    "ch": "Environments",
+    "title": "One changed assumption changes the agent",
+    "body": "<div class=\"scenario-controls\"><button class=\"scenario active\" data-case=\"plain\">Visible puzzle</button><button class=\"scenario\" data-case=\"hidden\">Hidden tiles</button><button class=\"scenario\" data-case=\"noise\">Noisy action</button><button class=\"scenario\" data-case=\"unknown\">Unknown rules</button></div><div class=\"scenario-display\"><p id=\"scenario-setup\" class=\"lead\"></p><div id=\"scenario-result\"></div></div><p class=\"takeaway\">A classification should explain what the agent needs in order to decide.</p>",
+    "notes": "Change one assumption at a time. Visible puzzle: search over known states. Hidden tiles: maintain possibilities compatible with observations. Noise: consider multiple successors and verify results. Unknown rules: learn the transition model through interaction. These are conceptual variants, not claimed features of the course laboratory. The actual Loopover simulator here retains deterministic rules and full visibility.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original interactive teaching example"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Four decision mechanisms",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Architecture</th><th>Main information</th><th>Question answered</th></tr></thead><tbody><tr><td>Simple reflex</td><td>Current percept and rules</td><td>Which action matches the situation now?</td></tr><tr><td>Model-based</td><td>Memory and a world model</td><td>Which state explains what I observe?</td></tr><tr><td>Goal-based</td><td>Model and goal condition</td><td>Which action sequence can reach the goal?</td></tr><tr><td>Utility-based</td><td>Preferences and consequences</td><td>Which option has the greatest expected value?</td></tr></tbody></table></div><p class=\"takeaway\">Learning can improve any of these architectures. It is not an obligatory final rung.</p>",
+    "notes": "These conceptual categories may be combined. Goal-based agents usually need a model, and a learned policy may execute reactively. More complexity does not guarantee better performance: a rule may suffice for a simple, well-observed task. Compare computational cost, available information and design guarantees.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Simple reflex agents",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Perceive</strong><span>Current input</span></div><div class=\"flowstep\"><small>02</small><strong>Match</strong><span>A rule condition</span></div><div class=\"flowstep\"><small>03</small><strong>Act</strong><span>Associated action</span></div></div><div class=\"cols\"><div><pre><code>if dirt == DIRTY:\n    return SUCK\nif location == A:\n    return RIGHT\nreturn LEFT</code></pre></div><div><h3>Strength</h3><p>Little computation and a fast response.</p><h3>Limitation</h3><p>Situations that look the same receive the same response even when their histories differ.</p></div></div>",
+    "notes": "This pseudocode matches the simulator’s reflex policy. It cannot establish that both squares are already clean. If the full world state were observable, a rule over that state could choose to wait. The limitation therefore depends on what counts as the input percept. Ask which two world states can produce the same percept (A, clean).",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Model-based agents",
+    "body": "<div class=\"equation smaller\">mₜ = update(mₜ₋₁, aₜ₋₁, oₜ)</div><div class=\"cols\"><div><div class=\"rows\"><div><strong>Previous memory</strong><span>What had been observed or inferred.</span></div><div><strong>Previous action</strong><span>Which change was attempted.</span></div><div><strong>New observation</strong><span>Which evidence has now arrived.</span></div></div></div><div><h3>In the vacuum world</h3><p>The agent remembers that A is clean while it is in B.</p><h3>If the world changes</h3><p>Memory may become stale and require revision.</p></div></div><p class=\"takeaway\">A model supports state estimation. It does not guarantee that the estimate is correct.</p>",
+    "notes": "mₜ denotes internal agent state, which need not equal the actual world state sₜ. The update uses transition and perception models. With deterministic, fully known dynamics it may maintain an exact estimate. Noise and hidden information may require a distribution instead. The previous action matters because the agent also changes its environment.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Supplied material · Teaching notation"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Goal-based agents",
+    "body": "<div class=\"cols\"><div><h3>Goal</h3><p>The parcel is at the authorized destination.</p><h3>Plan</h3><p>A sequence of actions that reaches that condition.</p><h3>Replanning</h3><p>A new observation can invalidate the route.</p></div><div><svg viewBox=\"0 0 640 430\" role=\"img\" aria-label=\"A search from an initial state to a blocked successor or a possible step leading to a goal\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"><path d=\"M320 95V150H130V205M320 150H505V205M505 285V340\"/></g><g class=\"svg-node\"><rect x=\"220\" y=\"25\" width=\"200\" height=\"70\" rx=\"4\"/><rect x=\"30\" y=\"205\" width=\"200\" height=\"80\" rx=\"4\"/><rect x=\"405\" y=\"205\" width=\"200\" height=\"80\" rx=\"4\"/><rect x=\"405\" y=\"340\" width=\"200\" height=\"70\" rx=\"4\"/></g><g fill=\"currentColor\" text-anchor=\"middle\" font-size=\"25\"><text x=\"320\" y=\"70\">Start</text><text x=\"130\" y=\"255\">Blocked</text><text x=\"505\" y=\"255\">Possible step</text><text x=\"505\" y=\"385\">Goal</text></g><g font-size=\"21\" fill=\"currentColor\"><text x=\"42\" y=\"178\">Route A</text><text x=\"527\" y=\"178\">Route B</text></g></svg></div></div><p class=\"takeaway\">Search simulates consequences before acting.</p>",
+    "notes": "The diagram shows modelled possibilities, not movements the robot has already executed. Distinguish a goal state from a particular route. A real action may fail and require observation and replanning. Connect to Unit 2: states, actions, transitions, goal and cost. Search requires a model on which consequences can be simulated.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted from the supplied course material"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Utility-based agents",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Feasible plan</th><th>Normalized time t</th><th>Normalized energy e</th><th>U = −(0.7t + 0.3e)</th></tr></thead><tbody><tr><td>A</td><td>0.2</td><td>0.8</td><td>−0.38</td></tr><tr><td>B</td><td>0.5</td><td>0.3</td><td>−0.44</td></tr></tbody></table></div><div class=\"cols\"><div><h3>With these weights</h3><p>A has greater utility and is preferred.</p></div><div><h3>When energy matters more</h3><p>With U = −(0.3t + 0.7e), B wins:<br>−0.36 versus −0.62.</p></div></div><p class=\"takeaway\">Weights express preferences. Normalization avoids adding incompatible scales.</p>",
+    "notes": "Synthetic example with t and e between zero and one, where smaller is better. A gives −(0.14+0.24)=−0.38, and B gives −(0.35+0.09)=−0.44. Reversing the weights produces −0.62 for A and −0.36 for B. Inappropriate normalization can distort the interpretation of weights. Both plans are assumed feasible and authorized. Under uncertainty, compare expected utilities.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original numerical example"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Learning improves behaviour",
+    "body": "<div class=\"learning-layout\"><div class=\"learning-main\"><small>PERFORMANCE ELEMENT</small><h3>Selects actions</h3><p>Uses the current behaviour.</p></div><div class=\"learning-rest\"><div class=\"rows\"><div><strong>Critic</strong><span>Evaluates experience against the criterion.</span></div><div><strong>Learning element</strong><span>Updates behaviour or its supporting knowledge.</span></div><div><strong>Problem generator</strong><span>Proposes informative experiences.</span></div></div></div></div><p class=\"takeaway\">Exploration can provide useful information, but it also has a cost.</p>",
+    "notes": "These are functional roles, not necessarily four separate networks. A classifier may learn before deployment and then remain fixed. A reinforcement-learning agent may update through interaction, but we must specify when learning occurs and which changes are allowed. Connect to Unit 6. The performance element selects actions and is not itself the external performance measure.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Sutton and Barto (2018), further context"
+  },
+  {
+    "ch": "Architectures",
+    "title": "Decision-making also uses resources",
+    "body": "<p class=\"statement compact\">A solution that arrives too late may no longer be useful.</p><div class=\"cols\"><div><h3>Bounded rationality</h3><p>Time, memory and computational capacity constrain deliberation.</p></div><div><h3>Value of information</h3><p>More observation is worthwhile when its expected benefit exceeds its cost.</p></div></div><p class=\"takeaway\">Example: checking a door before planning the entire route may prevent a detour.</p>",
+    "notes": "This extension introduces two concepts without deriving their algorithms. Bounded rationality recognizes limits on computation. Information has value when it can improve the decision. If a query costs 1 utility unit and increases the optimal expected utility from 5 to 7, its net value is 1. These hypothetical values must use a common scale. Additional data are not useful when they cannot improve a decision or arrive too late.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Teaching extension · Original example"
+  },
+  {
+    "ch": "LLM-based agents",
+    "title": "The language model within an agent",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Observation</strong><span>Request and state</span></div><div class=\"flowstep\"><small>02</small><strong>Decision</strong><span>Select a next step</span></div><div class=\"flowstep\"><small>03</small><strong>Tool</strong><span>Execute an action</span></div><div class=\"flowstep\"><small>04</small><strong>Result</strong><span>Verify and update</span></div></div><div class=\"cols\"><div><h3>The LLM may propose</h3><p>A query, a response or a structured action.</p></div><div><h3>The system must control</h3><p>Permissions, arguments, execution, limits and result verification.</p></div></div><p class=\"takeaway\">ReAct studies the combination of expressed reasoning, actions and new observations.</p>",
+    "notes": "This extension draws on ReAct without claiming it solves every problem. The approach interleaves reasoning traces and actions in an environment. Generated text alone does not prove that an action occurred. An engineered orchestrator controls tools, interprets results and determines completion. The LLM is one component. In the broad formal sense, the term agent also covers much simpler systems.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Yao et al. (2023), ReAct · Original engineering adaptation"
+  },
+  {
+    "ch": "LLM-based agents",
+    "title": "Fixed workflow and dynamic selection",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Aspect</th><th>Predefined workflow</th><th>Agent with dynamic selection</th></tr></thead><tbody><tr><td>Step order</td><td>The design fixes transitions.</td><td>Depends on runtime observations and decisions.</td></tr><tr><td>Strength</td><td>Predictable execution of a bounded process.</td><td>Adaptation when required steps change.</td></tr><tr><td>Challenge</td><td>Exceptions must be modelled.</td><td>It may select unnecessary or incorrect steps.</td></tr><tr><td>Hybrid design</td><td>Mandatory controls and known operations.</td><td>Limited choice among authorized actions.</td></tr></tbody></table></div><p class=\"takeaway\">Additional autonomy needs a concrete purpose and an evaluation of its outcome.</p>",
+    "notes": "These are ways of organizing execution, not mutually exclusive classes of intelligence. Fixed workflows may use AI models, and agents may call deterministic subroutines. A predefined workflow may suffice for a task with clear steps. In a hybrid, a model might choose which document to query but be unable to bypass permissions. This is a teaching synthesis, not a normative taxonomy.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original teaching extension"
+  },
+  {
+    "ch": "LLM-based agents",
+    "title": "Tool results can also fail",
+    "body": "<div class=\"rows\"><div><strong>Untrusted input</strong><span>An external document may contain instructions unrelated to the task.</span></div><div><strong>Invalid action</strong><span>Malformed arguments or insufficient permissions may block execution.</span></div><div><strong>Uncertain result</strong><span>A timeout does not establish whether the action occurred.</span></div><div><strong>Premature completion</strong><span>A convincing answer may hide an unverified objective.</span></div></div><p class=\"takeaway\">For the tutor: consult a source, check the evidence and acknowledge what cannot be verified.</p>",
+    "notes": "These are design-risk examples. Possible controls include separating external data from control instructions, checking schemas and permissions, recording execution state and verifying effects before retrying. High-impact actions may require human review. These measures reduce risk but do not constitute a universal guarantee. Useful traces record inputs, actions, results and checks rather than depending on a model’s verbal explanation.",
+    "cls": "",
+    "sub": "",
+    "ref": "Teaching extension · Hypothetical scenarios"
+  },
+  {
+    "ch": "LLM-based agents",
+    "title": "Evaluate trajectories as well as answers",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>What to assess</th><th>A classroom evaluation approach</th></tr></thead><tbody><tr><td>Task success</td><td>Verify the final condition rather than accept a success claim.</td></tr><tr><td>Constraints</td><td>Count unauthorized actions or prohibited states.</td></tr><tr><td>Cost</td><td>Measure time, calls and resources under a shared budget.</td></tr><tr><td>Robustness</td><td>Repeat with varied inputs and controlled failures.</td></tr><tr><td>Generalization</td><td>Use held-out cases that were not used to tune the system.</td></tr></tbody></table></div><p class=\"takeaway\">Fair comparisons share tasks, conditions, budgets and evaluation criteria.</p>",
+    "notes": "Build a small test collection: a normal task, missing data, a failing tool and an ambiguous request. If behaviour is random, run several repetitions and report variation rather than only the best attempt. A simple baseline reveals whether added complexity helps. In the lab, assess valid successors, costs and invalid-argument handling. No experimental results are invented here.",
+    "cls": "",
+    "sub": "",
+    "ref": "Proposed classroom evaluation"
+  },
+  {
+    "ch": "Loopover",
+    "title": "The actual laboratory: geared Loopover",
+    "body": "<div class=\"cols\"><div><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">00</span><span class=\"\">01</span><span class=\"\">02</span><span class=\"\">03</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><h3>A toroidal 4 × 4 board</h3><p>No empty square. Tiles leaving one edge reappear at the opposite edge.</p><h3>A coupled action</h3><p><code>02+</code> shifts row 0 right, then column 2 down.</p></div></div><p class=\"takeaway\">The second transformation uses the column index specified in the action.</p>",
+    "notes": "The embedded image on slide 34 of the supplied Unit 1 file specifies geared rather than simple Loopover. A plus sign means row right followed by column down. A minus sign means row left followed by column up. The column retains its original index and moves after the row. The lab encodes tiles 00 to 15 in a 32-character string. Exact implementation details should be checked against the supplied lab project, whose code was not attached to this request.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Laboratory image embedded in original Unit 1 slide 34"
+  },
+  {
+    "ch": "Loopover",
+    "title": "One action, two transformations",
+    "body": "<div class=\"loop-demo\"><div><div id=\"loop-board\" class=\"loop-board\" aria-label=\"Current Loopover board\"></div><div class=\"loop-count\">Completed actions: <b id=\"loop-count\">0</b></div></div><div><div class=\"loop-selects\"><label>Row<select id=\"loop-row\"><option>0</option><option>1</option><option>2</option><option>3</option></select></label><label>Column<select id=\"loop-col\"><option>0</option><option>1</option><option selected>2</option><option>3</option></select></label><label>Sign<select id=\"loop-dir\"><option value=\"1\">+</option><option value=\"-1\">−</option></select></label></div><div class=\"demo-controls\"><button id=\"loop-step\" class=\"primary\">1 · Move row</button><button id=\"loop-reset\">Reset</button><button id=\"loop-mix\">Mixed example</button></div><p id=\"loop-explain\" class=\"lead\"></p><div class=\"readout\"><span>Linear state: 32 characters</span><code id=\"loop-state\"></code></div><p class=\"fine\">The demonstration splits a legal action into two phases. The intermediate board is not a complete successor.</p></div></div>",
+    "notes": "Start from the ordered board with row 0, column 2 and plus selected. First click: row 0 becomes 03 00 01 02. Second click: column 2 shifts down and the first row becomes 03 00 14 02. Selectors are disabled between phases to keep the action consistent. The mixed example applies three fixed legal actions: 02+, 13− and 31+. Reset restores the goal. This simulator explores transitions rather than calculating an optimal solution. The PDF shows the initial board and the next screen explains the transition.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Original simulator based on the visible laboratory specification"
+  },
+  {
+    "ch": "Loopover",
+    "title": "The 02+ transition, step by step",
+    "body": "<div class=\"board-sequence\"><div><h3>Initial state</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">00</span><span class=\"\">01</span><span class=\"\">02</span><span class=\"\">03</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><h3>1 · Row 0 right</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"accentcell\">03</span><span class=\"accentcell\">00</span><span class=\"accentcell\">01</span><span class=\"accentcell\">02</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"\">06</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"\">10</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"\">14</span><span class=\"\">15</span></div></div><div><h3>2 · Column 2 down</h3><div class=\"loop-small\" style=\"grid-template-columns:repeat(4,1fr)\"><span class=\"\">03</span><span class=\"\">00</span><span class=\"accentcell\">14</span><span class=\"\">02</span><span class=\"\">04</span><span class=\"\">05</span><span class=\"accentcell\">01</span><span class=\"\">07</span><span class=\"\">08</span><span class=\"\">09</span><span class=\"accentcell\">06</span><span class=\"\">11</span><span class=\"\">12</span><span class=\"\">13</span><span class=\"accentcell\">10</span><span class=\"\">15</span></div></div></div><p class=\"takeaway\">Successor state: <code>03001402040501070809061112131015</code></p>",
+    "notes": "The row transformation precedes the column transformation. After the row move, column 2 contains 01, 06, 10, 14. Moving it down produces 14, 01, 06, 10. This check prevents implementing both transformations independently on the original state. The successor must contain each tile exactly once. Changing transformation order generally changes the result.",
+    "cls": "",
+    "sub": "",
+    "ref": "Example calculated from the laboratory rules"
+  },
+  {
+    "ch": "Loopover",
+    "title": "Formulating the search problem",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Component</th><th>Example specification</th></tr></thead><tbody><tr><td>State s</td><td>A permutation of 00…15, encoded row by row in 32 characters.</td></tr><tr><td>Initial state s₀</td><td>The valid configuration received by the program.</td></tr><tr><td>Actions A(s)</td><td>Row-column pairs and a sign: 4 × 4 × 2 = 32 actions.</td></tr><tr><td>Transition T(s,a)</td><td>Rotate the row, then the specified column.</td></tr><tr><td>Goal G(s)</td><td>s = 00010203040506070809101112131415.</td></tr><tr><td>Cost c(s,a)</td><td>Here, one unit per complete coupled action.</td></tr></tbody></table></div><p class=\"takeaway\">16! ≈ 2.09 × 10¹³ bounds the permutation space. It is not a count of reachable states.</p>",
+    "notes": "This is a permutation bound, not a claim that all arrangements are reachable under the rules. It explains why unrestricted sequence enumeration is expensive. There are 32 syntactic actions per state, but we do not claim all successors are distinct. Unit action cost is the teaching convention; follow the exact lab specification when implementing. The goal is a predicate rather than a picture.",
+    "cls": "",
+    "sub": "",
+    "ref": "Laboratory material · Calculations and explicit cost convention"
+  },
+  {
+    "ch": "Loopover",
+    "title": "Search does not execute every path",
+    "body": "<div class=\"cols\"><div><h3>State-space graph</h3><p>Different action sequences may reach the same state.</p><h3>Search tree</h3><p>Represents explored paths and may repeat states.</p></div><div><h3>Consequence</h3><p>Recording visited states can prevent redundant work.</p><h3>In the laboratory</h3><p>Correct transitions come before evaluating a search algorithm.</p></div></div><p class=\"takeaway\">For coupled actions, changing + to − without reversing the order need not undo the action.</p>",
+    "notes": "Optional extension: the inverse of a composition reverses operation order. A row-then-column move is undone by reversing the column and then the row. The opposite-sign action still applies row then column, so it is generally not the inverse. Validate calculated cases and properties such as preserving all tiles. The original lab image mentions Java, Maven, PicoCLI, bitboards and a verify command, but that code has not been inspected.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Analysis of the transformations"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "Workshop: a cybersecurity agent",
+    "body": "<p class=\"lead\">An agent reviews access alerts for a university laboratory. It can query logs, request context and propose a response.</p><div class=\"cols\"><div><div class=\"activity-time\">10 min</div><p>Teams of three.<br>A one-page design.</p></div><div><div class=\"rows\"><div><strong>1 · Specify</strong><span>Complete PEAS and one constraint.</span></div><div><strong>2 · Characterize</strong><span>Justify observability, dynamics and other agents.</span></div><div><strong>3 · Design</strong><span>Choose an architecture and necessary memory.</span></div><div><strong>4 · Evaluate</strong><span>Define a normal case and a failure case.</span></div></div></div></div><p class=\"takeaway\">Assumption: blocking an account requires authorization. Logs may be incomplete.</p>",
+    "notes": "Fictional introductory exercise connected to professional practice. Suggested roles: specification, architecture and critical review. The system has no access to real accounts or records. Distinguish proposing an action from executing it. Reward designs that seek more context or abstain when an alert is ambiguous. An LLM is not required. A justified rule-based design with memory is valid.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original classroom activity"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "A reasoned workshop solution",
+    "body": "<div class=\"rows\"><div><strong>PEAS</strong><span>P: confirmed incidents and false positives. E: accounts and logs. A: query and propose. S: alerts and context.</span></div><div><strong>Environment</strong><span>Partially observable, sequential and dynamic. Other actors may change their behaviour.</span></div><div><strong>Design</strong><span>Per-alert memory, associated evidence and review status. Rules or utility depending on scope.</span></div><div><strong>Evaluation</strong><span>Confirmed alert, false positive, missing record and unauthorized request.</span></div></div><p class=\"takeaway\">Suggested rubric: PEAS 3 points · environment 2 · architecture and memory 3 · evaluation 2.</p>",
+    "notes": "There is no unique solution. Strong answers connect each classification to a design choice: partial observability, for example, motivates maintaining evidence and seeking additional context. More automation requires a clear authorization model and effect verification. An LLM alone does not solve observability, permission or metric problems. The rubric is a proposal, not the official course grading scheme.",
+    "cls": "",
+    "sub": "",
+    "ref": "Indicative solution and proposed rubric"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "Six questions to check understanding",
+    "body": "<div class=\"check-grid\"><div class=\"check-item\"><b>01</b><p>What does P* represent?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>All finite percept histories, not just the current percept.</div></div><div class=\"check-item\"><b>02</b><p>Can a rational decision fail?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Yes. It is assessed by expected performance given the available information.</div></div><div class=\"check-item\"><b>03</b><p>Does unknown mean partially observable?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>No. Unknown rules and hidden state are different difficulties.</div></div><div class=\"check-item\"><b>04</b><p>Must a goal-based agent learn?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Not necessarily. It may plan with a supplied model.</div></div><div class=\"check-item\"><b>05</b><p>What does utility add to a goal?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>It compares the quality of different acceptable outcomes.</div></div><div class=\"check-item\"><b>06</b><p>How many phases does 02+ have?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Two: row 0 right, then column 2 down. Together they count as one action.</div></div></div>",
+    "notes": "Retrieval activity, 4 minutes. Ask students to answer before revealing each explanation. Answers are visible in print. For informal assessment, ask each student to identify the idea that remains least clear. The known-versus-observable item targets a common confusion. For Loopover, the transformation order is part of the answer.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original learning check"
+  },
+  {
+    "ch": "Synthesis",
+    "title": "Misconceptions we can now correct",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Incomplete or incorrect claim</th><th>Correction</th></tr></thead><tbody><tr><td>“Success proves rationality.”</td><td>Evaluate the choice using information available before the outcome.</td></tr><tr><td>“Every agent needs an LLM.”</td><td>Rules, search and other methods also implement agents.</td></tr><tr><td>“Learning means remembering.”</td><td>Storing information does not necessarily improve a rule or model.</td></tr><tr><td>“All discrete spaces are finite.”</td><td>A discrete set may be countably infinite.</td></tr><tr><td>“A goal is enough to compare plans.”</td><td>A goal tests achievement. Cost or utility compares alternatives.</td></tr></tbody></table></div>",
+    "notes": "Ask pairs to select one claim and construct a counterexample. Possibilities include a reflex vacuum agent, exact memory that does not learn, integers as an infinite discrete set, and different-cost routes reaching the same goal. Reward conceptual reasoning rather than sweeping claims about intelligence.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Clarifications and original examples"
+  },
+  {
+    "ch": "Reference",
+    "title": "Essential vocabulary",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody><tr><td>Percept</td><td>An input received by the agent at a particular instant.</td></tr><tr><td>Agent function</td><td>A mapping from percept histories to actions.</td></tr><tr><td>Policy</td><td>A rule for selecting actions from represented information.</td></tr><tr><td>Belief state</td><td>A representation of possibilities about hidden state.</td></tr><tr><td>Utility</td><td>A value representing preferences over outcomes.</td></tr><tr><td>Transition model</td><td>A description of the effects of actions on state.</td></tr><tr><td>Goal test</td><td>A predicate checking whether the objective is satisfied.</td></tr></tbody></table></div>",
+    "notes": "Use this glossary to connect the lecture, textbook and lab terminology. Policy and agent function are related, but a policy often takes the state, a belief or a particular information representation as input. Observation and state should only be identified when the model supports full observability.",
+    "cls": "",
+    "sub": "",
+    "ref": "Supplied material · Supporting glossary"
+  },
+  {
+    "ch": "Reference",
+    "title": "Readings for consolidation and extension",
+    "body": "<div class=\"references\"><p><b>Course foundation</b><br>01_Presentacion_Tema1_Intelligent_Agents(2).pptx, including its visual specification of geared Loopover.</p><p><b>Russell and Norvig · Artificial Intelligence: A Modern Approach</b><br>Chapters 1 and 2: agents, rationality, PEAS and architectures.<br><a href=\"https://aima.cs.berkeley.edu/\">aima.cs.berkeley.edu</a></p><p><b>UC Berkeley · CS188, Agents</b><br>A concise overview of agents and environments.<br><a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/search/agents.html\">CS188 · Agents</a></p><p><b>Sutton and Barto (2018) · Reinforcement Learning: An Introduction</b><br>Second edition. Further reading towards the reinforcement learning unit.<br><a href=\"http://incompleteideas.net/book/the-book-2nd.html\">The authors’ book page</a></p></div>",
+    "notes": "The supplied presentation is the main source of the unit structure. Explanations, cases and simulations have been reworked for this presentation. AIMA provides the general reference; CS188 offers a concise online overview. Sutton and Barto is further reading rather than a prerequisite. External references require internet access, but the presentation and simulations do not.",
+    "cls": "",
+    "sub": "",
+    "ref": "Primary sources and supplied teaching material"
+  },
+  {
+    "ch": "Reference",
+    "title": "A modern reading and a closing question",
+    "body": "<div class=\"cols\"><div><div class=\"references\"><p><b>Yao et al. (2023)</b><br>ReAct: Synergizing Reasoning and Acting in Language Models.<br>ICLR 2023. Initial preprint: 2022.</p><p><a href=\"https://arxiv.org/abs/2210.03629\">Original paper</a><br><a href=\"https://react-lm.github.io/\">Authors’ project and examples</a></p></div></div><div><h3>Reading question</h3><p>Which part belongs to the model, and which depends on interaction with the environment?</p><h3>Next unit</h3><p>Formulating problems and searching for action sequences that reach a goal.</p></div></div><p class=\"takeaway\">We can now assess the opening robot: goal, information, actions, constraints and consequences.</p>",
+    "notes": "Return to the robot that delivered in four minutes after crossing a prohibited area. The observed outcome alone cannot establish performance. A design must specify allowed actions and the information used to decide. Ask for one sentence linking agents and search: a goal-based agent can simulate transitions to choose an action sequence. ReAct is a specific research approach rather than a correctness guarantee.",
+    "cls": "",
+    "sub": "",
+    "ref": "Yao et al. · DOI 10.48550/arXiv.2210.03629"
+  }
+]

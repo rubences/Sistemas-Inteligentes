@@ -1,0 +1,542 @@
+[
+  {
+    "ch": "Opening",
+    "title": "Reinforcement<br>learning",
+    "body": "<p class=\"cover-sub\">Unit 6 · Intelligent Systems</p><div class=\"cover-meta\">School of Computer Science · Ciudad Real<br>Universidad de Castilla-La Mancha<br><strong>Rubén Juárez Cádiz</strong></div>",
+    "notes": "This English unit expands the supplied 32-slide lecture into 60 slides. Five offline laboratories connect return, planning, updates, exploration and learning. The cover is conceptual AI-generated artwork. Mathematical diagrams and laboratory results follow the explicit models described in the slides.",
+    "cls": "cover dark",
+    "sub": "",
+    "ref": "UCLM · Computer Science Degree · 2026/2027"
+  },
+  {
+    "ch": "Opening",
+    "title": "Learning connects decisions with their consequences",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Formulate</strong><span>State, action, reward and objective.</span></div><div class=\"flowstep\"><small>02</small><strong>Evaluate</strong><span>Return, values and Bellman backups.</span></div><div class=\"flowstep\"><small>03</small><strong>Learn</strong><span>Monte Carlo, TD and action values.</span></div><div class=\"flowstep\"><small>04</small><strong>Test</strong><span>Exploration, evaluation and failure modes.</span></div></div><p class=\"takeaway\">By the end, explain an update numerically and justify what an experiment does and does not show.</p>",
+    "notes": "Suggested sequence: three 80-minute classes plus a practical session. Class 1 covers the MDP and value iteration. Class 2 develops sample updates and exploration. Class 3 covers implementation, evaluation and extensions. Use the laboratories to ask students for predictions before changing parameters. The HTML includes notes and mobile study mode. PDF exercise answers are visible.",
+    "cls": "",
+    "sub": "60 slides · Five interactive laboratories · Worked exercises",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Course connection",
+    "title": "Search plans; reinforcement learning improves behaviour",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Course idea</th><th>Main question</th><th>What must be available?</th></tr></thead><tbody><tr><td>Search</td><td>Which path reaches the goal?</td><td>A state model and legal transitions.</td></tr><tr><td>Adversarial search</td><td>Which move survives a reply?</td><td>Game rules and an opponent assumption.</td></tr><tr><td>Reinforcement learning</td><td>Which behaviour earns return?</td><td>Experience and a reward definition.</td></tr></tbody></table></div><p class=\"takeaway\">Planning and learning can coexist. A learned model can support search.</p>",
+    "notes": "The original course connects agents, search, CSPs and games to learning. RL does not require that every aspect of the environment be unknown. A simulator may implement known rules while an agent learns a useful policy. The important distinction is how the decision procedure obtains its values or policy, rather than a rigid division between known and unknown worlds.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Feedback",
+    "title": "The learning signal changes the problem",
+    "body": "<div class=\"rows\"><div><strong>Supervised learning</strong><span>Examples provide target outputs, such as image labels.</span></div><div><strong>Unsupervised learning</strong><span>Data reveal structure without a supplied target label.</span></div><div><strong>Reinforcement learning</strong><span>Actions influence later data, and rewards evaluate their consequences.</span></div></div><p class=\"takeaway\">A reward usually gives no explicit label for the best action in the current state.</p>",
+    "notes": "These are learning settings, not mutually exclusive software architectures. An RL system may also use supervised representation learning or imitation learning. Unlike a fixed labelled dataset, interaction changes which states the agent visits. A bad action may have consequences much later, creating a credit-assignment problem.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Interaction",
+    "title": "The reward arrives after the action",
+    "body": "<svg class=\"rl-loop\" viewBox=\"0 0 1100 360\" role=\"img\" aria-label=\"The agent observes state s t and chooses action a t. The environment returns reward r t plus 1 and next state s t plus 1.\"><defs><marker id=\"arr6\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"8\" markerHeight=\"8\" orient=\"auto-start-reverse\"><path d=\"M0 0L10 5L0 10z\" fill=\"#b80c33\"/></marker></defs><rect x=\"40\" y=\"110\" width=\"320\" height=\"130\" rx=\"5\"/><rect x=\"740\" y=\"110\" width=\"320\" height=\"130\" rx=\"5\"/><text x=\"200\" y=\"162\" class=\"node-title\">AGENT</text><text x=\"200\" y=\"204\">policy + learning rule</text><text x=\"900\" y=\"162\" class=\"node-title\">ENVIRONMENT</text><text x=\"900\" y=\"204\">transition + reward</text><path d=\"M360 143H740\" marker-end=\"url(#arr6)\"/><text x=\"550\" y=\"116\">action aₜ</text><path d=\"M740 219H360\" marker-end=\"url(#arr6)\"/><text x=\"550\" y=\"259\">reward rₜ₊₁, next state sₜ₊₁</text></svg><p class=\"takeaway\">At time t: observe sₜ, choose aₜ, then receive rₜ₊₁ and sₜ₊₁.</p>",
+    "notes": "We use uppercase letters for random variables in equations and lowercase letters for realized samples. A policy maps the information available to the agent to actions. In a fully observed MDP that information is the state. If the observation is incomplete, calling it a state does not automatically make the problem Markovian.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source interaction loop · Explicit timing convention"
+  },
+  {
+    "ch": "MDP",
+    "title": "An MDP defines a sequential decision problem",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Element</th><th>Definition in this unit</th></tr></thead><tbody><tr><td>S, A(s)</td><td>States and legal actions in each state.</td></tr><tr><td>P(s′ | s,a)</td><td>Probability of the next state after an action.</td></tr><tr><td>R(s,a,s′)</td><td>Expected immediate reward for that transition.</td></tr><tr><td>γ and start distribution</td><td>Discount factor and where episodes begin.</td></tr><tr><td>Terminal states</td><td>States after which no further task rewards occur.</td></tr></tbody></table></div><p class=\"takeaway\">The policy π is what we evaluate or improve; it is separate from the environment model.</p>",
+    "notes": "A common MDP tuple is (S,A,P,R,γ). We additionally state the initial-state distribution and terminal convention because they affect experiments. When rewards are stochastic, R may be an expectation or the joint distribution p(s′,r|s,a) may be used. Our gridworld rewards are deterministic once the next cell is known.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "State design",
+    "title": "A useful state retains what predicts the next step",
+    "body": "<div class=\"equation smaller\">P(s′,r | history,a) = P(s′,r | s,a)</div><div class=\"cols\"><div><h3>Enough information</h3><p>A robot state may need position, velocity and remaining battery.</p></div><div><h3>Missing information</h3><p>A single camera frame may hide motion or an obstacle behind the robot.</p></div></div><p class=\"takeaway\">For a task with a true deadline, include remaining time when it changes the decision problem.</p>",
+    "notes": "This is the Markov property for transitions and rewards. State compression is useful only if relevant predictive information survives. A history or recurrent internal representation can help under partial observation, but its adequacy must still be assessed. In a finite-horizon task, two identical physical positions with different time remaining may have different values.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Running example",
+    "title": "One gridworld, fully specified",
+    "body": "<div class=\"cols\"><div><div class=\"gridworld static-grid\" role=\"img\" aria-label=\"Three rows, four columns. Positive terminal at row 1 column 4. Negative terminal at row 2 column 4. Wall at row 2 column 2. Start at row 3 column 1.\"><div class=\"cell \"><small>(1,1)</small><b>·</b></div><div class=\"cell \"><small>(1,2)</small><b>·</b></div><div class=\"cell \"><small>(1,3)</small><b>·</b></div><div class=\"cell terminal\"><small>(1,4)</small><b>+1</b></div><div class=\"cell \"><small>(2,1)</small><b>·</b></div><div class=\"cell wall\"><small></small><b>Wall</b></div><div class=\"cell \"><small>(2,3)</small><b>·</b></div><div class=\"cell terminal\"><small>(2,4)</small><b>−1</b></div><div class=\"cell \"><small>(3,1)</small><b>Start</b></div><div class=\"cell \"><small>(3,2)</small><b>·</b></div><div class=\"cell \"><small>(3,3)</small><b>·</b></div><div class=\"cell \"><small>(3,4)</small><b>·</b></div></div></div><div><h3>Four actions</h3><p>Up, right, down and left.</p><h3>Movement</h3><p>Default: 0.8 intended, 0.1 to each side. A wall or boundary keeps the agent in place.</p><h3>Reward on entry</h3><p>+1 or −1 for a terminal. Otherwise −0.04, including a blocked move.</p></div></div><p class=\"fine\">Start: (3,1). γ=0.9. Terminal values are 0: their reward has already been received on entry.</p>",
+    "notes": "Rows count from top to bottom and columns from left to right. The source introduces a three-by-four grid with a wall and two terminals; this version makes every probability and reward convention explicit. The terminal reward replaces the ordinary step reward. We do not add −0.04 to a terminal reward. The deterministic variant sets intended probability to 1.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source gridworld structure · Explicit teaching model"
+  },
+  {
+    "ch": "Policy",
+    "title": "A policy specifies the agent’s choices",
+    "body": "<div class=\"cols\"><div><h3>Deterministic</h3><div class=\"equation smaller\">a = π(s)</div><p>Each state selects one action.</p></div><div><h3>Stochastic</h3><div class=\"equation smaller\">π(a | s)</div><p>Each state defines a probability distribution over legal actions.</p></div></div><p class=\"takeaway\">For every state, probabilities must be nonnegative and sum to 1.</p>",
+    "notes": "A stochastic policy can implement exploration, represent uncertainty in action preferences, or be required by a problem setting. In a finite discounted fully observed MDP, a deterministic stationary optimal policy exists. That statement does not extend automatically to partially observed or multi-agent settings. Stationary means the rule does not depend explicitly on time, provided the state already contains required task information.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Objective",
+    "title": "Return accumulates rewards over time",
+    "body": "<div class=\"equation smaller\">Gₜ = Rₜ₊₁ + γRₜ₊₂ + γ²Rₜ₊₃ + …</div><div class=\"rows\"><div><strong>Reward</strong><span>The immediate signal from one transition.</span></div><div><strong>Return</strong><span>The discounted total along a trajectory.</span></div><div><strong>Objective</strong><span>Maximize expected return under the chosen start distribution.</span></div></div><p class=\"takeaway\">One lucky episode does not establish a high expected return.</p>",
+    "notes": "This unit focuses on expected discounted return. Other objectives include average reward, constrained return and risk-sensitive criteria. The first reward receives discount exponent zero. The random return of a sampled trajectory and its expectation are different quantities. A value function estimates the latter.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Worked return",
+    "title": "A delayed payoff can justify an initial cost",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Option</th><th>Reward sequence</th><th>Return at γ=0.9</th></tr></thead><tbody><tr><td>Quick</td><td>[1] then terminate</td><td>1</td></tr><tr><td>Patient</td><td>[−1, −1, 5] then terminate</td><td>−1 − 0.9 + 0.9²×5 = 2.15</td></tr></tbody></table></div><div class=\"equation smaller\">Gₜ = Rₜ₊₁ + γGₜ₊₁</div><p class=\"takeaway\">The last return is 5. Working backwards gives 3.5, then 2.15.</p>",
+    "notes": "This original example makes the reward timing explicit. The patient trajectory has three transitions and no reward after the final 5. Backward recurrence gives G2=5, G1=−1+0.9×5=3.5 and G0=−1+0.9×3.5=2.15. The comparison is deterministic; no expectation over alternate outcomes is needed.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Laboratory 1",
+    "title": "Discounting can change the preferred trajectory",
+    "body": "<div class=\"lab-two\"><div><label class=\"control-label\" for=\"return-gamma\">Discount γ: <b id=\"return-gamma-label\"></b></label><input id=\"return-gamma\" type=\"range\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0.9\"><div id=\"return-bars\"></div><div class=\"demo-controls\"><button id=\"return-short\">γ=0</button><button id=\"return-long\">γ=0.9</button><button id=\"return-tie\">Exact tie</button></div></div><div><div id=\"return-terms\"></div><p id=\"return-status\" class=\"lab-status\" aria-live=\"polite\"></p><p class=\"small\">Quick: [1]. Patient: [−1, −1, 5]. Both end after the listed rewards.</p></div></div>",
+    "notes": "Compare the weighted contributions, including the negative initial rewards. Solve 5γ²−γ−1=1 to find γ=(1+√41)/10≈0.740312. Quick is better below this value and Patient above it. The exact-tie button uses the full numerical value internally. The slider then resumes hundredth increments. γ=1 is valid here because the two trajectories are finite.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable original discounted-return example"
+  },
+  {
+    "ch": "Horizon",
+    "title": "Discounting and termination solve different problems",
+    "body": "<div class=\"cols\"><div><h3>Continuing task</h3><p>For bounded rewards and γ&lt;1, the discounted infinite sum is finite.</p><div class=\"equation smaller\">|Gₜ| ≤ R<sub>max</sub> / (1−γ)</div></div><div><h3>Episodic task</h3><p>Return stops at a task terminal. γ=1 can be valid when returns are well defined.</p></div></div><p class=\"takeaway\">A small γ changes preferences over timing. It does not make the task end sooner.</p>",
+    "notes": "For episodic undiscounted problems, termination alone is not enough if episode lengths or total rewards have an infinite expectation. A finite horizon and bounded rewards suffice. A common rough scale 1/(1−γ) describes discounted weight, not a guaranteed planning depth. γ=0 retains only the immediate reward.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Reward design",
+    "title": "A reward defines the preference we ask the agent to learn",
+    "body": "<div class=\"rows\"><div><strong>Sparse reward</strong><span>Only goal or failure outcomes provide feedback.</span></div><div><strong>Step cost</strong><span>Charges time or effort and can favour shorter successful routes.</span></div><div><strong>Proxy reward</strong><span>Measures a convenient substitute that may reward unwanted behaviour.</span></div></div><p class=\"takeaway\">The algorithm attempts to optimize the specified return. Success on that signal can still miss the intended goal.</p>",
+    "notes": "The source says the agent optimizes exactly the reward signal. This wording needs care: learning can fail, and a trained policy need not reach the true optimum. Even perfect optimization would only optimize the mathematical objective, not an unstated intention. A positive reward for visiting a location can encourage repeated visits when the intended task is to finish a delivery.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Optional extension",
+    "title": "Potential-based shaping can preserve optimal choices",
+    "body": "<div class=\"equation smaller\">R′ = R + γΦ(s′) − Φ(s)</div><div class=\"cols\"><div><h3>Idea</h3><p>Add progress information through a state potential Φ.</p></div><div><h3>Boundary convention</h3><p>Use the same γ. For a stopped episodic return, set terminal potentials to 0.</p></div></div><p class=\"takeaway\">The added discounted rewards telescope to −Φ(s₀), independent of the actions taken.</p>",
+    "notes": "For bounded potentials with γ<1, the infinite discounted boundary term vanishes. In an episodic sum, zero terminal potential removes the final boundary term. Then return shifts by a state-dependent constant and optimal action preferences are preserved. Arbitrary bonuses lack this guarantee. This preserves the objective, not a guarantee of faster learning.",
+    "cls": "",
+    "sub": "",
+    "ref": "Ng, Harada & Russell (1999), Policy invariance under reward transformations"
+  },
+  {
+    "ch": "Value functions",
+    "title": "V evaluates a state; Q evaluates an action in a state",
+    "body": "<div class=\"equation smaller\">V<sup>π</sup>(s) = E<sub>π</sub>[Gₜ | Sₜ=s]</div><div class=\"equation smaller\">Q<sup>π</sup>(s,a) = E<sub>π</sub>[Gₜ | Sₜ=s, Aₜ=a]</div><p class=\"takeaway\">Q fixes the first action, then follows π. V averages over the policy’s first action.</p>",
+    "notes": "For a stochastic policy, Vπ(s)=Σa π(a|s)Qπ(s,a). The policy is part of the definition: a state has different values under different continuation behaviours. A greedy action with respect to an inaccurate Q estimate is not necessarily truly optimal. Terminal V is zero under our reward-on-entry convention.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Bellman expectation",
+    "title": "A fixed policy averages over actions and outcomes",
+    "body": "<div class=\"equation smaller\">V<sup>π</sup>(s) = Σₐ π(a|s) Σₛ′ P(s′|s,a)<br>[R(s,a,s′) + γV<sup>π</sup>(s′)]</div><p class=\"takeaway\">Prediction asks how good the specified policy is.</p>",
+    "notes": "This expression uses expected reward conditional on the state transition. Each transition probability multiplies both immediate reward and discounted successor value. If the policy is deterministic, the outer sum reduces to the selected action. The successor terminal value is zero; no future reward is counted after termination.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source Bellman expectation · Expanded finite-state notation"
+  },
+  {
+    "ch": "Bellman optimality",
+    "title": "Control selects an action before averaging its outcomes",
+    "body": "<div class=\"equation smaller\">V*(s) = maxₐ Σₛ′ P(s′|s,a)<br>[R(s,a,s′) + γV*(s′)]</div><p class=\"takeaway\">The agent chooses the action. The environment samples its consequence.</p>",
+    "notes": "The maximum is outside the sum over successor states because the action must be selected before the random outcome is observed. Moving max inside that sum would often give the agent impossible knowledge of future randomness. This connects to Unit 5: a stochastic environment uses an expectation, whereas a strategic adversary requires an opponent model.",
+    "cls": "red",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Worked backup",
+    "title": "One noisy action combines three possible outcomes",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Outcome of RIGHT from (1,3)</th><th>Probability</th><th>Reward + γV(next)</th></tr></thead><tbody><tr><td>Enter +1 terminal</td><td>0.8</td><td>1 + 0.9×0 = 1</td></tr><tr><td>Hit top boundary; stay at (1,3)</td><td>0.1</td><td>−0.04 + 0.9×0.8 = 0.68</td></tr><tr><td>Move down to (2,3)</td><td>0.1</td><td>−0.04 + 0.9×0.4 = 0.32</td></tr></tbody></table></div><div class=\"equation smaller\">Q<sub>backup</sub> = 0.8×1 + 0.1×0.68 + 0.1×0.32 = 0.90</div>",
+    "notes": "The assumed current estimates are V(1,3)=0.8 and V(2,3)=0.4. This is one action backup, not a claim that these are converged optimal values. The boundary outcome is a genuine self-transition. Its reward is the ordinary step cost. To update the state by value iteration, calculate all four action backups and take their maximum.",
+    "cls": "",
+    "sub": "",
+    "ref": "Original numerical backup under the declared grid model"
+  },
+  {
+    "ch": "Dynamic programming",
+    "title": "Value iteration repeatedly applies optimality backups",
+    "body": "<pre class=\"wide-code\"><code>V[s] = 0 for every state\nrepeat:\n    old = copy(V)\n    for each nonterminal state s:\n        V[s] = max_a Σ_s′ P(s′|s,a) * (R + γ*old[s′])\n    Δ = max_s |V[s] - old[s]|</code></pre><p class=\"takeaway\">Synchronous sweeps use the previous vector for every state in the next vector.</p>",
+    "notes": "With finite states and actions, bounded rewards and γ<1, the Bellman optimality operator is a contraction. Its fixed point is unique and value iteration converges to it. An in-place implementation can also work under appropriate conditions, but its intermediate sweeps differ. Our lab uses synchronous updates to make propagation visible. Known-model dynamic programming is a planning method.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source dynamic programming · Berkeley CS188, Value iteration"
+  },
+  {
+    "ch": "Laboratory 2",
+    "title": "Watch values spread through the grid",
+    "body": "<div class=\"lab-two vi-lab\"><div><div id=\"vi-grid\" class=\"gridworld\" role=\"group\" aria-label=\"Gridworld value estimates\"></div><p class=\"fine\">Cells show Vₖ. Arrows are greedy with respect to Vₖ. Terminal labels show entry rewards.</p></div><div><div class=\"slider-pair\"><label>Discount γ <b id=\"vi-gamma-label\"></b><input id=\"vi-gamma\" type=\"range\" min=\"0\" max=\"0.99\" step=\"0.01\" value=\"0.9\"></label><label>Intended move p <b id=\"vi-p-label\"></b><input id=\"vi-p\" type=\"range\" min=\"0.5\" max=\"1\" step=\"0.1\" value=\"0.8\"></label></div><div class=\"demo-controls\"><button id=\"vi-step\" class=\"primary\">One sweep</button><button id=\"vi-ten\">10 sweeps</button><button id=\"vi-solve\">Converge</button><button id=\"vi-reset\">Reset</button></div><div class=\"metrics\"><div><span>Sweeps</span><b id=\"vi-k\">0</b></div><div><span>Last sweep change Δ</span><b id=\"vi-delta\">—</b></div><div><span>Start value V(3,1)</span><b id=\"vi-start\">0</b></div><div><span>Residual ‖TV−V‖∞</span><b id=\"vi-residual\">—</b></div></div><p id=\"vi-status\" class=\"lab-status\" aria-live=\"polite\"></p></div></div>",
+    "notes": "Reset initializes all values to zero. At p=1 and γ=0.9, the start value after five sweeps is 0.51854. The farthest useful terminal information has arrived by then. At p=0.8, repeated self-transitions require additional sweeps. Converge stops when the residual is below 1e−8 or at 2,000 sweeps. Changing a slider resets the iteration. The bound ||V−V*||∞≤residual/(1−γ) applies for γ<1.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable synchronous value iteration · Step cost −0.04"
+  },
+  {
+    "ch": "Policy iteration",
+    "title": "Evaluation and improvement can be separated",
+    "body": "<div class=\"flow\"><div class=\"flowstep\"><small>01</small><strong>Evaluate π</strong><span>Solve or iterate the Bellman expectation equations.</span></div><div class=\"flowstep\"><small>02</small><strong>Improve π</strong><span>Choose actions greedy with respect to the evaluated values.</span></div><div class=\"flowstep\"><small>03</small><strong>Repeat</strong><span>Stop when the policy no longer changes.</span></div></div><p class=\"takeaway\">Policy evaluation follows the current policy. Policy improvement asks whether another action is better.</p>",
+    "notes": "Exact policy iteration in a finite discounted MDP reaches an optimal policy under consistent tie handling. Modified policy iteration uses incomplete evaluation. Value iteration combines a short evaluation-like backup and greedy improvement in each sweep. These are model-based planning procedures; learning a model first creates a model-based RL system.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Model and experience",
+    "title": "A model enables averages; a sample supplies one outcome",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method family</th><th>What the update consumes</th><th>Main limitation</th></tr></thead><tbody><tr><td>Known-model planning</td><td>Transition probabilities and rewards.</td><td>Requires a usable model.</td></tr><tr><td>Learned-model RL</td><td>Experience to fit a model, then planning.</td><td>Model errors influence the plan.</td></tr><tr><td>Model-free RL</td><td>Observed transitions to update values or a policy.</td><td>May require many interactions.</td></tr></tbody></table></div><p class=\"takeaway\">A simulator can generate samples without giving the learner its probability table.</p>",
+    "notes": "In our training lab, the environment uses the declared rules to sample movement. The learner receives only state, action, reward and next state. Its Q-learning or SARSA update does not read the full transition table. The value-iteration lab uses that table directly. This controlled comparison exposes the difference without changing the task.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Monte Carlo",
+    "title": "A complete episode provides a sampled return",
+    "body": "<pre class=\"wide-code\"><code>follow a fixed policy π until termination\ncompute G backward through the episode\nfor each state on its first visit in the episode:\n    N[s] += 1\n    V[s] += (G_at_that_visit - V[s]) / N[s]</code></pre><p class=\"takeaway\">First-visit Monte Carlo averages one return per visited state per episode.</p>",
+    "notes": "Every-visit Monte Carlo uses every visit instead and is a different estimator. Here first-visit means first occurrence in forward time, even when returns are computed backward. No transition model and no bootstrapped next-state value are required. A truly continuing task needs another construction because there is no complete episode to wait for.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source Monte Carlo route · Explicit first-visit estimator"
+  },
+  {
+    "ch": "Worked Monte Carlo",
+    "title": "The return becomes a target after the episode ends",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Observation</th><th>Value</th></tr></thead><tbody><tr><td>Episode rewards</td><td>−1, −1, 5</td></tr><tr><td>Discount and sampled return</td><td>γ=0.9, G₀=2.15</td></tr><tr><td>Old estimate and learning rate</td><td>V(s)=0.5, α=0.2</td></tr><tr><td>Update</td><td>0.5 + 0.2(2.15−0.5) = 0.83</td></tr></tbody></table></div><p class=\"takeaway\">This constant-step update illustrates one sample. A running mean instead uses α=1/N(s).</p>",
+    "notes": "All numbers are original calculations. With fixed policy and properly sampled complete returns, the sample return targets that policy’s value. Constant α gives recency weighting, whereas the running-mean version gives equal weight to sampled returns. The policy must be identified before comparing estimated values.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Temporal difference",
+    "title": "TD(0) learns before the episode finishes",
+    "body": "<div class=\"equation smaller\">δₜ = Rₜ₊₁ + γV(Sₜ₊₁) − V(Sₜ)</div><div class=\"equation smaller\">V(Sₜ) ← V(Sₜ) + αδₜ</div><div class=\"rows\"><div><strong>Sample</strong><span>The observed reward and successor state.</span></div><div><strong>Bootstrap</strong><span>The current estimate of that successor’s value.</span></div></div><p class=\"takeaway\">For a true terminal successor, the continuation value is zero.</p>",
+    "notes": "TD(0) prediction evaluates the policy generating the sampled transitions under the usual assumptions. Its target contains an estimate, so it can be inaccurate even if the current transition is noise-free. The TD error is target minus current estimate; its sign determines the direction of the update. α controls learning speed, while γ defines the return objective.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Worked TD",
+    "title": "One transition corrects one estimate",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Quantity</th><th>Calculation</th></tr></thead><tbody><tr><td>Known sample</td><td>r=−0.04, V(s)=0.5, V(s′)=2</td></tr><tr><td>Target at γ=0.9</td><td>−0.04 + 0.9×2 = 1.76</td></tr><tr><td>TD error</td><td>δ = 1.76−0.5 = 1.26</td></tr><tr><td>New value at α=0.2</td><td>0.5 + 0.2×1.26 = 0.752</td></tr></tbody></table></div><p class=\"takeaway\">The sample updates V(s). It does not directly update V(s′).</p>",
+    "notes": "These are illustrative estimates, not asserted optimal values of the running grid. If s′ is terminal, replacing its continuation by zero gives target −0.04 instead. In the declared gridworld, entering a positive terminal actually yields +1, so that concrete transition would use target +1. Distinguish an abstract update example from a task-specific reward rule.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Comparison",
+    "title": "Monte Carlo and TD use different targets",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Aspect</th><th>Monte Carlo prediction</th><th>TD(0) prediction</th></tr></thead><tbody><tr><td>Target</td><td>Complete sampled return Gₜ.</td><td>r + γV(s′).</td></tr><tr><td>When available</td><td>After the episode completes.</td><td>After one transition.</td></tr><tr><td>Bootstraps?</td><td>No.</td><td>Yes.</td></tr><tr><td>Typical trade-off</td><td>Return can have high variance.</td><td>Target depends on imperfect estimates.</td></tr></tbody></table></div><p class=\"takeaway\">Neither method is universally better. Compare them on the same policy and task.</p>",
+    "notes": "For fixed-policy prediction, complete sampled returns avoid bootstrapping bias, subject to the sampling and termination assumptions. TD often trades this for lower-variance local targets. Speed and error depend on the environment, data and learning-rate choices. The source introduces these routes; this table makes their different information requirements explicit.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Q-learning",
+    "title": "Q-learning uses a greedy continuation target",
+    "body": "<div class=\"equation smaller\">Q(s,a) ← Q(s,a) + α[r + γ maxₐ′Q(s′,a′) − Q(s,a)]</div><div class=\"cols\"><div><h3>Behaviour</h3><p>The agent can explore while collecting transitions.</p></div><div><h3>Target</h3><p>The update uses the largest current next-state action value.</p></div></div><p class=\"takeaway\">Q-learning is off-policy: the target can differ from the action actually selected next.</p>",
+    "notes": "For a true terminal successor, the target is just r. In the tabular setting, Q-learning can converge to Q* under appropriate exploration and learning-rate conditions, described later. Finite training, constant α and nonlinear function approximation do not inherit that guarantee automatically. The maximum ranges over legal next actions only.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "SARSA",
+    "title": "SARSA includes the selected next action",
+    "body": "<div class=\"equation smaller\">Q(s,a) ← Q(s,a) + α[r + γQ(s′,a′) − Q(s,a)]</div><div class=\"rows\"><div><strong>Five quantities</strong><span>State, action, reward, next state, next action.</span></div><div><strong>On-policy</strong><span>The next action comes from the behaviour policy being learned.</span></div></div><p class=\"takeaway\">If exploration selects a poor next action, that action affects this SARSA target.</p>",
+    "notes": "The next action must be sampled before the nonterminal SARSA update and then carried forward as the action actually used. Do not sample one next action for the update and silently execute another. At a terminal successor no next action is needed. SARSA learns values appropriate to the ongoing behaviour, including its exploratory actions.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Laboratory 3",
+    "title": "Compare three one-step update targets",
+    "body": "<div class=\"lab-two update-lab\"><div><label class=\"control-label\" for=\"update-case\">Transition</label><select id=\"update-case\"><option value=\"ordinary\">Ordinary: reward −0.04</option><option value=\"terminal\">True terminal: reward +1</option><option value=\"truncated\">External time cap: reward −0.04</option></select><div class=\"slider-pair\"><label>Learning rate α <b id=\"update-alpha-label\"></b><input id=\"update-alpha\" type=\"range\" min=\"0\" max=\"1\" step=\"0.05\" value=\"0.2\"></label><label>Discount γ <b id=\"update-gamma-label\"></b><input id=\"update-gamma\" type=\"range\" min=\"0\" max=\"0.99\" step=\"0.01\" value=\"0.9\"></label></div><label class=\"control-label\" for=\"update-action\">Selected next action for SARSA</label><select id=\"update-action\"><option value=\"0\">Up: Q=4</option><option value=\"1\" selected>Right: Q=1</option><option value=\"2\">Down: Q=−2</option><option value=\"3\">Left: Q=0</option></select><p class=\"fine\">Current estimate=0.5. V(s′)=2.<br>Q(s′,·)=[4,1,−2,0]. These are illustrative estimates.</p></div><div><div id=\"update-table\" class=\"compact-table\"></div><p id=\"update-status\" class=\"lab-status\" aria-live=\"polite\"></p><button id=\"update-reset\">Reset example</button></div></div>",
+    "notes": "Default results: TD target 1.76 and new value 0.752. Q-learning target 3.56 and new value 1.112. SARSA with Right target 0.86 and new value 0.572. The current estimate is 0.5 for each displayed method for arithmetic comparison, but TD evaluates a state whereas Q methods evaluate a state-action pair. They need not agree and a larger result is not automatically better.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable update arithmetic · Terminal and truncation conventions"
+  },
+  {
+    "ch": "Exploration",
+    "title": "ε-greedy reserves probability for every action",
+    "body": "<div class=\"equation smaller\">π(a|s) = (1−ε)·𝟙[a=a*] + ε/|A(s)|</div><div class=\"table-scroll\"><table><thead><tr><th>Four actions, one chosen greedy action</th><th>Probability at ε=0.2</th></tr></thead><tbody><tr><td>Chosen greedy action</td><td>0.8 + 0.2/4 = 0.85</td></tr><tr><td>Each other action</td><td>0.2/4 = 0.05</td></tr></tbody></table></div><p class=\"takeaway\">The random branch can select the greedy action too.</p>",
+    "notes": "a* is the chosen greedy action after applying the stated tie rule. With uniform tie breaking among k maximizers, each maximizing action receives (1−ε)/k+ε/|A| instead. The laboratories state their tie conventions. Decaying ε is common, but decaying it too quickly can leave useful actions unvisited. Exploration is necessary for learning about actions that the current estimates undervalue.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Laboratory 4",
+    "title": "Explore three actions with unknown reward rates",
+    "body": "<div class=\"lab-two bandit-lab\"><div><div id=\"bandit-table\" class=\"compact-table\"></div><div id=\"bandit-chart\" class=\"line-chart\"></div><p class=\"fine\">Reward is 1 with probability p, otherwise 0. True p is visible to you; the agent uses only Q̂ and ε.</p></div><div><div class=\"select-pair\"><label>Exploration ε<select id=\"bandit-epsilon\"><option value=\"0\">0</option><option value=\"0.1\" selected>0.1</option><option value=\"0.3\">0.3</option><option value=\"1\">1</option></select></label><label>Seed<input id=\"bandit-seed\" type=\"number\" min=\"1\" max=\"9999\" value=\"1\"></label></div><div class=\"demo-controls\"><button id=\"bandit-one\" class=\"primary\">1 pull</button><button id=\"bandit-hundred\">100 pulls</button><button id=\"bandit-thousand\">1,000 pulls</button><button id=\"bandit-reset\">Reset</button></div><div class=\"metrics\"><div><span>Pulls</span><b id=\"bandit-n\">0</b></div><div><span>Mean reward</span><b id=\"bandit-mean\">—</b></div><div><span>Best-action share</span><b id=\"bandit-best\">—</b></div><div><span>Expected regret</span><b id=\"bandit-regret\">0</b></div></div><p id=\"bandit-status\" class=\"lab-status\" aria-live=\"polite\"></p></div></div>",
+    "notes": "This is a stationary three-armed Bernoulli bandit with true probabilities 0.2, 0.5 and 0.8. Q estimates start at zero and use sample means. Greedy ties use A, then B, then C, making the initial preference explicit. Exploration samples uniformly from all three actions. Expected pseudo-regret is Σt(0.8−p_action), not 0.8t minus the realized reward. Each parameter change resets the run. One seed is an illustration, not evidence of a universal ranking.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable stationary bandit · Seeded samples · Sample-mean estimates"
+  },
+  {
+    "ch": "Bandit versus MDP",
+    "title": "Bandits isolate exploration from delayed state effects",
+    "body": "<div class=\"cols\"><div><h3>Bandit laboratory</h3><p>Every pull returns to the same decision setting.</p><p>The action changes the current reward distribution.</p></div><div><h3>Sequential MDP</h3><p>The action also changes which states come next.</p><p>Exploration may open or close future opportunities.</p></div></div><p class=\"takeaway\">A strategy that works in a bandit can still struggle to reach informative states in an MDP.</p>",
+    "notes": "The bandit is a useful special case but not a substitute for sequential control. In the lab, fixed ε continues choosing inferior actions even after estimates become accurate, so it incurs continuing expected regret. ε=0 can remain stuck with an early preference. Neither statement proves that a particular finite run must look better or worse than another.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Implementation",
+    "title": "A Q-learning loop needs two stopping decisions",
+    "body": "<pre class=\"wide-code\"><code>s = env.reset()\nwhile collecting data:\n    a = epsilon_greedy(Q[s])\n    s_next, r, terminated, truncated = env.step(a)\n    target = r if terminated else r + γ*max(Q[s_next])\n    Q[s,a] += α * (target - Q[s,a])\n    s = env.reset() if (terminated or truncated) else s_next</code></pre><p class=\"takeaway\">Reset after either ending signal. Remove continuation only for true termination.</p>",
+    "notes": "This is pedagogical pseudocode, not a copy of a particular API signature. A vectorized or auto-reset environment must expose the actual final observation for the bootstrap target; using a fresh reset state is incorrect. Legal-action restrictions must also apply to max Q. For SARSA, choose the next behaviour action and use its value, including at a nonterminal external cutoff.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source Q-learning pseudocode · Farama, Handling time limits"
+  },
+  {
+    "ch": "Episode endings",
+    "title": "A data-collection cutoff is not a task terminal",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Reason for stopping</th><th>Bootstrap?</th><th>Example target</th></tr></thead><tbody><tr><td>Goal reached or task failure</td><td>No.</td><td>r</td></tr><tr><td>External collection limit</td><td>Yes, if the task would continue.</td><td>r + γV(s′)</td></tr><tr><td>Deadline inside the task</td><td>No after its true final step.</td><td>r; include remaining time in state.</td></tr></tbody></table></div><p class=\"takeaway\">With r=1, γ=0.9 and next value 5: termination gives 1; external truncation gives 5.5.</p>",
+    "notes": "The distinction is part of the task definition. An inherent finite-horizon deadline belongs to the MDP and its remaining time must be represented. An external cap simply ends data collection. The training laboratory caps rollouts at 100 transitions and bootstraps on that last transition because the underlying grid task has not terminated.",
+    "cls": "",
+    "sub": "",
+    "ref": "Farama Foundation, Handling time limits · Original numerical example"
+  },
+  {
+    "ch": "Laboratory 5",
+    "title": "Train a policy from sampled gridworld experience",
+    "body": "<div class=\"lab-two train-lab\"><div><div id=\"train-grid\" class=\"gridworld\" role=\"group\" aria-label=\"Learned gridworld action values\"></div><div id=\"train-chart\" class=\"line-chart\"></div><p class=\"fine\">Cells: maxₐQ(s,a), with greedy arrows. Chart: training return, averaged over up to 20 recent episodes.</p></div><div><div class=\"train-settings\"><label>Algorithm<select id=\"train-method\"><option value=\"q\">Q-learning</option><option value=\"sarsa\">SARSA</option></select></label><label>Motion<select id=\"train-p\"><option value=\"1\">Deterministic</option><option value=\"0.8\">80% intended</option></select></label><label>ε<select id=\"train-epsilon\"><option value=\"0.1\">0.1</option><option value=\"0.3\" selected>0.3</option></select></label><label>α<select id=\"train-alpha\"><option value=\"0.1\">0.1</option><option value=\"0.3\" selected>0.3</option><option value=\"0.5\">0.5</option></select></label><label>Seed<input id=\"train-seed\" type=\"number\" min=\"1\" max=\"9999\" value=\"17\"></label></div><div class=\"demo-controls\"><button id=\"train-one\">1 episode</button><button id=\"train-hundred\" class=\"primary\">100 episodes</button><button id=\"train-thousand\">1,000 episodes</button><button id=\"train-eval\">Evaluate 100</button><button id=\"train-reset\">Reset</button></div><div class=\"metrics\"><div><span>Training episodes</span><b id=\"train-n\">0</b></div><div><span>Transitions</span><b id=\"train-steps\">0</b></div></div><p id=\"train-status\" class=\"lab-status\" aria-live=\"polite\"></p><p id=\"train-eval-result\" class=\"small eval-result\">Evaluation has not run.</p></div></div>",
+    "notes": "Start is always (3,1). γ=0.9, nonterminal reward −0.04, terminal entry rewards ±1. Every rollout has an external 100-step cap. Training breaks greedy ties randomly, then ε-greedy chooses its action. Evaluation freezes Q, sets ε=0 and resolves ties Up, Right, Down, Left. Evaluation uses a separate seeded generator and reports goal, failure and cap counts plus mean discounted return. It never changes Q or the training random stream. Settings changes reset all learned values.",
+    "cls": "dark",
+    "sub": "",
+    "ref": "Executable tabular control · Frozen evaluation · No network required"
+  },
+  {
+    "ch": "Reading the experiment",
+    "title": "Training return and evaluation return answer different questions",
+    "body": "<div class=\"rows\"><div><strong>Training curve</strong><span>Performance while exploring and changing the estimates.</span></div><div><strong>Frozen evaluation</strong><span>Performance of the current greedy policy without learning.</span></div><div><strong>Learned cell value</strong><span>max Q is an estimate, not an exact success probability.</span></div><div><strong>Model baseline</strong><span>At p=1 and γ=0.9, optimal start return is 0.51854.</span></div></div><p class=\"takeaway\">A deterministic optimal route has five actions: four rewards of −0.04, then +1.</p>",
+    "notes": "The baseline is −0.04(1+0.9+0.9²+0.9³)+0.9⁴=0.51854. Multiple shortest safe routes can tie. A plot that improves is evidence about the displayed run only. Under stochastic motion, even a sensible greedy policy can fail occasionally. The evaluation mean is a sample estimate, and a 100-step capped return is not automatically the exact infinite-horizon value.",
+    "cls": "",
+    "sub": "",
+    "ref": "Independent exact calculation for the deterministic gridworld"
+  },
+  {
+    "ch": "Convergence",
+    "title": "Tabular Q-learning guarantees need conditions",
+    "body": "<div class=\"rows\"><div><strong>Stable finite MDP</strong><span>Finite state-action table, stationary dynamics and bounded rewards.</span></div><div><strong>Discounted setting</strong><span>Use γ&lt;1 for the standard discounted theorem.</span></div><div><strong>Coverage</strong><span>Visit every relevant state-action pair infinitely often.</span></div><div><strong>Learning rates</strong><span>For each pair: Σαₙ=∞ and Σαₙ²&lt;∞.</span></div></div><p class=\"takeaway\">A finite classroom run with constant α illustrates learning; it does not satisfy an asymptotic theorem.</p>",
+    "notes": "Watkins and Dayan prove a tabular convergence result. The conditions are sufficient assumptions, not a practical finite-sample certificate. αn=1/n for the nth visit to a pair satisfies the two sum conditions. A constant positive α does not satisfy the squared-sum condition. A neural Q-function introduces a different approximation problem.",
+    "cls": "",
+    "sub": "",
+    "ref": "Watkins & Dayan (1992), Q-learning"
+  },
+  {
+    "ch": "Learning rates",
+    "title": "α changes estimation; γ changes the objective",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Parameter</th><th>Effect</th><th>Common mistake</th></tr></thead><tbody><tr><td>α, learning rate</td><td>Weights a new target against the old estimate.</td><td>Reducing α so quickly that learning effectively stops.</td></tr><tr><td>γ, discount</td><td>Weights rewards at different times.</td><td>Treating γ as a measure of confidence in the data.</td></tr><tr><td>ε, exploration</td><td>Changes the behaviour that collects experience.</td><td>Assuming a greedy policy has already learned every action.</td></tr></tbody></table></div><p class=\"takeaway\">A parameter sweep needs equal interaction budgets and multiple random seeds.</p>",
+    "notes": "These parameters play different mathematical roles. Constant α may be useful for tracking changing environments, at the cost of persistent noise. Nonstationarity also changes what convergence means. A decaying exploration schedule may improve eventual exploitation, but whether it provides adequate coverage depends on the task and schedule, not just on ε becoming small.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Policy perspective",
+    "title": "On-policy and off-policy describe the learning target",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method</th><th>Continuation in the target</th><th>Relationship to behaviour</th></tr></thead><tbody><tr><td>SARSA</td><td>The sampled next action a′.</td><td>On-policy when that action comes from the learned behaviour.</td></tr><tr><td>Q-learning</td><td>maxₐ′Q(s′,a′).</td><td>Targets greedy continuation while behaviour may explore.</td></tr><tr><td>Expected SARSA</td><td>Σₐ′π(a′|s′)Q(s′,a′).</td><td>Averages the specified target policy’s next action.</td></tr></tbody></table></div><p class=\"takeaway\">Off-policy does not mean “offline”. Offline learning uses a fixed previously collected dataset.</p>",
+    "notes": "Expected SARSA replaces the sampled next-action value with an expectation. Whether an algorithm is on-policy or off-policy depends on which policy is evaluated and which collects the data. Offline RL must additionally contend with unsupported actions and distribution shift in a fixed dataset; a tabular Q-learning formula alone does not solve those problems.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "A familiar comparison",
+    "title": "Exploration changes the cost of a risky route",
+    "body": "<div class=\"cols\"><div><h3>Route near a cliff</h3><p>Short when actions are greedy, but exploratory moves may incur a large penalty.</p></div><div><h3>Route with a buffer</h3><p>Longer, but exploratory actions have less severe consequences.</p></div></div><p class=\"takeaway\">SARSA can account for its ongoing exploration. Q-learning targets greedy continuation.</p>",
+    "notes": "This is the conceptual cliff-walking comparison from Sutton and Barto, Chapter 6. In that particular setting SARSA can learn a safer route under ongoing ε-greedy behaviour, while Q-learning favours the optimal greedy route. It does not establish a universal safety guarantee for SARSA or imply that Q-learning always performs worse. Our grid laboratory is a separate, fully specified experiment.",
+    "cls": "",
+    "sub": "",
+    "ref": "Sutton & Barto (2018), Chapter 6 · Conceptual comparison"
+  },
+  {
+    "ch": "Evaluation",
+    "title": "A reliable result needs repeated, comparable experiments",
+    "body": "<div class=\"rows\"><div><strong>Freeze the policy</strong><span>Evaluate without parameter updates and state the action-selection rule.</span></div><div><strong>Repeat training</strong><span>Use independent seeds and report uncertainty across runs.</span></div><div><strong>Keep budgets equal</strong><span>Compare interactions, computation and tuning effort.</span></div><div><strong>Test the intended task</strong><span>Report return, success, failures and performance under changed conditions.</span></div></div><p class=\"takeaway\">One best seed or one smooth curve is an incomplete comparison.</p>",
+    "notes": "Agarwal and colleagues show that aggregate deep-RL comparisons can change when uncertainty is considered. For a university practical, report each seed, mean and spread and keep evaluation conditions fixed. For benchmark research, use suitable interval estimates and robust aggregate metrics rather than only a point estimate. Do not select a favourable seed after inspecting all results.",
+    "cls": "",
+    "sub": "",
+    "ref": "Agarwal et al. (2021), Deep RL at the edge of the statistical precipice"
+  },
+  {
+    "ch": "Failure analysis",
+    "title": "A proxy can reward behaviour that never completes the task",
+    "body": "<div class=\"cols\"><div><h3>Intended objective</h3><p>Deliver a parcel successfully.</p></div><div><h3>Flawed proxy</h3><p>Give +1 whenever the robot enters the loading bay.</p><p>A repeated exit-and-return loop may collect reward indefinitely.</p></div></div><p class=\"takeaway\">Test the reward on deliberate shortcuts before attributing the failure to the learning algorithm.</p>",
+    "notes": "This is an original hypothetical example, not a claim about a deployed robot. If the reward bonus repeats, a sufficiently long loop may dominate a single delivery. A one-time event needs state recording whether the bonus has already been collected. Success and safety metrics should be measured directly as well as through the training return.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Formulation",
+    "title": "The state and action space constrain what can be learned",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Design choice</th><th>Consequence</th></tr></thead><tbody><tr><td>Battery omitted from state</td><td>Identical positions can require different decisions.</td></tr><tr><td>Actions ignore legal constraints</td><td>The learner may select impossible moves.</td></tr><tr><td>Goal bonus repeats</td><td>A loop can outperform finishing.</td></tr><tr><td>Remaining deadline omitted</td><td>A finite-horizon task can appear non-Markovian.</td></tr></tbody></table></div><p class=\"takeaway\">An incorrect task formulation can make a correct update learn the wrong behaviour.</p>",
+    "notes": "State, action and reward design should be tested together. In a robotics example the environment may reject unsafe or invalid commands, but this affects transitions and must be represented. A learned policy cannot recover information that never reaches its decision input. Memory can help with partial observability, but is not an automatic proof that the Markov property holds.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Loopover connection",
+    "title": "Loopover supports both planning and learning formulations",
+    "body": "<div class=\"cols\"><div><h3>Search formulation</h3><p>Board configuration, legal row/column shifts, known transitions and a goal test.</p></div><div><h3>RL formulation</h3><p>The same board and moves, with a step cost, terminal success reward and training distribution.</p></div></div><p class=\"takeaway\">For a single small known puzzle, direct search is a strong baseline. Training may help across many instances.</p>",
+    "notes": "Preserve the actual Loopover assignment’s move conventions rather than inventing new ones. A per-tile correctness bonus can favour local changes that do not solve the whole puzzle. A reward shaping potential requires the consistent discount and terminal convention introduced earlier. Compare solution rate and move count on held-out starting boards, including computational cost.",
+    "cls": "",
+    "sub": "",
+    "ref": "Source Loopover connection · Expanded experimental formulation"
+  },
+  {
+    "ch": "Function approximation",
+    "title": "Large state spaces require shared representations",
+    "body": "<div class=\"cols\"><div><h3>Table</h3><div class=\"equation smaller\">Q[s,a]</div><p>Separate estimates for discrete state-action pairs.</p></div><div><h3>Function approximator</h3><div class=\"equation smaller\">Q(s,a;θ) or π(a|s;θ)</div><p>Parameters generalize across inputs.</p></div></div><p class=\"takeaway\">Generalization reduces storage, but an update can also change predictions for other states.</p>",
+    "notes": "The source introduces the transition from tabular to deep RL. A neural network is one form of function approximation. Linear approximation is another useful intermediate step. When updates affect many states simultaneously, tabular convergence arguments need not apply. Representation error, correlated data and moving targets can interact.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Deep Q-networks",
+    "title": "DQN combines approximation with two stabilizing devices",
+    "body": "<div class=\"rows\"><div><strong>Replay buffer</strong><span>Store transitions and sample training batches from past experience.</span></div><div><strong>Target network</strong><span>Use a separate, more slowly updated network to build the target.</span></div><div><strong>Learning target</strong><span>r + γ maxₐ′Q(s′,a′;θ⁻), with zero continuation at termination.</span></div></div><p class=\"takeaway\">These mechanisms improve the training procedure; they do not make deep RL universally stable.</p>",
+    "notes": "Mnih et al. (2015) introduced the influential DQN system for Atari. Replay reduces short-range sample correlations and reuses experience. The target network slows changes in the bootstrap target. The learner fits Q(s,a;θ) toward that target through optimization. This slide introduces the mechanism without claiming that the tabular convergence theorem carries over.",
+    "cls": "",
+    "sub": "",
+    "ref": "Mnih et al. (2015), Human-level control through deep reinforcement learning"
+  },
+  {
+    "ch": "Policy learning",
+    "title": "A policy can be optimized directly",
+    "body": "<div class=\"equation smaller\">π(a | s; θ)</div><div class=\"cols\"><div><h3>Policy parameters</h3><p>A network produces action probabilities or a continuous-action distribution.</p></div><div><h3>Return signal</h3><p>Sampled returns help adjust how likely different actions become.</p></div></div><p class=\"takeaway\">The objective remains expected return, even when the algorithm no longer stores a Q-table.</p>",
+    "notes": "Policy-gradient methods estimate a gradient of a return objective using sampled trajectories and action log probabilities. A baseline can reduce variance without changing the expected gradient when used under the appropriate conditions. Direct policy optimization does not mean that every successful trajectory should be imitated indiscriminately; credit assignment and sampling still matter.",
+    "cls": "",
+    "sub": "",
+    "ref": "Sutton & Barto (2018), Chapter 13 · Introductory extension"
+  },
+  {
+    "ch": "Actor–critic",
+    "title": "The critic supplies a learning signal for the actor",
+    "body": "<div class=\"cols\"><div><h3>Actor</h3><p>The parameterized policy chooses actions.</p></div><div><h3>Critic</h3><p>A value estimator helps judge whether the observed outcome was better than expected.</p></div></div><div class=\"equation smaller\">A<sup>π</sup>(s,a) = Q<sup>π</sup>(s,a) − V<sup>π</sup>(s)</div><p class=\"takeaway\">Advantage compares an action with the policy’s usual outcome in that state.</p>",
+    "notes": "A critic can estimate V, Q or an advantage-related quantity. Some actor–critic algorithms use a TD error as an advantage estimate under particular assumptions. Errors in the critic influence the actor update. This conceptual overview provides a bridge to advanced courses without presenting one universal actor–critic update rule.",
+    "cls": "",
+    "sub": "",
+    "ref": "Sutton & Barto (2018), Chapter 13 · Introductory extension"
+  },
+  {
+    "ch": "Practical limits",
+    "title": "Learning performance is only one requirement",
+    "body": "<div class=\"rows\"><div><strong>Interaction cost</strong><span>Training may require far more experience than deployment can afford.</span></div><div><strong>Unsafe exploration</strong><span>Some actions are unacceptable even during learning.</span></div><div><strong>Distribution shift</strong><span>New states or changed dynamics can expose brittle behaviour.</span></div><div><strong>Validation</strong><span>A high average return may conceal rare, severe failures.</span></div></div><p class=\"takeaway\">The task determines whether simulation, constrained actions or another method is appropriate.</p>",
+    "notes": "These limitations extend the source material. A simulator can reduce physical interaction costs but introduces a transfer problem. Constraints and human oversight must be designed for the application rather than assumed to emerge from reward maximization. Search, supervised learning or a hand-designed controller can be preferable depending on the objective and available data.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Workshop 1 · 12 minutes",
+    "title": "Formulate a delivery robot as an MDP",
+    "body": "<div class=\"rows\"><div><strong>Task</strong><span>Deliver one parcel before a 20-step deadline.</span></div><div><strong>Available facts</strong><span>Grid location, battery level, parcel status and remaining time.</span></div><div><strong>Your design</strong><span>States, legal actions, terminal conditions, transitions and rewards.</span></div><div><strong>Your evaluation</strong><span>State one success metric and one failure metric.</span></div></div><p class=\"takeaway\">Explain what changes if movement is noisy or the battery level is hidden.</p>",
+    "notes": "Work in pairs. Require an explicit reward-on-transition convention and distinguish a task deadline from an external data-collection cap. Students should say whether the map is known and whether the agent learns a model, values or a policy. There is no single correct numeric reward scale; consistency with the stated objective is the target.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Workshop 1 · One valid solution",
+    "title": "A complete state makes the deadline explicit",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Element</th><th>Example answer</th></tr></thead><tbody><tr><td>State</td><td>(cell, battery, parcel status, steps remaining).</td></tr><tr><td>Actions</td><td>Legal moves, pick up, deliver and recharge where allowed.</td></tr><tr><td>Dynamics</td><td>Movement noise and battery consumption are specified.</td></tr><tr><td>End and reward</td><td>+10 for delivery, −10 for failure, otherwise −0.1; γ=1.</td></tr><tr><td>Evaluation</td><td>Delivery rate and battery/deadline failures on held-out maps.</td></tr></tbody></table></div><p class=\"takeaway\">Rewards here are alternatives on a transition. The finite 20-step horizon makes the return bounded.</p>",
+    "notes": "This is one internally consistent teaching formulation. A successful delivery ends the task. A depleted battery or exhausted deadline before success is failure. If delivery and deadline exhaustion coincide, define event precedence; this example credits delivery on the final allowed action. Map information must be part of the state or fixed task context. Hidden battery would require a partially observed model or a belief representation.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Workshop 2 · 8 minutes",
+    "title": "Calculate the targets before choosing an algorithm",
+    "body": "<div class=\"cols\"><div><h3>One nonterminal sample</h3><p>Q(s,a)=2, r=−1, γ=0.9, α=0.5.</p><p>Q(s′,·)=[4,1].<br>The selected next action has value 1.</p></div><div><h3>Questions</h3><p>1. Compute the Q-learning update.</p><p>2. Compute the SARSA update.</p><p>3. Repeat both if s′ is truly terminal.</p></div></div><p class=\"takeaway\">For an ε-greedy extension, use ε=0.2 and two legal actions.</p>",
+    "notes": "Ask students to write target, error and new estimate separately. This catches arithmetic that inserts the learning rate into the target or applies the discount to the immediate reward. The terminal variant keeps r=−1 and changes only the continuation condition. The optional extension computes Expected SARSA under a stated unique greedy action.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Workshop 2 · Solution",
+    "title": "The continuation determines the difference",
+    "body": "<div class=\"table-scroll\"><table><thead><tr><th>Method</th><th>Target</th><th>Error</th><th>New Q</th></tr></thead><tbody><tr><td>Q-learning</td><td>−1 + 0.9×4 = 2.6</td><td>0.6</td><td>2.3</td></tr><tr><td>SARSA</td><td>−1 + 0.9×1 = −0.1</td><td>−2.1</td><td>0.95</td></tr><tr><td>Either, true terminal</td><td>−1</td><td>−3</td><td>0.5</td></tr><tr><td>Expected SARSA, ε=0.2</td><td>−1 + 0.9×3.7 = 2.33</td><td>0.33</td><td>2.165</td></tr></tbody></table></div><p class=\"takeaway\">Expected SARSA uses probabilities 0.9 and 0.1: 0.9×4 + 0.1×1 = 3.7.</p>",
+    "notes": "The greedy action receives 1−ε+ε/2=0.9 and the other action ε/2=0.1. For an external truncation, use the nonterminal rows if the underlying task continues and the final next-state observation is available. All updates start from the original Q=2; they are alternatives, not successive updates to one table.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Debugging workshop",
+    "title": "Two plausible lines can create a silent learning error",
+    "body": "<pre class=\"wide-code\"><code>next_state, reward, terminated, truncated = env.step(action)\ndone = terminated or truncated\nif done:\n    next_state = env.reset()\ntarget = reward + γ * (1 - done) * max(Q[next_state])\nQ[state, action] += α * (target - Q[state, action])</code></pre><p class=\"takeaway\">Identify the meaning of the bootstrap mask and which observation belongs in the target.</p>",
+    "notes": "There are two distinct conceptual errors. First, done combines termination with external truncation and therefore removes valid continuation at truncation. Second, overwriting the final next state before the update loses the observation needed for bootstrapping. With this exact mask the second error is concealed when done is true; fixing only the mask would expose it.",
+    "cls": "",
+    "sub": "",
+    "ref": "Adapted and expanded from the supplied Unit 6 material"
+  },
+  {
+    "ch": "Debugging solution",
+    "title": "The update uses the final transition before resetting",
+    "body": "<pre class=\"wide-code\"><code>final_state, reward, terminated, truncated = env.step(action)\nif terminated:\n    target = reward\nelse:\n    target = reward + γ * max(Q[final_state])\nQ[state, action] += α * (target - Q[state, action])\nstate = env.reset() if (terminated or truncated) else final_state</code></pre><p class=\"takeaway\">Also check legal actions, reward timing, random seeds and evaluation without learning.</p>",
+    "notes": "This is corrected conceptual pseudocode. Some environment wrappers auto-reset and return a new episode’s observation alongside a separate final observation; inspect the API contract before implementing this pattern. Test both termination and truncation with nonzero next-state values, otherwise a zero initialization can hide the bug.",
+    "cls": "",
+    "sub": "",
+    "ref": "Farama termination/truncation semantics · Original debugging exercise"
+  },
+  {
+    "ch": "Self-check",
+    "title": "Six questions to test the core ideas",
+    "body": "<div class=\"check-grid\"><div class=\"check-item\"><b>01</b><p>Reward or return?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Reward belongs to one transition. Return sums discounted rewards.</div></div><div class=\"check-item\"><b>02</b><p>What does γ change?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>The relative weight of later rewards, hence the objective.</div></div><div class=\"check-item\"><b>03</b><p>What bootstraps?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>TD, SARSA and Q-learning use estimated continuation values.</div></div><div class=\"check-item\"><b>04</b><p>Why does ε=0 risk failure?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>An action with a poor early estimate may never be tried again.</div></div><div class=\"check-item\"><b>05</b><p>Q-learning versus SARSA?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Greedy next value versus the value of the selected next action.</div></div><div class=\"check-item\"><b>06</b><p>What happens at truncation?</p><button class=\"reveal\" aria-expanded=\"false\">Show explanation</button><div class=\"answer\" hidden>Keep valid continuation and use the final observation before reset.</div></div></div>",
+    "notes": "Use this as retrieval practice before showing answers. Ask students to add one numerical example for each concept. The explanations are visible in the printable PDF. Follow up on the distinction between one-step sampled updates and complete model backups, and on why stochastic returns require repeated evaluation.",
+    "cls": "",
+    "sub": "",
+    "ref": "Expanded source mini-test · Answers included in the PDF"
+  },
+  {
+    "ch": "References",
+    "title": "Core reading and sources for the extensions",
+    "body": "<div class=\"references refs-grid\"><div><p><strong>Course material</strong><br>Supplied UCLM Unit 6 lecture, 32 slides. Expanded examples and executable labs are original to this version.</p><p><strong>Sutton &amp; Barto (2018)</strong><br><em>Reinforcement Learning: An Introduction</em>, 2nd ed. Chapters 2–6 and 13.<br><a href=\"https://incompleteideas.net/book/the-book-2nd.html\">incompleteideas.net/book/the-book-2nd.html</a></p><p><strong>Watkins &amp; Dayan (1992)</strong><br>Q-learning. <em>Machine Learning</em> 8, 279–292.<br><a href=\"https://doi.org/10.1007/BF00992698\">doi.org/10.1007/BF00992698</a></p><p><strong>Ng, Harada &amp; Russell (1999)</strong><br>Policy invariance under reward transformations.<br><a href=\"https://people.eecs.berkeley.edu/~russell/papers/icml99-shaping.pdf\">Berkeley: original shaping paper</a></p></div><div><p><strong>Berkeley CS188</strong><br>MDPs, value iteration and reinforcement learning.<br><a href=\"https://inst.eecs.berkeley.edu/~cs188/textbook/\">inst.eecs.berkeley.edu/~cs188/textbook/</a></p><p><strong>Farama Foundation</strong><br>Gymnasium: Handling time limits.<br><a href=\"https://gymnasium.farama.org/tutorials/gymnasium_basics/handling_time_limits/\">gymnasium.farama.org · Handling time limits</a></p><p><strong>Mnih et al. (2015)</strong><br>Human-level control through deep reinforcement learning.<br><a href=\"https://doi.org/10.1038/nature14236\">doi.org/10.1038/nature14236</a></p><p><strong>Agarwal et al. (2021)</strong><br>Deep RL at the edge of the statistical precipice.<br><a href=\"https://agarwl.github.io/rliable/\">agarwl.github.io/rliable/</a></p></div></div>",
+    "notes": "Use the supplied slides for course alignment, the textbook for systematic study, and the primary papers or official documentation for the named extensions. Online resources checked in September 2026. Links are optional further reading: all laboratories and presentation controls work offline. The synthetic examples are educational models, not empirical claims about deployed systems.",
+    "cls": "",
+    "sub": "",
+    "ref": "Primary research, university teaching material and official documentation"
+  },
+  {
+    "ch": "Course synthesis",
+    "title": "An intelligent agent needs a model of what matters",
+    "body": "<div class=\"rows\"><div><strong>Represent</strong><span>Choose state, actions, goals, constraints and uncertainty.</span></div><div><strong>Decide</strong><span>Search, plan against opponents or evaluate a policy.</span></div><div><strong>Learn</strong><span>Use experience to improve predictions and choices.</span></div><div><strong>Validate</strong><span>Check assumptions, outcomes and failure cases.</span></div></div><p class=\"takeaway\">The six units now form one toolkit: formulate the problem, choose a method and test the evidence.</p>",
+    "notes": "Close the course by asking students to solve the same small task using two paradigms and justify the comparison. Revisit the agent model from Unit 1, the search and heuristic machinery from Units 2 and 3, CSP modelling from Unit 4, strategic reasoning from Unit 5 and learning from Unit 6. A correct mathematical update is necessary, but a sound formulation and honest evaluation complete the argument.",
+    "cls": "red",
+    "sub": "",
+    "ref": "UCLM · Intelligent Systems · End of Unit 6"
+  }
+]
