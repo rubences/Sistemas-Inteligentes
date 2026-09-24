@@ -15,9 +15,12 @@ jobs:
           node --test tests/*.test.cjs
           node --check assets/app.js
           python scripts/check_materials.py
+          python scripts/check_learning.py
           python authoring/build.py
       - name: Python reference algorithms
         run: python -m unittest discover -s practice/python -v
+      - name: Classroom service authentication and persistence
+        run: python -m unittest discover -s server -v
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -28,3 +31,17 @@ jobs:
           javac *.java
           java -ea LoopoverTest
           java Loopover
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install browser verification tools
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Campus, real Python runtime and classroom workflows
+        run: |
+          node scripts/browser_check.cjs
+          node scripts/browser_v2.cjs
+          node scripts/browser_live_regressions.cjs

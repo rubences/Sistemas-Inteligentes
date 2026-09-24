@@ -1,0 +1,14 @@
+services:
+  classroom:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"
+    environment:
+      CLASSROOM_TEACHER_KEY: ${CLASSROOM_TEACHER_KEY:?Set a random teacher key outside the repository}
+      CLASSROOM_ORIGINS: ${CLASSROOM_ORIGINS:-https://rubences.github.io}
+    volumes:
+      - classroom-data:/data
+      - ${CLASSROOM_PRIVATE_PATH:?Set an absolute private directory outside this repository}:/private:ro
+volumes:
+  classroom-data:

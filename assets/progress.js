@@ -1,7 +1,8 @@
 /* Pure validation, scoring and clock logic. No network or browser dependencies. */
 (function(root){
  'use strict';
- const empty=()=>({version:1,completed:[],labs:{},quizzes:{}});
+ const L=typeof module!=='undefined'?require('./learning-core.js'):root.LearningCore;
+ const empty=()=>({version:1,completed:[],labs:{},quizzes:{},learning:L.empty()});
  const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
  const integer=(x,min,max)=>Number.isInteger(x)&&x>=min&&x<=max;
  function validate(raw,course){
@@ -18,10 +19,11 @@
    if(!u||!object(x)||!integer(x.best,0,n)||!integer(x.last,0,n)||x.best<x.last||!integer(x.attempts,1,100000))throw Error('A quiz result is invalid.');
    out.quizzes[id]={best:x.best,last:x.last,attempts:x.attempts};
   }
+  out.learning=raw.learning===undefined?L.empty():L.validate(raw.learning,course);
   return out;
  }
  function score(questions,answers){if(!Array.isArray(answers)||answers.length!==questions.length||answers.some((a,i)=>!integer(a,0,questions[i].options.length-1)))throw Error('Answer every question with a valid choice.');return answers.reduce((n,a,i)=>n+(a===questions[i].answer?1:0),0);}
- function recordQuiz(progress,unit,result,total){if(!integer(unit,1,6)||!integer(result,0,total))throw Error('Invalid quiz result.');const p=JSON.parse(JSON.stringify(progress)),old=p.quizzes[String(unit)];p.quizzes[String(unit)]={best:Math.max(old?.best??0,result),last:result,attempts:(old?.attempts??0)+1};return p;}
+ function recordQuiz(progress,unit,result,total){if(!integer(unit,1,6)||!integer(result,0,total))throw Error('Invalid quiz result.');const p=JSON.parse(JSON.stringify(progress)),old=p.quizzes[String(unit)];p.quizzes[String(unit)]={best:Math.max(old?.best??0,result),last:result,attempts:Math.min(100000,(old?.attempts??0)+1)};return p;}
  function timer(seconds){if(!Number.isFinite(seconds)||seconds<0)throw Error('Invalid duration.');return {seconds,deadline:null,running:false};}
  const remaining=(t,now)=>Math.max(0,t.running?(t.deadline-now)/1000:t.seconds);
  const start=(t,now)=>t.running?t:{...t,running:true,deadline:now+t.seconds*1000};

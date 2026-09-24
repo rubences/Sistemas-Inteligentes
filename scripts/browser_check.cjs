@@ -19,8 +19,8 @@ const root=path.resolve(__dirname,'..'),course=require('../assets/course-data.js
  await go('labs');assert.equal(await page.locator('.lab-row').count(),28);
  await page.locator('#lab-search').fill('zzzzzz');assert.equal(await page.locator('.lab-row').count(),0);
  await page.getByRole('button',{name:'Clear filters'}).click();await page.selectOption('#lab-filter','6');assert.equal(await page.locator('.lab-row').count(),5);
- await go('lab/u1-l1');await page.locator('#lab-done').check();await page.getByRole('button',{name:'Save evidence'}).click();
- assert.match(await page.locator('#toast').textContent(),/Record your evidence/);
+ await go('lab/u1-l1');await page.locator('#lab-done').click();assert.equal(await page.locator('#lab-done').isChecked(),false);
+ assert.match(await page.locator('#toast').textContent(),/Record evidence/);
  const note='<img src=x onerror="window.XSS=true"> prediction → evidence';
  await page.locator('#evidence').fill(note);await page.getByRole('button',{name:'Save evidence'}).click();await page.reload();
  assert.equal(await page.locator('#evidence').inputValue(),note);assert.equal(await page.evaluate(()=>window.XSS),undefined);

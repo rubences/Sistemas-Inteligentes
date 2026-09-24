@@ -2,7 +2,7 @@
 
 ## Before the first session
 
-Download and extract the repository, open `index.html`, and test the chosen laboratory on the classroom computer. The materials work offline. A local server (`python -m http.server 8000`) provides a stable browser origin. Keep the PDF available as a projection fallback.
+Download and extract the repository, open `index.html`, and test the chosen laboratory on the classroom computer. Reading and standalone simulations work offline; integrated workspaces use HTTP(S), browser Python needs its CDN runtime, and shared participation needs the classroom service. A local server (`python -m http.server 8000`) provides a stable browser origin. Keep the PDF available as a projection fallback.
 
 Review the unit's notes and the worksheet in advance. Confirm the official syllabus, schedule, accessibility arrangements and assessment policy separately. The six supplied presentations are retained in `materials/originals/`; the English HTML/PDF editions add explanation and interactive examples.
 
@@ -41,8 +41,14 @@ Use the Python reference only after students have attempted the contract. Public
 
 The project rubric in [CAPSTONE.md](CAPSTONE.md) is a proposal, not an official grade scheme. Give feedback on model accuracy, algorithm assumptions, controlled experiments and clarity of conclusions. Self-checks are public practice questions and local scores can be edited by the learner; they are unsuitable as trusted grades.
 
-There is no server, login, attendance tracker or submission endpoint. Use UCLM's approved teaching platform for submissions and official records. The campus can be linked from that platform, while its simulations remain independently usable.
+The optional [classroom service](../server/README.md) supports shared polls, evidence receipts and feedback with protected teacher access. Deploy it separately with HTTPS and persistent storage; GitHub Pages cannot execute it. Student pseudonyms are not verified identities. Use UCLM's approved platform for official records and grades. The [Moodle package](../integration/README.md) supplies 36 public practice questions and 18 assignment briefs with suggested criteria. Keep any official marking guides outside the public repository and configure the private directory only on the server.
 
 ## Maintenance
 
 Edit unit metadata and quiz explanations in `assets/course-data.js`. Edit presentation sources using [the authoring guide](../authoring/README.md). Run the repository checks before publishing. Replace PDFs after changing their HTML source so students do not study contradictory versions. Update the manifest deliberately when accepting a new canonical edition.
+
+## Plan a full course
+
+**Weekly plan** proposes 15 weeks with preparation, two theory sessions, a laboratory and follow-up. Adjust it to the approved timetable. Each unit includes a worked example and foundation/applied/extension challenges. The criteria support formative feedback; approve official assessment weights separately. **Compare algorithms** keeps the instance and budget visible and exports reproducible settings/results. Require students to distinguish solved, exhausted and cutoff search; exact minimax values and bounds; and training from frozen-policy evaluation.
+
+After editing learning metadata, run `python scripts/build_learning_data.py`, `python scripts/build_integration.py` and `python scripts/check_learning.py`. To run full browser checks, install Playwright and Chromium, then run `node scripts/browser_check.cjs` and `node scripts/browser_v2.cjs`. The latter starts temporary local web/classroom servers and exercises actual Python execution and teacher/student interactions.

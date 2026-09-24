@@ -1,0 +1,969 @@
+<?xml version='1.0' encoding='utf-8'?>
+<quiz>
+  <question type="category">
+    <category>
+      <text>$course$/Intelligent Systems/Unit 1</text>
+    </category>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u1q1</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A rational agent chooses actions using…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Rationality concerns the information and objective available when the decision is made.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>the actual future outcome</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>available percepts, knowledge and expected performance</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>a guarantee of success</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u1q2</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Which PEAS component describes what the agent can observe?</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Sensors provide observations. Actuators change the environment.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>Actuators</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>Performance measure</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>Sensors</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u1q3</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A partially observable environment may require…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The latest observation can omit information that matters for the next decision.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>memory or a belief about hidden state</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>only the most recent percept in every task</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>a deterministic transition model</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u1q4</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A stochastic environment means…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Stochasticity concerns transition outcomes, not the quality of the agent.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>the agent is always irrational</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>the same state-action pair can have different outcomes</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the goal changes after every action</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u1q5</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>In geared Loopover, one action is…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The course model couples both phases into one unit-cost action.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>a row shift followed by a column shift</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>either a row shift or a column shift, chosen independently</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>a swap of any two tiles</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u1q6</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A performance measure should evaluate…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The measure should capture what successful behaviour means for the task.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>only the number of actions executed</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>whether the intended task objective is achieved</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>whether the implementation uses AI terminology</text>
+    </answer>
+  </question>
+  <question type="category">
+    <category>
+      <text>$course$/Intelligent Systems/Unit 2</text>
+    </category>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u2q1</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>BFS returns a least-cost path when…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>BFS minimizes depth. Equal step costs align depth with path cost.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>step costs are equal and nonnegative</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the deepest node is always best</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the graph contains no repeated states</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u2q2</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Uniform-cost search prioritizes…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>UCS orders the frontier by the cost already paid.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>estimated remaining cost h</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>lowest accumulated path cost g</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>largest branching factor</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u2q3</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A depth-limited cutoff means…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>A deeper search may still find a solution.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>the problem is unsatisfiable</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the goal is already found</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>the current limit prevented complete exploration</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u2q4</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>With branching factor 3 and depth 2, a full tree contains…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>There are 1+3+9=13 nodes including the root.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>9 nodes</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>13 nodes</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>6 nodes</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u2q5</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>For finite coin inventories, a state must distinguish…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The remaining coins determine which future actions are legal.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>only the current monetary amount</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>the amount and remaining inventory</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>only the last coin selected</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u2q6</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A search hits its configured node budget. Report…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>A resource cap is not a proof that no solution exists.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>cutoff / budget exhausted</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>proved unsolvable</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>optimal failure</text>
+    </answer>
+  </question>
+  <question type="category">
+    <category>
+      <text>$course$/Intelligent Systems/Unit 3</text>
+    </category>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u3q1</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A* normally orders the frontier using…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>A* combines cost paid with an estimate of cost remaining.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>h only</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>g+h</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>g−h</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u3q2</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>An admissible heuristic satisfies…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>It never overestimates the optimal remaining cost.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>h(s)≤h*(s)</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>h(s)≥h*(s)</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>h(s)=g(s)</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u3q3</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Consistency requires, on each edge s→s′,…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>This local inequality prevents f from decreasing along a path.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>h(s)≤c(s,a,s′)+h(s′)</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>h(s)=h(s′)</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>g(s)≤h(s′)</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u3q4</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>With an inconsistent heuristic, graph A* may need…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Reopening allows the improved path to propagate to successors.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>to ignore cheaper paths to closed states</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>to reopen a state when a better g is found</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>to replace all costs with one</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u3q5</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A single geared move affects seven distinct positions. A lower bound based on m misplaced tiles is…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>One action can correct at most seven misplaced positions.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>m</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>ceil(m/7)</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>7m</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u3q6</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Does greedy best-first search guarantee a least-cost path?</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Expansion count alone does not establish path optimality.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>Yes, for any heuristic</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>No, h alone ignores cost already paid</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>Yes, if it expands fewer states</text>
+    </answer>
+  </question>
+  <question type="category">
+    <category>
+      <text>$course$/Intelligent Systems/Unit 4</text>
+    </category>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u4q1</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A CSP consists of…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The model defines values each variable may take and which combinations are allowed.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>variables, domains and constraints</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>a neural policy only</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>a frontier with one fixed cost</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u4q2</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>MRV chooses the variable with…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>MRV focuses on the most constrained current choice.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>most remaining values</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>fewest remaining legal values</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>largest name alphabetically</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u4q3</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>LCV prefers a value that…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>LCV preserves flexibility for later choices.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>removes fewer options from other variables</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>always has the smallest numeric value</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>maximizes constraint violations</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u4q4</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>AC-3 reaches arc consistency. This implies…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Local support does not guarantee a jointly consistent global assignment.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>a solution must exist</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>each remaining value has local support on each relevant arc</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>every variable has one value</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u4q5</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Three mutually adjacent variables with two colours are…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Each pair has support, but a triangle needs a third colour.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>satisfiable</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>unsatisfiable even though initial binary arcs can be consistent</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>always solved by a single AC-3 revision</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u4q6</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Min-conflicts reaches its step budget with one attack. Report…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The budgeted local search did not find a solution in this run.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>a valid solution</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>an incomplete run with one conflict remaining</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>proof that eight queens has no solution</text>
+    </answer>
+  </question>
+  <question type="category">
+    <category>
+      <text>$course$/Intelligent Systems/Unit 5</text>
+    </category>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u5q1</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A MAX root has MIN children with leaves [4,7] and [6,1]. Its value is…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>MIN values are 4 and 1. MAX selects 4.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>7</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>4</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>1</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u5q2</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Alpha-beta pruning preserves…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>A cut-off subtree may supply a bound while the root decision remains correct.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>the minimax root value under the same complete search model</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>every internal value as exact</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the number of leaves visited</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u5q3</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A terminal state should use…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Terminal outcomes must take precedence over nonterminal evaluation.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>a heuristic before checking the winner</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>exact terminal utility</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the value zero in every game</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u5q4</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>A cut-off MIN node returns an upper bound equal to the current best root value. It…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>An equal upper bound is not an exact-value tie.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>proves that candidate ties the best action</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>may hide a worse true value</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>must replace the earlier root action</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u5q5</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Risk gives +10 with probability p and −6 otherwise. Expected utility is…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>10p−6(1−p)=16p−6.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>4p</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>16p−6</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>10p−6</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u5q6</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Risk beats a certain utility 4 when…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Solve 16p−6&gt;4. At p=0.625 both actions tie.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>p&gt;0.625</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>p&gt;0.5</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>p&lt;0.625</text>
+    </answer>
+  </question>
+  <question type="category">
+    <category>
+      <text>$course$/Intelligent Systems/Unit 6</text>
+    </category>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u6q1</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Rewards [−1,−1,5] with γ=0.9 give return…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>−1−0.9+0.9²×5=2.15.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>3</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>2.15</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>3.5</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u6q2</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Q-learning uses which continuation?</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Its greedy target can differ from the exploratory behaviour action.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100" format="plain_text">
+      <text>the maximum current next-state Q value</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>only the action actually selected next</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>no estimate of future rewards</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u6q3</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>SARSA uses which continuation?</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>SARSA includes the next action drawn from its behaviour policy.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>always max Q</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>the value of the selected next action</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>the average of all values regardless of policy</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u6q4</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>At a true task terminal, the TD target is…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>No task reward follows the terminal state under the stated reward-on-entry convention.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>r+γV(reset state)</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>r</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>γV(s′)</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u6q5</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>An external time cap should normally…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>Collection stops, but the underlying MDP may still continue.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>erase all continuation value</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>retain bootstrapping from the final nonterminal observation</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>change the reward into success</text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text>u6q6</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>With four actions, one chosen greedy action and ε=0.2, its probability is…</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text>The random branch can also pick it: 1−ε+ε/4=0.85.</text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="0" format="plain_text">
+      <text>0.8</text>
+    </answer>
+    <answer fraction="100" format="plain_text">
+      <text>0.85</text>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>0.95</text>
+    </answer>
+  </question>
+</quiz>
